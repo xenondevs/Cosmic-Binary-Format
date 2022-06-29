@@ -428,13 +428,6 @@ class NettyByteBuffer(val nettyBuf: ByteBuf) : ByteBuffer {
     }
     
     /**
-     * Returns the string at the given index.
-     */
-    override fun getString(index: Int): String {
-        return String(getBytes(index + 4, getInt(index)))
-    }
-    
-    /**
      * Returns the [UUID] at the given index.
      */
     override fun getUUID(index: Int): UUID {
@@ -684,15 +677,6 @@ class NettyByteBuffer(val nettyBuf: ByteBuf) : ByteBuffer {
      */
     override fun setCharSequence(index: Int, value: CharSequence, charset: Charset) {
         nettyBuf.setCharSequence(index, value, charset)
-    }
-    
-    /**
-     * Sets the string at the given index.
-     */
-    override fun setString(index: Int, value: String) {
-        val bytes = value.encodeToByteArray()
-        setInt(index, bytes.size)
-        setBytes(index + 4, bytes)
     }
     
     /**

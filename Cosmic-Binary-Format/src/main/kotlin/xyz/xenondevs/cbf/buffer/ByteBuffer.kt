@@ -303,11 +303,6 @@ interface ByteBuffer {
     fun getCharSequence(index: Int, length: Int, charset: Charset): CharSequence
     
     /**
-     * Returns the string at the given index.
-     */
-    fun getString(index: Int): String
-    
-    /**
      * Returns the [UUID] at the given index.
      */
     fun getUUID(index: Int): UUID
@@ -487,11 +482,6 @@ interface ByteBuffer {
      * Sets the char sequence at the given index.
      */
     fun setCharSequence(index: Int, value: CharSequence, charset: Charset)
-    
-    /**
-     * Sets the string at the given index.
-     */
-    fun setString(index: Int, value: String)
     
     /**
      * Sets the [UUID] at the given index.
