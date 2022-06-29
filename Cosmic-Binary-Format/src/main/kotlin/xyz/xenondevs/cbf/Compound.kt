@@ -74,18 +74,18 @@ class Compound internal constructor(
     internal object CompoundBinaryAdapter : BinaryAdapter<Compound> {
         
         override fun write(obj: Compound, buf: ByteBuffer) {
-            buf.writeInt(obj.binMap.size + obj.map.size)
+            buf.writeVarInt(obj.binMap.size + obj.map.size)
             
             obj.binMap.forEach { (key, binData) ->
                 buf.writeString(key)
-                buf.writeInt(binData.size)
+                buf.writeVarInt(binData.size)
                 buf.writeBytes(binData)
             }
             
             obj.map.forEach { (key, data) ->
                 buf.writeString(key)
                 val binData = CBF.write(data)
-                buf.writeInt(binData.size)
+                buf.writeVarInt(binData.size)
                 buf.writeBytes(binData)
             }
         }

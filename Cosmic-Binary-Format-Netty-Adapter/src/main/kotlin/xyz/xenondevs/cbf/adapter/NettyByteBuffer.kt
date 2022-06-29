@@ -856,6 +856,40 @@ class NettyByteBuffer(val nettyBuf: ByteBuf) : ByteBuffer {
     }
     
     /**
+     * Reads the int in a variable length format at current writer position.
+     */
+    override fun readVarInt(): Int {
+        var value = 0
+        var currentByte: Byte
+        var byteIdx = 0
+        
+        do {
+            currentByte = readByte()
+            value = value or ((currentByte.toInt() and 127) shl byteIdx++ * 7)
+            check(byteIdx < 6) { "VarInt is too big" }
+        } while (currentByte.countLeadingZeroBits() == 0)
+        
+        return value
+    }
+    
+    /**
+     * Reads the  long in a variable length format at current writer position.
+     */
+    override fun readVarLong(): Long {
+        var value = 0L
+        var currentByte: Byte
+        var byteIdx = 0
+        
+        do {
+            currentByte = readByte()
+            value = value or ((currentByte.toLong() and 127) shl byteIdx++ * 7)
+            check(byteIdx < 10) { "VarLong is too big" }
+        } while (currentByte.countLeadingZeroBits() == 0)
+        
+        return value
+    }
+    
+    /**
      * Reads the bytes at the current reader position.
      */
     override fun readBytes(dst: ByteArray, dstIndex: Int, length: Int) {
@@ -939,7 +973,7 @@ class NettyByteBuffer(val nettyBuf: ByteBuf) : ByteBuffer {
      * Reads the string at the current reader position.
      */
     override fun readString(): String {
-        return String(readBytes(readInt()))
+        return String(readBytes(readVarInt()))
     }
     
     /**
@@ -1125,6 +1159,32 @@ class NettyByteBuffer(val nettyBuf: ByteBuf) : ByteBuffer {
     }
     
     /**
+     * Writes the given int in a variable length format at current writer position.
+     */
+    override fun writeVarInt(value: Int) {
+        var currentValue = value
+        while ((currentValue and -128) != 0) {
+            this.writeByte(((currentValue and 127) or 128).toByte())
+            currentValue = currentValue ushr 7
+        }
+        
+        this.writeByte(currentValue.toByte())
+    }
+    
+    /**
+     * Writes the given long in a variable length format at current writer position.
+     */
+    override fun writeVarLong(value: Long) {
+        var currentValue = value
+        while ((currentValue and -128L) != 0.toLong()) {
+            this.writeByte(((currentValue and 127) or 128).toByte())
+            currentValue = currentValue ushr 7
+        }
+        
+        this.writeByte(currentValue.toByte())
+    }
+    
+    /**
      * Writes the given bytes at current writer position
      */
     override fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
@@ -1199,7 +1259,7 @@ class NettyByteBuffer(val nettyBuf: ByteBuf) : ByteBuffer {
      */
     override fun writeString(value: String) {
         val bytes = value.encodeToByteArray()
-        writeInt(bytes.size)
+        writeVarInt(bytes.size)
         writeBytes(bytes)
     }
     

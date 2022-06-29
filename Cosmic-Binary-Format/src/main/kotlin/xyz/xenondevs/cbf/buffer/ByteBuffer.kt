@@ -608,6 +608,17 @@ interface ByteBuffer {
      */
     fun readDoubleLE(): Double
     
+    
+    /**
+     * Reads the int in a variable length format at current writer position.
+     */
+    fun readVarInt(): Int
+    
+    /**
+     * Reads the  long in a variable length format at current writer position.
+     */
+    fun readVarLong(): Long
+    
     /**
      * Reads the bytes at the current reader position.
      */
@@ -799,6 +810,16 @@ interface ByteBuffer {
     fun writeDoubleLE(value: Double)
     
     /**
+     * Writes the given int in a variable length format at current writer position.
+     */
+    fun writeVarInt(value: Int)
+    
+    /**
+     * Writes the given long in a variable length format at current writer position.
+     */
+    fun writeVarLong(value: Long)
+    
+    /**
      * Writes the given bytes at current writer position
      */
     fun writeBytes(src: ByteArray, srcIndex: Int, length: Int)
@@ -952,7 +973,5 @@ interface ByteBuffer {
      * hashCode() of this buffer.
      */
     override fun hashCode(): Int
-    
-    
     
 }

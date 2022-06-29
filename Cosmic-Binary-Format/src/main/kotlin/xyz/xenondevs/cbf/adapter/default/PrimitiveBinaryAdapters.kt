@@ -19,12 +19,12 @@ internal object ByteBinaryAdapter : BinaryAdapter<Byte> {
 internal object ByteArrayBinaryAdapter : BinaryAdapter<ByteArray> {
     
     override fun write(obj: ByteArray, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach { buf.writeByte(it) }
     }
     
     override fun read(type: Type, buf: ByteBuffer): ByteArray {
-        return ByteArray(buf.readInt()) { buf.readByte() }
+        return ByteArray(buf.readVarInt()) { buf.readByte() }
     }
     
 }
@@ -44,12 +44,12 @@ internal object ShortBinaryAdapter : BinaryAdapter<Short> {
 internal object ShortArrayBinaryAdapter : BinaryAdapter<ShortArray> {
     
     override fun write(obj: ShortArray, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach { buf.writeShort(it) }
     }
     
     override fun read(type: Type, buf: ByteBuffer): ShortArray {
-        return ShortArray(buf.readInt()) { buf.readShort() }
+        return ShortArray(buf.readVarInt()) { buf.readShort() }
     }
     
 }
@@ -57,11 +57,11 @@ internal object ShortArrayBinaryAdapter : BinaryAdapter<ShortArray> {
 internal object IntBinaryAdapter : BinaryAdapter<Int> {
     
     override fun write(obj: Int, buf: ByteBuffer) {
-        buf.writeInt(obj)
+        buf.writeVarInt(obj)
     }
     
     override fun read(type: Type, buf: ByteBuffer): Int {
-        return buf.readInt()
+        return buf.readVarInt()
     }
     
 }
@@ -69,12 +69,12 @@ internal object IntBinaryAdapter : BinaryAdapter<Int> {
 internal object IntArrayBinaryAdapter : BinaryAdapter<IntArray> {
     
     override fun write(obj: IntArray, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach(buf::writeInt)
     }
     
     override fun read(type: Type, buf: ByteBuffer): IntArray {
-        return IntArray(buf.readInt()) { buf.readInt() }
+        return IntArray(buf.readVarInt()) { buf.readInt() }
     }
     
 }
@@ -94,12 +94,12 @@ internal object LongBinaryAdapter : BinaryAdapter<Long> {
 internal object LongArrayBinaryAdapter : BinaryAdapter<LongArray> {
     
     override fun write(obj: LongArray, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach(buf::writeLong)
     }
     
     override fun read(type: Type, buf: ByteBuffer): LongArray {
-        return LongArray(buf.readInt()) { buf.readLong() }
+        return LongArray(buf.readVarInt()) { buf.readLong() }
     }
     
 }
@@ -119,12 +119,12 @@ internal object FloatBinaryAdapter : BinaryAdapter<Float> {
 internal object FloatArrayBinaryAdapter : BinaryAdapter<FloatArray> {
     
     override fun write(obj: FloatArray, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach(buf::writeFloat)
     }
     
     override fun read(type: Type, buf: ByteBuffer): FloatArray {
-        return FloatArray(buf.readInt()) { buf.readFloat() }
+        return FloatArray(buf.readVarInt()) { buf.readFloat() }
     }
     
 }
@@ -144,12 +144,12 @@ internal object DoubleBinaryAdapter : BinaryAdapter<Double> {
 internal object DoubleArrayBinaryAdapter : BinaryAdapter<DoubleArray> {
     
     override fun write(obj: DoubleArray, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach(buf::writeDouble)
     }
     
     override fun read(type: Type, buf: ByteBuffer): DoubleArray {
-        return DoubleArray(buf.readInt()) { buf.readDouble() }
+        return DoubleArray(buf.readVarInt()) { buf.readDouble() }
     }
     
 }
@@ -169,12 +169,12 @@ internal object BooleanBinaryAdapter : BinaryAdapter<Boolean> {
 internal object BooleanArrayBinaryAdapter : BinaryAdapter<BooleanArray> {
     
     override fun write(obj: BooleanArray, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach(buf::writeBoolean)
     }
     
     override fun read(type: Type, buf: ByteBuffer): BooleanArray {
-        return BooleanArray(buf.readInt()) { buf.readBoolean() }
+        return BooleanArray(buf.readVarInt()) { buf.readBoolean() }
     }
     
 }
@@ -194,12 +194,12 @@ internal object CharBinaryAdapter : BinaryAdapter<Char> {
 internal object CharArrayBinaryAdapter : BinaryAdapter<CharArray> {
     
     override fun write(obj: CharArray, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach { buf.writeChar(it) }
     }
     
     override fun read(type: Type, buf: ByteBuffer): CharArray {
-        return CharArray(buf.readInt()) { buf.readChar() }
+        return CharArray(buf.readVarInt()) { buf.readChar() }
     }
     
 }

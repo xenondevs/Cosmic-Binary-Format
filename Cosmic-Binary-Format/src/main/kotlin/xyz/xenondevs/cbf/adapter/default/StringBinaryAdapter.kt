@@ -19,12 +19,12 @@ internal object StringBinaryAdapter : BinaryAdapter<String> {
 internal object StringArrayBinaryAdapter : BinaryAdapter<Array<String>> {
     
     override fun write(obj: Array<String>, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach(buf::writeString)
     }
     
     override fun read(type: Type, buf: ByteBuffer): Array<String> {
-        return Array(buf.readInt()) { buf.readString() }
+        return Array(buf.readVarInt()) { buf.readString() }
     }
     
 }

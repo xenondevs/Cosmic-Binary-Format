@@ -9,7 +9,7 @@ import java.lang.reflect.Type
 internal object MapBinaryAdapter : BinaryAdapter<Map<*, *>> {
     
     override fun write(obj: Map<*, *>, buf: ByteBuffer) {
-        buf.writeInt(obj.size)
+        buf.writeVarInt(obj.size)
         obj.forEach { (key, value) -> 
             CBF.write(key, buf)
             CBF.write(value, buf)
@@ -17,7 +17,7 @@ internal object MapBinaryAdapter : BinaryAdapter<Map<*, *>> {
     }
     
     override fun read(type: Type, buf: ByteBuffer): Map<*, *> {
-        val size = buf.readInt()
+        val size = buf.readVarInt()
         val typeArguments = (type as ParameterizedType).actualTypeArguments
         val keyType = typeArguments[0]
         val valueType = typeArguments[1]
