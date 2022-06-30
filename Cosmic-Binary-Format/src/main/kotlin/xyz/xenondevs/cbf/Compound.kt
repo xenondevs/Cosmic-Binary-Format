@@ -12,7 +12,7 @@ class Compound internal constructor(
 ) {
     
     val keys: Set<String>
-        get() = binMap.keys
+        get() = binMap.keys + map.keys
     
     constructor() : this(HashMap(), HashMap())
     
