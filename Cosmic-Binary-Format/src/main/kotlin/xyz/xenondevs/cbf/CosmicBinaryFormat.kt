@@ -48,7 +48,7 @@ object CBF {
         registerBinaryAdapter(Pair::class, PairBinaryAdapter)
         registerBinaryAdapter(Triple::class, TripleBinaryAdapter)
         registerBinaryAdapter(Compound::class, CompoundBinaryAdapter)
-    
+        
         // default binary hierarchy adapters
         registerBinaryHierarchyAdapter(Enum::class, EnumBinaryAdapter)
         registerBinaryHierarchyAdapter(Collection::class, CollectionBinaryAdapter)
@@ -89,8 +89,7 @@ object CBF {
     }
     
     fun <T> read(type: Type, bytes: ByteArray): T? {
-        val wrapped = defaultBufferProvider?.wrappedBuffer(bytes)
-            ?: throw IllegalStateException("No default buffer provider set")
+        val wrapped = wrappedBuffer(bytes)
         return read(type, wrapped)
     }
     
@@ -105,8 +104,7 @@ object CBF {
     }
     
     fun write(obj: Any?): ByteArray {
-        val buf = defaultBufferProvider?.getBuffer()
-            ?: throw IllegalStateException("No default buffer provider set")
+        val buf = buffer()
         write(obj, buf)
         return buf.toByteArray()
     }
@@ -122,6 +120,12 @@ object CBF {
             .firstOrNull { it.parameters.isEmpty() }
             ?.call() as T?
     }
+    
+    fun buffer() = defaultBufferProvider?.getBuffer()
+        ?: throw IllegalStateException("No default buffer provider set")
+    
+    fun wrappedBuffer(bytes: ByteArray) = defaultBufferProvider?.wrappedBuffer(bytes)
+        ?: throw IllegalStateException("No default buffer provider set")
     
     private fun <R> getBinaryAdapter(clazz: KClass<*>): BinaryAdapter<R> {
         val typeAdapter: BinaryAdapter<*>? =
