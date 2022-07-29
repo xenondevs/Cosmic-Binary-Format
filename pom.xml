@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>xyz.xenondevs.cbf</groupId>
-    <artifactId>Cosmic-Binary-Format-Parent</artifactId>
+    <artifactId>cosmic-binary-format-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>Cosmic-Binary-Format</module>
-        <module>Cosmic-Binary-Format-Netty-Adapter</module>
+        <module>cosmic-binary-format</module>
+        <module>cosmic-binary-format-netty-adapter</module>
     </modules>
     <properties>
         <kotlin.version>1.7.0</kotlin.version>
