@@ -91,12 +91,12 @@ class Compound internal constructor(
         }
         
         override fun read(type: Type, buf: ByteBuffer): Compound {
-            val mapSize = buf.readInt()
+            val mapSize = buf.readVarInt()
             val map = HashMap<String, ByteArray>(mapSize)
             
             repeat(mapSize) {
                 val key = buf.readString()
-                val arraySize = buf.readInt()
+                val arraySize = buf.readVarInt()
                 val array = ByteArray(arraySize)
                 buf.readBytes(array)
                 map[key] = array
