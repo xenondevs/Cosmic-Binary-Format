@@ -20,7 +20,7 @@ internal object ByteArrayBinaryAdapter : BinaryAdapter<ByteArray> {
     
     override fun write(obj: ByteArray, buf: ByteBuffer) {
         buf.writeVarInt(obj.size)
-        obj.forEach { buf.writeByte(it) }
+        buf.writeBytes(obj)
     }
     
     override fun read(type: Type, buf: ByteBuffer): ByteArray {
@@ -70,11 +70,11 @@ internal object IntArrayBinaryAdapter : BinaryAdapter<IntArray> {
     
     override fun write(obj: IntArray, buf: ByteBuffer) {
         buf.writeVarInt(obj.size)
-        obj.forEach(buf::writeInt)
+        obj.forEach(buf::writeVarInt)
     }
     
     override fun read(type: Type, buf: ByteBuffer): IntArray {
-        return IntArray(buf.readVarInt()) { buf.readInt() }
+        return IntArray(buf.readVarInt()) { buf.readVarInt() }
     }
     
 }
@@ -82,11 +82,11 @@ internal object IntArrayBinaryAdapter : BinaryAdapter<IntArray> {
 internal object LongBinaryAdapter : BinaryAdapter<Long> {
     
     override fun write(obj: Long, buf: ByteBuffer) {
-        buf.writeLong(obj)
+        buf.writeVarLong(obj)
     }
     
     override fun read(type: Type, buf: ByteBuffer): Long {
-        return buf.readLong()
+        return buf.readVarLong()
     }
     
 }
@@ -95,11 +95,11 @@ internal object LongArrayBinaryAdapter : BinaryAdapter<LongArray> {
     
     override fun write(obj: LongArray, buf: ByteBuffer) {
         buf.writeVarInt(obj.size)
-        obj.forEach(buf::writeLong)
+        obj.forEach(buf::writeVarLong)
     }
     
     override fun read(type: Type, buf: ByteBuffer): LongArray {
-        return LongArray(buf.readVarInt()) { buf.readLong() }
+        return LongArray(buf.readVarInt()) { buf.readVarLong() }
     }
     
 }
