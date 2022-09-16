@@ -7,6 +7,8 @@ import xyz.xenondevs.cbf.buffer.ByteBuffer
 import xyz.xenondevs.cbf.buffer.ByteBufferProvider
 import xyz.xenondevs.cbf.instancecreator.InstanceCreator
 import xyz.xenondevs.cbf.instancecreator.default.EnumMapInstanceCreator
+import xyz.xenondevs.cbf.security.CBFSecurityException
+import xyz.xenondevs.cbf.security.CBFSecurityManager
 import xyz.xenondevs.cbf.util.representedKClass
 import xyz.xenondevs.cbf.util.type
 import java.lang.reflect.Type
@@ -18,6 +20,11 @@ import kotlin.reflect.full.isSuperclassOf
 object CBF {
     
     var defaultBufferProvider: ByteBufferProvider? = null
+    var securityManager: CBFSecurityManager? = null
+        set(value) {
+            check(field == null) { "CBFSecurityManager has already been set" }
+            field = value
+        }
     
     private val binaryAdapters = HashMap<KClass<*>, BinaryAdapter<*>>()
     private val binaryHierarchyAdapters = HashMap<KClass<*>, BinaryAdapter<*>>()
@@ -59,14 +66,23 @@ object CBF {
     }
     
     fun <T : Any> registerBinaryAdapter(clazz: KClass<T>, adapter: BinaryAdapter<T>) {
+        if (securityManager?.canRegisterAdapter(clazz, adapter) == false)
+            throw CBFSecurityException()
+        
         binaryAdapters[clazz] = adapter
     }
     
     fun <T : Any> registerBinaryHierarchyAdapter(clazz: KClass<T>, adapter: BinaryAdapter<T>) {
+        if (securityManager?.canRegisterHierarchyAdapter(clazz, adapter) == false)
+            throw CBFSecurityException()
+        
         binaryHierarchyAdapters[clazz] = adapter
     }
     
     fun <T : Any> registerInstanceCreator(clazz: KClass<T>, creator: InstanceCreator<T>) {
+        if (securityManager?.canRegisterInstanceCreator(clazz, creator) == false)
+            throw CBFSecurityException()
+        
         instanceCreators[clazz] = creator
     }
     
