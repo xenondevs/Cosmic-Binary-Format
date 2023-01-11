@@ -1,7 +1,8 @@
 package xyz.xenondevs.cbf
 
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
-import xyz.xenondevs.cbf.buffer.ByteBuffer
+import xyz.xenondevs.cbf.io.ByteReader
+import xyz.xenondevs.cbf.io.ByteWriter
 import xyz.xenondevs.cbf.util.type
 import java.lang.reflect.Type
 
@@ -54,10 +55,19 @@ class Compound internal constructor(
     
     fun isNotEmpty(): Boolean = map.isNotEmpty()
     
+    fun copy(): Compound {
+        return Compound(HashMap(binMap), HashMap(map))
+    }
+    
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append("{")
-        (binMap.entries + map.entries).forEach { (key, value) ->
+        
+        binMap.entries.forEach { (key, value) ->
+            builder.append("\n\"$key\": (binary) ${value.contentToString()}")
+        }
+        
+        map.entries.forEach { (key, value) ->
             builder.append("\n\"$key\": $value")
         }
         
@@ -66,40 +76,38 @@ class Compound internal constructor(
     
     companion object {
         
-        fun of(map: HashMap<String, Any?>): Compound =
-            Compound(HashMap(), map.mapValuesTo(HashMap()) { CBF.write(it.value) })
+        fun of(map: Map<String, Any?>): Compound =
+            Compound(HashMap(), HashMap(map))
         
     }
     
     internal object CompoundBinaryAdapter : BinaryAdapter<Compound> {
         
-        override fun write(obj: Compound, buf: ByteBuffer) {
-            buf.writeVarInt(obj.binMap.size + obj.map.size)
+        override fun write(obj: Compound, writer: ByteWriter) {
+            writer.writeVarInt(obj.binMap.size + obj.map.size)
             
             obj.binMap.forEach { (key, binData) ->
-                buf.writeString(key)
-                buf.writeVarInt(binData.size)
-                buf.writeBytes(binData)
+                writer.writeString(key)
+                writer.writeVarInt(binData.size)
+                writer.writeBytes(binData)
             }
             
             obj.map.forEach { (key, data) ->
-                buf.writeString(key)
+                writer.writeString(key)
                 val binData = CBF.write(data)
-                buf.writeVarInt(binData.size)
-                buf.writeBytes(binData)
+                writer.writeVarInt(binData.size)
+                writer.writeBytes(binData)
             }
         }
         
-        override fun read(type: Type, buf: ByteBuffer): Compound {
-            val mapSize = buf.readVarInt()
+        override fun read(type: Type, reader: ByteReader): Compound {
+            val mapSize = reader.readVarInt()
             val map = HashMap<String, ByteArray>(mapSize)
             
             repeat(mapSize) {
-                val key = buf.readString()
-                val arraySize = buf.readVarInt()
-                val array = ByteArray(arraySize)
-                buf.readBytes(array)
-                map[key] = array
+                val key = reader.readString()
+                val length = reader.readVarInt()
+                map[key] = reader.readBytes(length)
             }
             
             return Compound(map, HashMap())

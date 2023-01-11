@@ -2,7 +2,7 @@ package xyz.xenondevs.cbf.adapter
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
-import xyz.xenondevs.cbf.buffer.ByteBuffer
+import xyz.xenondevs.cbf.io.ByteBuffer
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.channels.FileChannel

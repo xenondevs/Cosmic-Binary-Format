@@ -3,14 +3,16 @@ package xyz.xenondevs.cbf
 import xyz.xenondevs.cbf.Compound.CompoundBinaryAdapter
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
 import xyz.xenondevs.cbf.adapter.default.*
-import xyz.xenondevs.cbf.buffer.ByteBuffer
-import xyz.xenondevs.cbf.buffer.ByteBufferProvider
+import xyz.xenondevs.cbf.io.ByteReader
+import xyz.xenondevs.cbf.io.ByteWriter
 import xyz.xenondevs.cbf.instancecreator.InstanceCreator
 import xyz.xenondevs.cbf.instancecreator.default.EnumMapInstanceCreator
 import xyz.xenondevs.cbf.security.CBFSecurityException
 import xyz.xenondevs.cbf.security.CBFSecurityManager
 import xyz.xenondevs.cbf.util.representedKClass
 import xyz.xenondevs.cbf.util.type
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.lang.reflect.Type
 import java.util.*
 import kotlin.reflect.KClass
@@ -19,7 +21,6 @@ import kotlin.reflect.full.isSuperclassOf
 @Suppress("UNCHECKED_CAST")
 object CBF {
     
-    var defaultBufferProvider: ByteBufferProvider? = null
     var securityManager: CBFSecurityManager? = null
         set(value) {
             check(field == null) { "CBFSecurityManager has already been set" }
@@ -86,7 +87,7 @@ object CBF {
         instanceCreators[clazz] = creator
     }
     
-    inline fun <reified T> read(buf: ByteBuffer): T? {
+    inline fun <reified T> read(buf: ByteReader): T? {
         return read(type<T>(), buf)
     }
     
@@ -94,7 +95,7 @@ object CBF {
         return read(type<T>(), bytes)
     }
     
-    fun <T> read(type: Type, buf: ByteBuffer): T? {
+    fun <T> read(type: Type, buf: ByteReader): T? {
         if (buf.readBoolean()) {
             val clazz = type.representedKClass
             val typeAdapter = getBinaryAdapter<T>(clazz)
@@ -105,24 +106,23 @@ object CBF {
     }
     
     fun <T> read(type: Type, bytes: ByteArray): T? {
-        val wrapped = wrappedBuffer(bytes)
-        return read(type, wrapped)
+        return read(type, ByteReader.fromStream(ByteArrayInputStream(bytes)))
     }
     
-    fun write(obj: Any?, buf: ByteBuffer) {
+    fun write(obj: Any?, writer: ByteWriter) {
         if (obj != null) {
-            buf.writeBoolean(true)
+            writer.writeBoolean(true)
             
             val clazz = obj::class
             val typeAdapter = getBinaryAdapter<Any>(clazz)
-            typeAdapter.write(obj, buf)
-        } else buf.writeBoolean(false)
+            typeAdapter.write(obj, writer)
+        } else writer.writeBoolean(false)
     }
     
     fun write(obj: Any?): ByteArray {
-        val buf = buffer()
-        write(obj, buf)
-        return buf.toByteArray()
+        val out = ByteArrayOutputStream()
+        write(obj, ByteWriter.fromStream(out))
+        return out.toByteArray()
     }
     
     fun <T> createInstance(type: Type): T? {
@@ -136,12 +136,6 @@ object CBF {
             .firstOrNull { it.parameters.isEmpty() }
             ?.call() as T?
     }
-    
-    fun buffer() = defaultBufferProvider?.getBuffer()
-        ?: throw IllegalStateException("No default buffer provider set")
-    
-    fun wrappedBuffer(bytes: ByteArray) = defaultBufferProvider?.wrappedBuffer(bytes)
-        ?: throw IllegalStateException("No default buffer provider set")
     
     private fun <R> getBinaryAdapter(clazz: KClass<*>): BinaryAdapter<R> {
         val typeAdapter: BinaryAdapter<*>? =

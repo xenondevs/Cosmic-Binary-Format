@@ -1,205 +1,206 @@
 package xyz.xenondevs.cbf.adapter.default
 
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
-import xyz.xenondevs.cbf.buffer.ByteBuffer
+import xyz.xenondevs.cbf.io.ByteReader
+import xyz.xenondevs.cbf.io.ByteWriter
 import java.lang.reflect.Type
 
 internal object ByteBinaryAdapter : BinaryAdapter<Byte> {
     
-    override fun write(obj: Byte, buf: ByteBuffer) {
-        buf.writeByte(obj)
+    override fun write(obj: Byte, writer: ByteWriter) {
+        writer.writeByte(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): Byte {
-        return buf.readByte()
+    override fun read(type: Type, reader: ByteReader): Byte {
+        return reader.readByte()
     }
     
 }
 
 internal object ByteArrayBinaryAdapter : BinaryAdapter<ByteArray> {
     
-    override fun write(obj: ByteArray, buf: ByteBuffer) {
-        buf.writeVarInt(obj.size)
-        buf.writeBytes(obj)
+    override fun write(obj: ByteArray, writer: ByteWriter) {
+        writer.writeVarInt(obj.size)
+        writer.writeBytes(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): ByteArray {
-        return ByteArray(buf.readVarInt()) { buf.readByte() }
+    override fun read(type: Type, reader: ByteReader): ByteArray {
+        return ByteArray(reader.readVarInt()) { reader.readByte() }
     }
     
 }
 
 internal object ShortBinaryAdapter : BinaryAdapter<Short> {
     
-    override fun write(obj: Short, buf: ByteBuffer) {
-        buf.writeShort(obj)
+    override fun write(obj: Short, writer: ByteWriter) {
+        writer.writeShort(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): Short {
-        return buf.readShort()
+    override fun read(type: Type, reader: ByteReader): Short {
+        return reader.readShort()
     }
     
 }
 
 internal object ShortArrayBinaryAdapter : BinaryAdapter<ShortArray> {
     
-    override fun write(obj: ShortArray, buf: ByteBuffer) {
-        buf.writeVarInt(obj.size)
-        obj.forEach { buf.writeShort(it) }
+    override fun write(obj: ShortArray, writer: ByteWriter) {
+        writer.writeVarInt(obj.size)
+        obj.forEach { writer.writeShort(it) }
     }
     
-    override fun read(type: Type, buf: ByteBuffer): ShortArray {
-        return ShortArray(buf.readVarInt()) { buf.readShort() }
+    override fun read(type: Type, reader: ByteReader): ShortArray {
+        return ShortArray(reader.readVarInt()) { reader.readShort() }
     }
     
 }
 
 internal object IntBinaryAdapter : BinaryAdapter<Int> {
     
-    override fun write(obj: Int, buf: ByteBuffer) {
-        buf.writeVarInt(obj)
+    override fun write(obj: Int, writer: ByteWriter) {
+        writer.writeVarInt(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): Int {
-        return buf.readVarInt()
+    override fun read(type: Type, reader: ByteReader): Int {
+        return reader.readVarInt()
     }
     
 }
 
 internal object IntArrayBinaryAdapter : BinaryAdapter<IntArray> {
     
-    override fun write(obj: IntArray, buf: ByteBuffer) {
-        buf.writeVarInt(obj.size)
-        obj.forEach(buf::writeVarInt)
+    override fun write(obj: IntArray, writer: ByteWriter) {
+        writer.writeVarInt(obj.size)
+        obj.forEach(writer::writeVarInt)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): IntArray {
-        return IntArray(buf.readVarInt()) { buf.readVarInt() }
+    override fun read(type: Type, reader: ByteReader): IntArray {
+        return IntArray(reader.readVarInt()) { reader.readVarInt() }
     }
     
 }
 
 internal object LongBinaryAdapter : BinaryAdapter<Long> {
     
-    override fun write(obj: Long, buf: ByteBuffer) {
+    override fun write(obj: Long, buf: ByteWriter) {
         buf.writeVarLong(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): Long {
-        return buf.readVarLong()
+    override fun read(type: Type, reader: ByteReader): Long {
+        return reader.readVarLong()
     }
     
 }
 
 internal object LongArrayBinaryAdapter : BinaryAdapter<LongArray> {
     
-    override fun write(obj: LongArray, buf: ByteBuffer) {
-        buf.writeVarInt(obj.size)
-        obj.forEach(buf::writeVarLong)
+    override fun write(obj: LongArray, writer: ByteWriter) {
+        writer.writeVarInt(obj.size)
+        obj.forEach(writer::writeVarLong)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): LongArray {
-        return LongArray(buf.readVarInt()) { buf.readVarLong() }
+    override fun read(type: Type, reader: ByteReader): LongArray {
+        return LongArray(reader.readVarInt()) { reader.readVarLong() }
     }
     
 }
 
 internal object FloatBinaryAdapter : BinaryAdapter<Float> {
     
-    override fun write(obj: Float, buf: ByteBuffer) {
+    override fun write(obj: Float, buf: ByteWriter) {
         buf.writeFloat(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): Float {
-        return buf.readFloat()
+    override fun read(type: Type, reader: ByteReader): Float {
+        return reader.readFloat()
     }
     
 }
 
 internal object FloatArrayBinaryAdapter : BinaryAdapter<FloatArray> {
     
-    override fun write(obj: FloatArray, buf: ByteBuffer) {
-        buf.writeVarInt(obj.size)
-        obj.forEach(buf::writeFloat)
+    override fun write(obj: FloatArray, writer: ByteWriter) {
+        writer.writeVarInt(obj.size)
+        obj.forEach(writer::writeFloat)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): FloatArray {
-        return FloatArray(buf.readVarInt()) { buf.readFloat() }
+    override fun read(type: Type, reader: ByteReader): FloatArray {
+        return FloatArray(reader.readVarInt()) { reader.readFloat() }
     }
     
 }
 
 internal object DoubleBinaryAdapter : BinaryAdapter<Double> {
     
-    override fun write(obj: Double, buf: ByteBuffer) {
+    override fun write(obj: Double, buf: ByteWriter) {
         buf.writeDouble(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): Double {
-        return buf.readDouble()
+    override fun read(type: Type, reader: ByteReader): Double {
+        return reader.readDouble()
     }
     
 }
 
 internal object DoubleArrayBinaryAdapter : BinaryAdapter<DoubleArray> {
     
-    override fun write(obj: DoubleArray, buf: ByteBuffer) {
-        buf.writeVarInt(obj.size)
-        obj.forEach(buf::writeDouble)
+    override fun write(obj: DoubleArray, writer: ByteWriter) {
+        writer.writeVarInt(obj.size)
+        obj.forEach(writer::writeDouble)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): DoubleArray {
-        return DoubleArray(buf.readVarInt()) { buf.readDouble() }
+    override fun read(type: Type, reader: ByteReader): DoubleArray {
+        return DoubleArray(reader.readVarInt()) { reader.readDouble() }
     }
     
 }
 
 internal object BooleanBinaryAdapter : BinaryAdapter<Boolean> {
     
-    override fun write(obj: Boolean, buf: ByteBuffer) {
-        buf.writeBoolean(obj)
+    override fun write(obj: Boolean, writer: ByteWriter) {
+        writer.writeBoolean(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): Boolean {
-        return buf.readBoolean()
+    override fun read(type: Type, reader: ByteReader): Boolean {
+        return reader.readBoolean()
     }
     
 }
 
 internal object BooleanArrayBinaryAdapter : BinaryAdapter<BooleanArray> {
     
-    override fun write(obj: BooleanArray, buf: ByteBuffer) {
-        buf.writeVarInt(obj.size)
-        obj.forEach(buf::writeBoolean)
+    override fun write(obj: BooleanArray, writer: ByteWriter) {
+        writer.writeVarInt(obj.size)
+        obj.forEach(writer::writeBoolean)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): BooleanArray {
-        return BooleanArray(buf.readVarInt()) { buf.readBoolean() }
+    override fun read(type: Type, reader: ByteReader): BooleanArray {
+        return BooleanArray(reader.readVarInt()) { reader.readBoolean() }
     }
     
 }
 
 internal object CharBinaryAdapter : BinaryAdapter<Char> {
     
-    override fun write(obj: Char, buf: ByteBuffer) {
-        buf.writeChar(obj)
+    override fun write(obj: Char, writer: ByteWriter) {
+        writer.writeChar(obj)
     }
     
-    override fun read(type: Type, buf: ByteBuffer): Char {
-        return buf.readChar()
+    override fun read(type: Type, reader: ByteReader): Char {
+        return reader.readChar()
     }
     
 }
 
 internal object CharArrayBinaryAdapter : BinaryAdapter<CharArray> {
     
-    override fun write(obj: CharArray, buf: ByteBuffer) {
-        buf.writeVarInt(obj.size)
-        obj.forEach { buf.writeChar(it) }
+    override fun write(obj: CharArray, writer: ByteWriter) {
+        writer.writeVarInt(obj.size)
+        obj.forEach { writer.writeChar(it) }
     }
     
-    override fun read(type: Type, buf: ByteBuffer): CharArray {
-        return CharArray(buf.readVarInt()) { buf.readChar() }
+    override fun read(type: Type, reader: ByteReader): CharArray {
+        return CharArray(reader.readVarInt()) { reader.readChar() }
     }
     
 }

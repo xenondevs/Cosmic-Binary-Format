@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import xyz.xenondevs.cbf.CBF
-import xyz.xenondevs.cbf.buffer.ByteBufferProvider
 import xyz.xenondevs.cbf.util.type
 import java.lang.reflect.Type
 
@@ -18,12 +17,12 @@ fun <T> CBF.read(type: Type, buf: ByteBuf): T? = read(type, NettyByteBuffer(buf)
 
 fun CBF.write(obj: Any?, buf: ByteBuf) = write(obj, NettyByteBuffer(buf))
 
-object NettyBufferProvider : ByteBufferProvider {
+object NettyBufferProvider {
     
-    override fun getBuffer(size: Int) = NettyByteBuffer(Unpooled.buffer(size))
+    fun getBuffer(size: Int) = NettyByteBuffer(Unpooled.buffer(size))
     
-    override fun getBuffer() = NettyByteBuffer(Unpooled.buffer())
+    fun getBuffer() = NettyByteBuffer(Unpooled.buffer())
     
-    override fun wrappedBuffer(data: ByteArray) = NettyByteBuffer(Unpooled.wrappedBuffer(data))
+    fun wrappedBuffer(data: ByteArray) = NettyByteBuffer(Unpooled.wrappedBuffer(data))
     
 }

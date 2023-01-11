@@ -7,13 +7,13 @@
     <groupId>xyz.xenondevs.cbf</groupId>
     <artifactId>cosmic-binary-format-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.2</version>
+    <version>0.3</version>
     <modules>
         <module>cosmic-binary-format</module>
         <module>cosmic-binary-format-netty-adapter</module>
     </modules>
     <properties>
-        <kotlin.version>1.7.0</kotlin.version>
+        <kotlin.version>1.7.22</kotlin.version>
     </properties>
 
     <dependencies>
