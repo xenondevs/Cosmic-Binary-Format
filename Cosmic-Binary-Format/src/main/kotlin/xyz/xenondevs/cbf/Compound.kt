@@ -38,6 +38,10 @@ class Compound internal constructor(
         return get(type<T>(), key)
     }
     
+    inline fun <reified T> getOrPut(key: String, defaultValue: () -> T): T {
+        return get(key) ?: defaultValue().also { set(key, it) }
+    }
+    
     operator fun contains(key: String): Boolean {
         return map.containsKey(key) || binMap.containsKey(key)
     }
