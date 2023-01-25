@@ -178,7 +178,7 @@ object CBF {
         if (adapter != null)
             return adapter as BinaryAdapter<R>
         
-        adapter = binaryHierarchyAdapters.entries.firstOrNull { it.key.isSubtypeOf(type) }?.value
+        adapter = binaryHierarchyAdapters.entries.firstOrNull { type.isSubtypeOf(it.key) }?.value
         if (adapter != null)
             return adapter as BinaryAdapter<R>
         
