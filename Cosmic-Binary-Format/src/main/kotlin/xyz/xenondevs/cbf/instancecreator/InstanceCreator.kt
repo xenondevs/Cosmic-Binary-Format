@@ -1,9 +1,9 @@
 package xyz.xenondevs.cbf.instancecreator
 
-import java.lang.reflect.Type
+import kotlin.reflect.KType
 
 interface InstanceCreator<T> {
     
-    fun createInstance(type: Type): T
+    fun createInstance(type: KType): T
     
 }

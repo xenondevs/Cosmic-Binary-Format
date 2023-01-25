@@ -1,5 +1,6 @@
 package xyz.xenondevs.cbf.io
 
+import java.io.ByteArrayInputStream
 import java.io.DataInput
 import java.io.InputStream
 import java.util.*
@@ -231,6 +232,13 @@ interface ByteReader {
     }
     
     /**
+     * Reads a [UInt] in a variable length format.
+     */
+    fun readUnsignedVarInt(): UInt {
+        return readVarInt().toUInt()
+    }
+    
+    /**
      * Reads a [Long] in a variable length format.
      */
     fun readVarLong(): Long {
@@ -241,10 +249,17 @@ interface ByteReader {
         do {
             currentByte = readByte()
             value = value or ((currentByte.toLong() and 127) shl byteIdx++ * 7)
-            check(byteIdx < 10) { "VarLong is too big" }
+            check(byteIdx < 11) { "VarLong is too big" }
         } while (currentByte.countLeadingZeroBits() == 0)
         
         return value
+    }
+    
+    /**
+     * Reads a [ULong] in a variable length format.
+     */
+    fun readUnsignedVarLong(): ULong {
+        return readVarLong().toULong()
     }
     
     /**
@@ -296,6 +311,8 @@ interface ByteReader {
     }
     
     companion object {
+        
+        fun fromByteArray(bytes: ByteArray) = fromStream(ByteArrayInputStream(bytes))
         
         fun fromStream(ins: InputStream) = object : ByteReader {
             

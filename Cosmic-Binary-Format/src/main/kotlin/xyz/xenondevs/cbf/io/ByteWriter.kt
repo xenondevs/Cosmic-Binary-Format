@@ -212,6 +212,13 @@ interface ByteWriter {
     }
     
     /**
+     * Writes a [UInt] in a variable length format.
+     */
+    fun writeUnsignedVarInt(value: UInt) {
+        writeVarInt(value.toInt())
+    }
+    
+    /**
      * Writes a [Long] in a variable length format.
      */
     fun writeVarLong(value: Long) {
@@ -222,6 +229,13 @@ interface ByteWriter {
         }
         
         this.writeByte(currentValue.toByte())
+    }
+    
+    /**
+     * Writes a [ULong] in a variable length format.
+     */
+    fun writeUnsignedVarLong(value: ULong) {
+        writeVarLong(value.toLong())
     }
     
     /**

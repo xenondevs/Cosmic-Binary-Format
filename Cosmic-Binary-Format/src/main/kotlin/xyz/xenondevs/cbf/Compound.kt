@@ -3,31 +3,33 @@ package xyz.xenondevs.cbf
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
-import xyz.xenondevs.cbf.util.type
-import java.lang.reflect.Type
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 @Suppress("UNCHECKED_CAST")
 class Compound internal constructor(
     private val binMap: HashMap<String, ByteArray>,
-    private val map: HashMap<String, Any?>
+    private val map: HashMap<String, Any?> = HashMap(),
+    private val types: HashMap<String, KType> = HashMap()
 ) {
     
     val keys: Set<String>
         get() = binMap.keys + map.keys
     
-    constructor() : this(HashMap(), HashMap())
+    constructor() : this(HashMap(), HashMap(), HashMap())
     
     operator fun set(key: String, value: Any?) {
         binMap -= key
         map[key] = value
     }
     
-    fun <T> get(type: Type, key: String): T? {
-        map[key]?.let { return it as? T }
+    fun <T> get(type: KType, key: String): T? {
+        map[key]?.let { return it as T }
         
         val bytes = binMap[key] ?: return null
         val value = CBF.read<T>(type, bytes)
         
+        types[key] = type
         map[key] = value
         binMap -= key
         
@@ -35,7 +37,7 @@ class Compound internal constructor(
     }
     
     inline operator fun <reified T> get(key: String): T? {
-        return get(type<T>(), key)
+        return get(typeOf<T>(), key)
     }
     
     inline fun <reified T> getOrPut(key: String, defaultValue: () -> T): T {
@@ -49,6 +51,7 @@ class Compound internal constructor(
     fun remove(key: String) {
         binMap.remove(key)
         map.remove(key)
+        types.remove(key)
     }
     
     operator fun minusAssign(key: String) {
@@ -60,7 +63,7 @@ class Compound internal constructor(
     fun isNotEmpty(): Boolean = map.isNotEmpty()
     
     fun copy(): Compound {
-        return Compound(HashMap(binMap), HashMap(map))
+        return Compound(HashMap(binMap), HashMap(map), HashMap(types))
     }
     
     override fun toString(): String {
@@ -81,13 +84,13 @@ class Compound internal constructor(
     companion object {
         
         fun of(map: Map<String, Any?>): Compound =
-            Compound(HashMap(), HashMap(map))
+            Compound(HashMap(), HashMap(map), HashMap())
         
     }
     
     internal object CompoundBinaryAdapter : BinaryAdapter<Compound> {
         
-        override fun write(obj: Compound, writer: ByteWriter) {
+        override fun write(obj: Compound, type: KType, writer: ByteWriter) {
             writer.writeVarInt(obj.binMap.size + obj.map.size)
             
             obj.binMap.forEach { (key, binData) ->
@@ -96,25 +99,25 @@ class Compound internal constructor(
                 writer.writeBytes(binData)
             }
             
-            obj.map.forEach { (key, data) ->
+            obj.map.forEach { (key, value) ->
                 writer.writeString(key)
-                val binData = CBF.write(data)
+                val binData = CBF.write(value, obj.types[key])
                 writer.writeVarInt(binData.size)
                 writer.writeBytes(binData)
             }
         }
         
-        override fun read(type: Type, reader: ByteReader): Compound {
+        override fun read(type: KType, reader: ByteReader): Compound {
             val mapSize = reader.readVarInt()
-            val map = HashMap<String, ByteArray>(mapSize)
+            val binMap = HashMap<String, ByteArray>(mapSize)
             
             repeat(mapSize) {
                 val key = reader.readString()
                 val length = reader.readVarInt()
-                map[key] = reader.readBytes(length)
+                binMap[key] = reader.readBytes(length)
             }
             
-            return Compound(map, HashMap())
+            return Compound(binMap)
         }
         
     }

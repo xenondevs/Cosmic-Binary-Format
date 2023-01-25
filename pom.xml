@@ -7,13 +7,15 @@
     <groupId>xyz.xenondevs.cbf</groupId>
     <artifactId>cosmic-binary-format-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.3</version>
+    <version>0.4</version>
     <modules>
         <module>cosmic-binary-format</module>
         <module>cosmic-binary-format-netty-adapter</module>
     </modules>
     <properties>
         <kotlin.version>1.7.22</kotlin.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -22,10 +24,25 @@
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
+        
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit5</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -39,7 +56,18 @@
                             <goal>compile</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
             </plugin>
         </plugins>
     </build>

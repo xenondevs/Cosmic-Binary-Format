@@ -2,12 +2,12 @@ package xyz.xenondevs.cbf.adapter
 
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
-import java.lang.reflect.Type
+import kotlin.reflect.KType
 
 interface BinaryAdapter<T> {
     
-    fun write(obj: T, writer: ByteWriter)
+    fun write(obj: T, type: KType, writer: ByteWriter)
     
-    fun read(type: Type, reader: ByteReader): T
+    fun read(type: KType, reader: ByteReader): T
     
 }

@@ -883,7 +883,7 @@ class NettyByteBuffer(val nettyBuf: ByteBuf) : ByteBuffer {
         do {
             currentByte = readByte()
             value = value or ((currentByte.toLong() and 127) shl byteIdx++ * 7)
-            check(byteIdx < 10) { "VarLong is too big" }
+            check(byteIdx < 11) { "VarLong is too big" }
         } while (currentByte.countLeadingZeroBits() == 0)
         
         return value
