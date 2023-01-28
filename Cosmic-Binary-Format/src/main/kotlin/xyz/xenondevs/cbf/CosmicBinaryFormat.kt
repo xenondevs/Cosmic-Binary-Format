@@ -12,12 +12,12 @@ import xyz.xenondevs.cbf.io.ByteWriter
 import xyz.xenondevs.cbf.security.CBFSecurityException
 import xyz.xenondevs.cbf.security.CBFSecurityManager
 import xyz.xenondevs.commons.reflection.classifierClass
+import xyz.xenondevs.commons.reflection.createStarProjectedType
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
@@ -140,7 +140,7 @@ object CBF {
     fun write(obj: Any, type: KType?, writer: ByteWriter) {
         writer.writeBoolean(true)
         
-        val nonNullType = type?.withNullability(false) ?: obj::class.createType()
+        val nonNullType = type?.withNullability(false) ?: obj::class.createStarProjectedType()
         val adapter = getBinaryAdapter<Any>(nonNullType)
         adapter.write(obj, nonNullType, writer)
     }
