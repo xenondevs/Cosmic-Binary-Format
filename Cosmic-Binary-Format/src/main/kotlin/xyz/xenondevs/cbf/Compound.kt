@@ -3,6 +3,7 @@ package xyz.xenondevs.cbf
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
+import java.util.HexFormat
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -71,7 +72,8 @@ class Compound internal constructor(
         builder.append("{")
         
         binMap.entries.forEach { (key, value) ->
-            builder.append("\n\"$key\": (binary) ${value.contentToString()}")
+            val hexStr = HexFormat.of().formatHex(value)
+            builder.append("\n\"$key\": (binary) $hexStr")
         }
         
         map.entries.forEach { (key, value) ->
