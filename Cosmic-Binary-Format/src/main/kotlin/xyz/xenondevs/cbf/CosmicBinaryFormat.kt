@@ -4,7 +4,30 @@ package xyz.xenondevs.cbf
 
 import xyz.xenondevs.cbf.Compound.CompoundBinaryAdapter
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.*
+import xyz.xenondevs.cbf.adapter.impl.BooleanArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.BooleanBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.ByteArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.ByteBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.CharArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.CharBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.CollectionBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.DoubleArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.DoubleBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.EnumBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.FloatArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.FloatBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.IntArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.IntBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.LongArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.LongBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.MapBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.PairBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.ShortArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.ShortBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.StringArrayBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.StringBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.TripleBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.UUIDBinaryAdapter
 import xyz.xenondevs.cbf.instancecreator.InstanceCreator
 import xyz.xenondevs.cbf.instancecreator.impl.EnumMapInstanceCreator
 import xyz.xenondevs.cbf.io.ByteReader
@@ -19,6 +42,7 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubtypeOf
+import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
@@ -70,10 +94,16 @@ object CBF {
         registerInstanceCreator(EnumMap::class, EnumMapInstanceCreator)
     }
     
+    /**
+     * Registers a new [BinaryAdapter] for the reified type [T].
+     */
     inline fun <reified T : Any> registerBinaryAdapter(adapter: BinaryAdapter<T>) {
         registerBinaryAdapter(typeOf<T>(), adapter)
     }
     
+    /**
+     * Registers a new [BinaryAdapter] for the [type].
+     */
     fun <T : Any> registerBinaryAdapter(type: KType, adapter: BinaryAdapter<T>) {
         if (securityManager?.canRegisterAdapter(type, adapter) == false)
             throw CBFSecurityException()
@@ -82,10 +112,16 @@ object CBF {
         binaryAdaptersByClass.getOrPut(type.classifierClass!!, ::HashMap)[type] = adapter
     }
     
+    /**
+     * Registers a new [BinaryAdapter] for the reified type [T].
+     */
     inline fun <reified T : Any> registerBinaryHierarchyAdapter(adapter: BinaryAdapter<T>) {
         registerBinaryHierarchyAdapter(typeOf<T>(), adapter)
     }
     
+    /**
+     * Registers a new [BinaryAdapter] for the [type].
+     */
     fun <T : Any> registerBinaryHierarchyAdapter(type: KType, adapter: BinaryAdapter<T>) {
         if (securityManager?.canRegisterHierarchyAdapter(type, adapter) == false)
             throw CBFSecurityException()
@@ -93,10 +129,17 @@ object CBF {
         binaryHierarchyAdapters[type] = adapter
     }
     
+    /**
+     * Registers a new [InstanceCreator] for the reified type [T].
+     */
     inline fun <reified T : Any> registerInstanceCreator(instanceCreator: InstanceCreator<T>) {
         registerInstanceCreator(T::class, instanceCreator)
     }
     
+    
+    /**
+     * Registers a new [InstanceCreator] for the [clazz].
+     */
     fun <T : Any> registerInstanceCreator(clazz: KClass<T>, creator: InstanceCreator<T>) {
         if (securityManager?.canRegisterInstanceCreator(clazz, creator) == false)
             throw CBFSecurityException()
@@ -104,58 +147,108 @@ object CBF {
         instanceCreators[clazz] = creator
     }
     
-    inline fun <reified T> read(buf: ByteReader): T? {
+    /**
+     * Reads the reified type [T] from the [buf]. Can return null if null was written.
+     */
+    inline fun <reified T : Any> read(buf: ByteReader): T? {
         return read(typeOf<T>(), buf)
     }
     
-    inline fun <reified T> read(bytes: ByteArray): T? {
+    /**
+     * Reads the reified type [T] from the [byte array][bytes] Can return null if null was written.
+     */
+    inline fun <reified T : Any> read(bytes: ByteArray): T? {
         return read(typeOf<T>(), bytes)
     }
     
-    fun <T> read(type: KType, buf: ByteReader): T? {
+    /**
+     * Reads the [type] from the [buf]. Can return null if null was written.
+     */
+    fun <T : Any> read(type: KType, buf: ByteReader): T? {
         if (buf.readBoolean()) {
             val nonNullType = type.withNullability(false)
-            val adapter = getBinaryAdapter<T>(nonNullType)
+            val adapter = getBinaryAdapterExact<T>(nonNullType)
             return adapter.read(nonNullType, buf)
         }
         
         return null
     }
     
-    fun <T> read(type: KType, bytes: ByteArray): T? {
+    /**
+     * Reads the [type] from the [byte array][bytes]. Can return null if null was written.
+     */
+    fun <T : Any> read(type: KType, bytes: ByteArray): T? {
         return read(type, ByteReader.fromStream(ByteArrayInputStream(bytes)))
     }
     
-    inline fun <reified T> write(obj: T, writer: ByteWriter) {
+    /**
+     * Writes the given [obj] as the reified type [T] to the given [writer].
+     */
+    inline fun <reified T : Any> write(obj: T?, writer: ByteWriter) {
         write(obj, typeOf<T>(), writer)
     }
     
+    /**
+     * Writes the [obj] as [type] to the given [writer].
+     *
+     * If the [type] is null, a star projected type for the [obj]'s class will be used.
+     */
     fun write(obj: Any?, type: KType?, writer: ByteWriter) {
         if (obj != null) {
             write(obj, type, writer)
         } else writer.writeBoolean(false)
     }
     
-    @JvmName("write1")
+    /**
+     * Writes a non-null [obj] of the given [type] to the given [writer].
+     *
+     * If the [type] is null, a star projected type for the [obj]'s class will be used.
+     */
+    @JvmName("writeNonNull")
     fun write(obj: Any, type: KType?, writer: ByteWriter) {
         writer.writeBoolean(true)
         
-        val nonNullType = type?.withNullability(false) ?: obj::class.createStarProjectedType()
-        val adapter = getBinaryAdapter<Any>(nonNullType)
+        val objClass = obj::class
+        val nonNullType = type
+            ?.takeUnless { type.classifierClass in objClass.superclasses } // don't allow serialization as supertype
+            ?.withNullability(false)
+            ?: objClass.createStarProjectedType()
+        
+        val adapter = getBinaryAdapterExact<Any>(nonNullType)
         adapter.write(obj, nonNullType, writer)
     }
     
-    inline fun <reified T> write(obj: T): ByteArray {
+    /**
+     * Writes the given [obj] as the reified type [T] to a new [ByteArray] and returns it.
+     */
+    inline fun <reified T : Any> write(obj: T): ByteArray {
         return write(obj, typeOf<T>())
     }
     
+    /**
+     * Writes the [obj] as [type] to a new [ByteArray] and returns it.
+     *
+     * If the [type] is null, a star projected type for the [obj]'s class will be used.
+     */
     fun write(obj: Any?, type: KType?): ByteArray {
         val out = ByteArrayOutputStream()
         write(obj, type, ByteWriter.fromStream(out))
         return out.toByteArray()
     }
     
-    fun <T> createInstance(type: KType): T? {
+    /**
+     * Creates a new instance of the reified type [T].
+     *
+     * Returns null if no instance creator is registered for the type or if the type has no no-arg constructor.
+     */
+    inline fun <reified T : Any> createInstance(): T? {
+        return createInstance(typeOf<T>())
+    }
+    
+    /**
+     * Creates a new instance of the [type] or null if no instance creator is registered for the type or if the type has no no-arg constructor.
+     */
+    fun <T : Any> createInstance(type: KType): T? {
         val clazz = type.classifierClass!!
         
         val creator = instanceCreators[clazz]
@@ -167,20 +260,45 @@ object CBF {
             ?.call() as T?
     }
     
-    private fun <R> getBinaryAdapter(type: KType): BinaryAdapter<R> {
+    /**
+     * Copies the given [obj] as the reified type [T].
+     */
+    inline fun <reified T : Any> copy(obj: T): T {
+        return copy(obj, typeOf<T>())
+    }
+    
+    /**
+     * Copies the given [obj] as the [type].
+     */
+    fun <T : Any> copy(obj: T, type: KType): T {
+        val binaryAdapter = getBinaryAdapter<T>(type)
+        return binaryAdapter.copy(obj, type)
+    }
+    
+    /**
+     * Gets the registered [BinaryAdapter] for the [type] without nullability.
+     */
+    fun <T : Any> getBinaryAdapter(type: KType): BinaryAdapter<T> {
+        return getBinaryAdapterExact(type.withNullability(false))
+    }
+    
+    /**
+     * Gets the registered [BinaryAdapter] for that exact [type].
+     */
+    private fun <T : Any> getBinaryAdapterExact(type: KType): BinaryAdapter<T> {
         var adapter: BinaryAdapter<*>? = binaryAdapters[type]
         if (adapter != null)
-            return adapter as BinaryAdapter<R>
+            return adapter as BinaryAdapter<T>
         
         val clazz = type.classifierClass!!
         
         adapter = binaryAdaptersByClass[clazz]?.entries?.firstOrNull { type.isSubtypeOf(it.key) }?.value
         if (adapter != null)
-            return adapter as BinaryAdapter<R>
+            return adapter as BinaryAdapter<T>
         
         adapter = binaryHierarchyAdapters.entries.firstOrNull { type.isSubtypeOf(it.key) }?.value
         if (adapter != null)
-            return adapter as BinaryAdapter<R>
+            return adapter as BinaryAdapter<T>
         
         throw IllegalStateException("No binary adapter registered for $clazz")
     }

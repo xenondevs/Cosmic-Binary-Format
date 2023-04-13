@@ -20,4 +20,8 @@ internal object EnumBinaryAdapter : BinaryAdapter<Enum<*>> {
         return clazz.java.enumConstants.first { it.name == name }
     }
     
+    override fun copy(obj: Enum<*>, type: KType): Enum<*> {
+        return obj
+    }
+    
 }

@@ -15,6 +15,10 @@ internal object ByteBinaryAdapter : BinaryAdapter<Byte> {
         return reader.readByte()
     }
     
+    override fun copy(obj: Byte, type: KType): Byte {
+        return obj
+    }
+    
 }
 
 internal object ByteArrayBinaryAdapter : BinaryAdapter<ByteArray> {
@@ -28,6 +32,10 @@ internal object ByteArrayBinaryAdapter : BinaryAdapter<ByteArray> {
         return ByteArray(reader.readVarInt()) { reader.readByte() }
     }
     
+    override fun copy(obj: ByteArray, type: KType): ByteArray {
+        return obj.clone()
+    }
+    
 }
 
 internal object ShortBinaryAdapter : BinaryAdapter<Short> {
@@ -38,6 +46,10 @@ internal object ShortBinaryAdapter : BinaryAdapter<Short> {
     
     override fun read(type: KType, reader: ByteReader): Short {
         return reader.readShort()
+    }
+    
+    override fun copy(obj: Short, type: KType): Short {
+        return obj
     }
     
 }
@@ -53,6 +65,10 @@ internal object ShortArrayBinaryAdapter : BinaryAdapter<ShortArray> {
         return ShortArray(reader.readVarInt()) { reader.readShort() }
     }
     
+    override fun copy(obj: ShortArray, type: KType): ShortArray {
+        return obj.clone()
+    }
+    
 }
 
 internal object IntBinaryAdapter : BinaryAdapter<Int> {
@@ -63,6 +79,10 @@ internal object IntBinaryAdapter : BinaryAdapter<Int> {
     
     override fun read(type: KType, reader: ByteReader): Int {
         return reader.readVarInt()
+    }
+    
+    override fun copy(obj: Int, type: KType): Int {
+        return obj
     }
     
 }
@@ -78,6 +98,10 @@ internal object IntArrayBinaryAdapter : BinaryAdapter<IntArray> {
         return IntArray(reader.readVarInt()) { reader.readVarInt() }
     }
     
+    override fun copy(obj: IntArray, type: KType): IntArray {
+        return obj.clone()
+    }
+    
 }
 
 internal object LongBinaryAdapter : BinaryAdapter<Long> {
@@ -88,6 +112,10 @@ internal object LongBinaryAdapter : BinaryAdapter<Long> {
     
     override fun read(type: KType, reader: ByteReader): Long {
         return reader.readVarLong()
+    }
+    
+    override fun copy(obj: Long, type: KType): Long {
+        return obj
     }
     
 }
@@ -103,16 +131,24 @@ internal object LongArrayBinaryAdapter : BinaryAdapter<LongArray> {
         return LongArray(reader.readVarInt()) { reader.readVarLong() }
     }
     
+    override fun copy(obj: LongArray, type: KType): LongArray {
+        return obj.clone()
+    }
+    
 }
 
 internal object FloatBinaryAdapter : BinaryAdapter<Float> {
     
-    override fun write(obj: Float, type: KType, buf: ByteWriter) {
-        buf.writeFloat(obj)
+    override fun write(obj: Float, type: KType, writer: ByteWriter) {
+        writer.writeFloat(obj)
     }
     
     override fun read(type: KType, reader: ByteReader): Float {
         return reader.readFloat()
+    }
+    
+    override fun copy(obj: Float, type: KType): Float {
+        return obj
     }
     
 }
@@ -128,6 +164,10 @@ internal object FloatArrayBinaryAdapter : BinaryAdapter<FloatArray> {
         return FloatArray(reader.readVarInt()) { reader.readFloat() }
     }
     
+    override fun copy(obj: FloatArray, type: KType): FloatArray {
+        return obj.clone()
+    }
+    
 }
 
 internal object DoubleBinaryAdapter : BinaryAdapter<Double> {
@@ -138,6 +178,10 @@ internal object DoubleBinaryAdapter : BinaryAdapter<Double> {
     
     override fun read(type: KType, reader: ByteReader): Double {
         return reader.readDouble()
+    }
+    
+    override fun copy(obj: Double, type: KType): Double {
+        return obj
     }
     
 }
@@ -153,6 +197,10 @@ internal object DoubleArrayBinaryAdapter : BinaryAdapter<DoubleArray> {
         return DoubleArray(reader.readVarInt()) { reader.readDouble() }
     }
     
+    override fun copy(obj: DoubleArray, type: KType): DoubleArray {
+        return obj.clone()
+    }
+    
 }
 
 internal object BooleanBinaryAdapter : BinaryAdapter<Boolean> {
@@ -163,6 +211,10 @@ internal object BooleanBinaryAdapter : BinaryAdapter<Boolean> {
     
     override fun read(type: KType, reader: ByteReader): Boolean {
         return reader.readBoolean()
+    }
+    
+    override fun copy(obj: Boolean, type: KType): Boolean {
+        return obj
     }
     
 }
@@ -178,6 +230,10 @@ internal object BooleanArrayBinaryAdapter : BinaryAdapter<BooleanArray> {
         return BooleanArray(reader.readVarInt()) { reader.readBoolean() }
     }
     
+    override fun copy(obj: BooleanArray, type: KType): BooleanArray {
+        return obj.clone()
+    }
+    
 }
 
 internal object CharBinaryAdapter : BinaryAdapter<Char> {
@@ -188,6 +244,10 @@ internal object CharBinaryAdapter : BinaryAdapter<Char> {
     
     override fun read(type: KType, reader: ByteReader): Char {
         return reader.readChar()
+    }
+    
+    override fun copy(obj: Char, type: KType): Char {
+        return obj
     }
     
 }
@@ -201,6 +261,10 @@ internal object CharArrayBinaryAdapter : BinaryAdapter<CharArray> {
     
     override fun read(type: KType, reader: ByteReader): CharArray {
         return CharArray(reader.readVarInt()) { reader.readChar() }
+    }
+    
+    override fun copy(obj: CharArray, type: KType): CharArray {
+        return obj.clone()
     }
     
 }

@@ -23,4 +23,12 @@ internal object CollectionBinaryAdapter : BinaryAdapter<Collection<*>> {
         return collection
     }
     
+    override fun copy(obj: Collection<*>, type: KType): Collection<*> {
+        val collection = CBF.createInstance<MutableCollection<Any?>>(type) ?: ArrayList()
+        val collectionType = type.nonNullTypeArguments[0]
+        val typeBinaryAdapter = CBF.getBinaryAdapter<Any>(collectionType)
+        obj.forEach { collection.add(it?.let { typeBinaryAdapter.copy(it, collectionType) }) }
+        return collection
+    }
+    
 }

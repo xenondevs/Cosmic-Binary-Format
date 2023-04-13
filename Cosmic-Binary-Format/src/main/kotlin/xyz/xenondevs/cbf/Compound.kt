@@ -5,6 +5,7 @@ import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
 import java.util.HexFormat
 import kotlin.reflect.KType
+import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
 @Suppress("UNCHECKED_CAST")
@@ -19,12 +20,17 @@ class Compound internal constructor(
     
     constructor() : this(HashMap(), HashMap(), HashMap())
     
-    operator fun set(key: String, value: Any?) {
-        binMap -= key
-        map[key] = value
+    inline operator fun <reified T> set(key: String, value: T) {
+        set(typeOf<T>(), key, value)
     }
     
-    fun <T> get(type: KType, key: String): T? {
+    fun set(type: KType, key: String, value: Any?) {
+        binMap -= key
+        map[key] = value
+        types[key] = type
+    }
+    
+    fun <T : Any> get(type: KType, key: String): T? {
         map[key]?.let { return it as T }
         
         val bytes = binMap[key] ?: return null
@@ -37,11 +43,11 @@ class Compound internal constructor(
         return value
     }
     
-    inline operator fun <reified T> get(key: String): T? {
+    inline operator fun <reified T : Any> get(key: String): T? {
         return get(typeOf<T>(), key)
     }
     
-    inline fun <reified T> getOrPut(key: String, defaultValue: () -> T): T {
+    inline fun <reified T : Any> getOrPut(key: String, defaultValue: () -> T): T {
         return get(key) ?: defaultValue().also { set(key, it) }
     }
     
@@ -64,6 +70,18 @@ class Compound internal constructor(
     fun isNotEmpty(): Boolean = map.isNotEmpty()
     
     fun copy(): Compound {
+        val copy = Compound(HashMap(binMap))
+        
+        for((key, value) in map) {
+            val valueType = types[key]!!
+            copy.map[key] = value?.let { CBF.copy(it, valueType.withNullability(false)) }
+            copy.types[key] = valueType
+        }
+        
+        return copy
+    }
+    
+    fun shallowCopy(): Compound {
         return Compound(HashMap(binMap), HashMap(map), HashMap(types))
     }
     
@@ -120,6 +138,10 @@ class Compound internal constructor(
             }
             
             return Compound(binMap)
+        }
+        
+        override fun copy(obj: Compound, type: KType): Compound {
+            return obj.copy()
         }
         
     }

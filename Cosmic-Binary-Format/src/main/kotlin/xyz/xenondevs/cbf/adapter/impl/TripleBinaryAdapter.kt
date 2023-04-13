@@ -26,4 +26,17 @@ internal object TripleBinaryAdapter : BinaryAdapter<Triple<*, *, *>> {
         )
     }
     
+    override fun copy(obj: Triple<*, *, *>, type: KType): Triple<*, *, *> {
+        val (firstType, secondType, thirdType) = type.nonNullTypeArguments
+        val firstTypeBinaryAdapter = CBF.getBinaryAdapter<Any>(firstType)
+        val secondTypeBinaryAdapter = CBF.getBinaryAdapter<Any>(secondType)
+        val thirdTypeBinaryAdapter = CBF.getBinaryAdapter<Any>(thirdType)
+        
+        return Triple(
+            obj.first?.let { firstTypeBinaryAdapter.copy(it, firstType) },
+            obj.second?.let { secondTypeBinaryAdapter.copy(it, secondType) },
+            obj.third?.let { thirdTypeBinaryAdapter.copy(it, thirdType) }
+        )
+    }
+    
 }

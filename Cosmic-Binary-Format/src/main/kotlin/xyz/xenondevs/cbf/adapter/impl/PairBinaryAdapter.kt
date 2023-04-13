@@ -24,4 +24,15 @@ internal object PairBinaryAdapter : BinaryAdapter<Pair<*, *>> {
         )
     }
     
+    override fun copy(obj: Pair<*, *>, type: KType): Pair<*, *> {
+        val (firstType, secondType) = type.nonNullTypeArguments
+        val firstTypeBinaryAdapter = CBF.getBinaryAdapter<Any>(firstType)
+        val secondTypeBinaryAdapter = CBF.getBinaryAdapter<Any>(secondType)
+        
+        return Pair(
+            obj.first?.let { firstTypeBinaryAdapter.copy(it, firstType) },
+            obj.second?.let { secondTypeBinaryAdapter.copy(it, secondType) }
+        )
+    }
+    
 }

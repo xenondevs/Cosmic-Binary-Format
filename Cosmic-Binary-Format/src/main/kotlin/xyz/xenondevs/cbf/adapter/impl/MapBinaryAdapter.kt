@@ -30,4 +30,19 @@ internal object MapBinaryAdapter : BinaryAdapter<Map<*, *>> {
         return map
     }
     
+    override fun copy(obj: Map<*, *>, type: KType): Map<*, *> {
+        val (keyType, valueType) = type.nonNullTypeArguments
+        val keyTypeBinaryAdapter = CBF.getBinaryAdapter<Any>(keyType)
+        val valueTypeBinaryAdapter = CBF.getBinaryAdapter<Any>(valueType)
+        val map = CBF.createInstance<MutableMap<Any?, Any?>>(type) ?: HashMap()
+        
+        obj.forEach { (key, value) ->
+            val keyCopy = key?.let { keyTypeBinaryAdapter.copy(it, keyType) }
+            val valueCopy = value?.let { valueTypeBinaryAdapter.copy(it, valueType) }
+            map[keyCopy] = valueCopy
+        }
+        
+        return map
+    }
+    
 }

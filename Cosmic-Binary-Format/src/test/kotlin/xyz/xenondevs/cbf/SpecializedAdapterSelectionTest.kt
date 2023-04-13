@@ -21,6 +21,10 @@ class SpecializedAdapterSelectionTest {
             return AtomicReference(reader.readString())
         }
         
+        override fun copy(obj: AtomicReference<String>, type: KType): AtomicReference<String> {
+            return AtomicReference(obj.get())
+        }
+        
     }
     
     private object AtomicReferenceIntBinaryAdapter : BinaryAdapter<AtomicReference<Int>> {
@@ -31,6 +35,10 @@ class SpecializedAdapterSelectionTest {
         
         override fun read(type: KType, reader: ByteReader): AtomicReference<Int> {
             return AtomicReference(reader.readInt())
+        }
+        
+        override fun copy(obj: AtomicReference<Int>, type: KType): AtomicReference<Int> {
+            return AtomicReference(obj.get())
         }
         
     }

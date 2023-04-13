@@ -15,6 +15,10 @@ internal object StringBinaryAdapter : BinaryAdapter<String> {
         return reader.readString()
     }
     
+    override fun copy(obj: String, type: KType): String {
+        return obj
+    }
+    
 }
 
 internal object StringArrayBinaryAdapter : BinaryAdapter<Array<String>> {
@@ -26,6 +30,10 @@ internal object StringArrayBinaryAdapter : BinaryAdapter<Array<String>> {
     
     override fun read(type: KType, reader: ByteReader): Array<String> {
         return Array(reader.readVarInt()) { reader.readString() }
+    }
+    
+    override fun copy(obj: Array<String>, type: KType): Array<String> {
+        return obj.clone()
     }
     
 }

@@ -16,4 +16,8 @@ internal object UUIDBinaryAdapter : BinaryAdapter<UUID> {
         return reader.readUUID()
     }
     
+    override fun copy(obj: UUID, type: KType): UUID {
+        return obj
+    }
+    
 }

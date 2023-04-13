@@ -7,7 +7,7 @@
     <groupId>xyz.xenondevs.cbf</groupId>
     <artifactId>cosmic-binary-format-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.4</version>
+    <version>0.5</version>
     <modules>
         <module>cosmic-binary-format</module>
         <module>cosmic-binary-format-netty-adapter</module>
