@@ -13,6 +13,34 @@ interface ByteReader {
     fun readByte(): Byte
     
     /**
+     * Reads [length] amount of bytes into the [dst] array at the [dstIndex] offset.
+     */
+    fun readBytes(dst: ByteArray, dstIndex: Int, length: Int)
+    
+    /**
+     * Reads [length] amount of bytes into the [dst] array.
+     */
+    fun readBytes(dst: ByteArray, length: Int) {
+        readBytes(dst, 0, length)
+    }
+    
+    /**
+     * Reads bytes into the [dst] array.
+     */
+    fun readBytes(dst: ByteArray) {
+        readBytes(dst, 0, dst.size)
+    }
+    
+    /**
+     * Reads [length] amount of bytes into a new [ByteArray].
+     */
+    fun readBytes(length: Int): ByteArray {
+        val bytes = ByteArray(length)
+        readBytes(bytes, 0, length)
+        return bytes
+    }
+    
+    /**
      * Skips the given amount of bytes.
      */
     fun skip(length: Int)
@@ -263,40 +291,6 @@ interface ByteReader {
     }
     
     /**
-     * Reads [length] amount of bytes into the [dst] array at the [dstIndex] offset.
-     */
-    fun readBytes(dst: ByteArray, dstIndex: Int, length: Int) {
-        check(dstIndex + length <= dst.size) { "Destination buffer is too small" }
-        
-        for (i in 0 until length) {
-            dst[dstIndex + i] = readByte()
-        }
-    }
-    
-    /**
-     * Reads [length] amount of bytes into the [dst] array.
-     */
-    fun readBytes(dst: ByteArray, length: Int) {
-        readBytes(dst, 0, length)
-    }
-    
-    /**
-     * Reads bytes into the [dst] array.
-     */
-    fun readBytes(dst: ByteArray) {
-        readBytes(dst, 0, dst.size)
-    }
-    
-    /**
-     * Reads [length] amount of bytes into a new [ByteArray].
-     */
-    fun readBytes(length: Int): ByteArray {
-        val bytes = ByteArray(length)
-        readBytes(bytes, 0, length)
-        return bytes
-    }
-    
-    /**
      * Reads a [String].
      */
     fun readString(): String {
@@ -320,6 +314,10 @@ interface ByteReader {
                 return ins.read().toByte()
             }
             
+            override fun readBytes(dst: ByteArray, dstIndex: Int, length: Int) {
+                ins.read(dst, dstIndex, length)
+            }
+            
             override fun skip(length: Int) {
                 ins.skip(length.toLong())
             }
@@ -330,6 +328,10 @@ interface ByteReader {
             
             override fun readByte(): Byte {
                 return inp.readByte()
+            }
+            
+            override fun readBytes(dst: ByteArray, dstIndex: Int, length: Int) {
+                inp.readFully(dst, dstIndex, length)
             }
             
             override fun skip(length: Int) {

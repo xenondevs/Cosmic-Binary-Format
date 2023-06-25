@@ -12,6 +12,25 @@ interface ByteWriter {
     fun writeByte(value: Byte)
     
     /**
+     * Writes [length] number of bytes from [src] starting at [srcIndex].
+     */
+    fun writeBytes(src: ByteArray, srcIndex: Int, length: Int)
+    
+    /**
+     * Writes [length] number of bytes from [src].
+     */
+    fun writeBytes(src: ByteArray, length: Int) {
+        writeBytes(src, 0, length)
+    }
+    
+    /**
+     * Writes all bytes from [src].
+     */
+    fun writeBytes(src: ByteArray) {
+        writeBytes(src, 0, src.size)
+    }
+    
+    /**
      * Writes a [Boolean].
      */
     fun writeBoolean(value: Boolean) {
@@ -239,29 +258,6 @@ interface ByteWriter {
     }
     
     /**
-     * Writes [length] number of bytes from [src] starting at [srcIndex].
-     */
-    fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
-        for (i in 0 until length) {
-            writeByte(src[srcIndex + i])
-        }
-    }
-    
-    /**
-     * Writes [length] number of bytes from [src].
-     */
-    fun writeBytes(src: ByteArray, length: Int) {
-        writeBytes(src, 0, length)
-    }
-    
-    /**
-     * Writes all bytes from [src].
-     */
-    fun writeBytes(src: ByteArray) {
-        writeBytes(src, 0, src.size)
-    }
-    
-    /**
      * Writes a [String].
      */
     fun writeString(value: String) {
@@ -292,12 +288,20 @@ interface ByteWriter {
                 out.write(value.toInt())
             }
             
+            override fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
+                out.write(src, srcIndex, length)
+            }
+            
         }
         
         fun fromDataOutput(out: DataOutput) = object : ByteWriter {
             
             override fun writeByte(value: Byte) {
                 out.writeByte(value.toInt())
+            }
+            
+            override fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
+                out.write(src, srcIndex, length)
             }
             
         }
