@@ -51,6 +51,12 @@ class Compound internal constructor(
         return get(key) ?: defaultValue().also { set(key, it) }
     }
     
+    fun putAll(other: Compound) {
+        binMap.putAll(other.binMap)
+        map.putAll(other.map)
+        types.putAll(other.types)
+    }
+    
     operator fun contains(key: String): Boolean {
         return map.containsKey(key) || binMap.containsKey(key)
     }
