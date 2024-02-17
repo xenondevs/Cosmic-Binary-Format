@@ -4,6 +4,7 @@ package xyz.xenondevs.cbf
 
 import xyz.xenondevs.cbf.Compound.CompoundBinaryAdapter
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
+import xyz.xenondevs.cbf.adapter.ComplexBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.BooleanArrayBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.BooleanBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.ByteArrayBinaryAdapter
@@ -165,10 +166,13 @@ object CBF {
      * Reads the [type] from the [buf]. Can return null if null was written.
      */
     fun <T : Any> read(type: KType, buf: ByteReader): T? {
-        if (buf.readBoolean()) {
+        val b = buf.readUnsignedByte()
+        if (b != 0.toUByte()) {
             val nonNullType = type.withNullability(false)
-            val adapter = getBinaryAdapterExact<T>(nonNullType)
-            return adapter.read(nonNullType, buf)
+            return when (val adapter = getBinaryAdapterExact<T>(nonNullType)) {
+                is ComplexBinaryAdapter<T> -> adapter.read(type, b, buf)
+                else -> adapter.read(type, buf)
+            }
         }
         
         return null
@@ -206,8 +210,6 @@ object CBF {
      */
     @JvmName("writeNonNull")
     fun write(obj: Any, type: KType?, writer: ByteWriter) {
-        writer.writeBoolean(true)
-        
         val objClass = obj::class
         val nonNullType = type
             ?.takeUnless { type.classifierClass in objClass.superclasses } // don't allow serialization as supertype
@@ -215,6 +217,8 @@ object CBF {
             ?: objClass.createStarProjectedType()
         
         val adapter = getBinaryAdapterExact<Any>(nonNullType)
+        if (adapter !is ComplexBinaryAdapter<*>)
+            writer.writeBoolean(true)
         adapter.write(obj, nonNullType, writer)
     }
     
@@ -278,7 +282,7 @@ object CBF {
     /**
      * Gets the registered [BinaryAdapter] for the [type] without nullability.
      */
-    fun <T : Any> getBinaryAdapter(type: KType): BinaryAdapter<T> {
+    internal fun <T : Any> getBinaryAdapter(type: KType): BinaryAdapter<T> {
         return getBinaryAdapterExact(type.withNullability(false))
     }
     
