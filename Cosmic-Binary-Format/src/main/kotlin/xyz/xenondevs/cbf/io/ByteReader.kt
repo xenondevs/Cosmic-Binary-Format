@@ -2,8 +2,10 @@ package xyz.xenondevs.cbf.io
 
 import java.io.ByteArrayInputStream
 import java.io.DataInput
+import java.io.DataInputStream
 import java.io.InputStream
 import java.util.*
+import kotlin.math.asin
 
 interface ByteReader {
     
@@ -304,42 +306,99 @@ interface ByteReader {
         return UUID(readLong(), readLong())
     }
     
+    /**
+     * Creates an [InputStream] that reads from this [ByteReader].
+     */
+    fun asInputStream(): InputStream =
+        ByteReaderToInputStreamWrapper(this)
+    
+    /**
+     * Creates a [DataInput] that reads from this [ByteReader].
+     */
+    fun asDataInput(): DataInput =
+        DataInputStream(asInputStream())
+    
     companion object {
         
-        fun fromByteArray(bytes: ByteArray) = fromStream(ByteArrayInputStream(bytes))
+        /**
+         * Creates a [ByteReader] from the given [bytes].
+         */
+        fun fromByteArray(bytes: ByteArray): ByteReader =
+            fromStream(ByteArrayInputStream(bytes))
         
-        fun fromStream(ins: InputStream) = object : ByteReader {
-            
-            override fun readByte(): Byte {
-                return ins.read().toByte()
-            }
-            
-            override fun readBytes(dst: ByteArray, dstIndex: Int, length: Int) {
-                ins.read(dst, dstIndex, length)
-            }
-            
-            override fun skip(length: Int) {
-                ins.skip(length.toLong())
-            }
-            
-        }
+        /**
+         * Creates a [ByteReader] that reads from the given [InputStream].
+         */
+        fun fromStream(ins: InputStream): ByteReader =
+            InputStreamToByteReaderWrapper(ins)
         
-        fun fromDataInput(inp: DataInput) = object : ByteReader {
-            
-            override fun readByte(): Byte {
-                return inp.readByte()
-            }
-            
-            override fun readBytes(dst: ByteArray, dstIndex: Int, length: Int) {
-                inp.readFully(dst, dstIndex, length)
-            }
-            
-            override fun skip(length: Int) {
-                inp.skipBytes(length)
-            }
-            
-        }
+        /**
+         * Creates a [ByteReader] that reads from the given [DataInput].
+         */
+        fun fromDataInput(inp: DataInput): ByteReader =
+            DataInputToByteReaderWrapper(inp)
         
+    }
+    
+}
+
+private class InputStreamToByteReaderWrapper(private val inp: InputStream) : ByteReader {
+    
+    override fun readByte(): Byte {
+        return inp.read().toByte()
+    }
+    
+    override fun readBytes(dst: ByteArray, dstIndex: Int, length: Int) {
+        inp.read(dst, dstIndex, length)
+    }
+    
+    override fun skip(length: Int) {
+        inp.skip(length.toLong())
+    }
+    
+}
+
+private class DataInputToByteReaderWrapper(private val inp: DataInput) : ByteReader {
+    
+    override fun readByte(): Byte {
+        return inp.readByte()
+    }
+    
+    override fun readBytes(dst: ByteArray, dstIndex: Int, length: Int) {
+        inp.readFully(dst, dstIndex, length)
+    }
+    
+    override fun skip(length: Int) {
+        inp.skipBytes(length)
+    }
+    
+}
+
+private class ByteReaderToInputStreamWrapper(private val reader: ByteReader) : InputStream() {
+    
+    override fun read(): Int {
+        return reader.readByte().toInt()
+    }
+    
+    override fun read(b: ByteArray, off: Int, len: Int): Int {
+        reader.readBytes(b, off, len)
+        return len
+    }
+    
+    override fun readNBytes(len: Int): ByteArray {
+        return reader.readBytes(len)
+    }
+    
+    override fun skip(n: Long): Long {
+        if (n < 0 || n > Int.MAX_VALUE)
+            return 0
+        
+        reader.skip(n.toInt())
+        return n
+    }
+    
+    override fun readAllBytes(): ByteArray {
+        throw UnsupportedOperationException()
     }
     
 }

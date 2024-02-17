@@ -1,6 +1,7 @@
 package xyz.xenondevs.cbf.io
 
 import java.io.DataOutput
+import java.io.DataOutputStream
 import java.io.OutputStream
 import java.util.*
 
@@ -280,32 +281,72 @@ interface ByteWriter {
         repeat(length) { writeByte(0) }
     }
     
+    /**
+     * Creates an [OutputStream] that writes to this [ByteWriter].
+     */
+    fun asOutputStream(): OutputStream =
+        ByteWriterToOutputStreamWrapper(this)
+    
+    /**
+     * Creates a [DataOutput] that writes to this [ByteWriter].
+     */
+    fun asDataOutput(): DataOutput =
+        DataOutputStream(asOutputStream())
+    
     companion object {
         
-        fun fromStream(out: OutputStream) = object : ByteWriter {
-            
-            override fun writeByte(value: Byte) {
-                out.write(value.toInt())
-            }
-            
-            override fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
-                out.write(src, srcIndex, length)
-            }
-            
-        }
+        /**
+         * Creates a [ByteWriter] that writes to the given [OutputStream].
+         */
+        fun fromStream(out: OutputStream): ByteWriter =
+            OutputStreamToByteWriterWrapper(out)
         
-        fun fromDataOutput(out: DataOutput) = object : ByteWriter {
-            
-            override fun writeByte(value: Byte) {
-                out.writeByte(value.toInt())
-            }
-            
-            override fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
-                out.write(src, srcIndex, length)
-            }
-            
-        }
+        /**
+         * Creates a [ByteWriter] that writes to the given [DataOutput].
+         */
+        fun fromDataOutput(out: DataOutput): ByteWriter =
+            DataOutputToByteWriterWrapper(out)
         
+    }
+    
+}
+
+private class DataOutputToByteWriterWrapper(private val out: DataOutput) : ByteWriter {
+    
+    override fun writeByte(value: Byte) {
+        out.writeByte(value.toInt())
+    }
+    
+    override fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
+        out.write(src, srcIndex, length)
+    }
+    
+}
+
+private class OutputStreamToByteWriterWrapper(private val out: OutputStream) : ByteWriter {
+    
+    override fun writeByte(value: Byte) {
+        out.write(value.toInt())
+    }
+    
+    override fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
+        out.write(src, srcIndex, length)
+    }
+    
+}
+
+private class ByteWriterToOutputStreamWrapper(private val writer: ByteWriter) : OutputStream() {
+    
+    override fun write(b: Int) {
+        writer.writeByte(b.toByte())
+    }
+    
+    override fun write(b: ByteArray) {
+        writer.writeBytes(b)
+    }
+    
+    override fun write(b: ByteArray, off: Int, len: Int) {
+        writer.writeBytes(b, off, len)
     }
     
 }
