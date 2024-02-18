@@ -97,7 +97,7 @@ class Compound internal constructor(
         
         binMap.entries.forEach { (key, value) ->
             val hexStr = HexFormat.of().formatHex(value)
-            builder.append("\n\"$key\": (binary) $hexStr")
+            builder.append("\n\"$key\": (serialized) $hexStr")
         }
         
         map.entries.forEach { (key, value) ->
