@@ -3,6 +3,12 @@ package xyz.xenondevs.cbf.adapter.impl
 import org.junit.jupiter.api.Test
 import xyz.xenondevs.cbf.adapter.BinaryAdapterTest
 import xyz.xenondevs.cbf.assertContentEquals
+import xyz.xenondevs.commons.collections.enumMapOf
+import java.util.EnumMap
+
+private enum class TestEnum {
+    A, B, C
+}
 
 class MapBinaryAdapterTest : BinaryAdapterTest<Map<*, *>>(MapBinaryAdapter) {
     
@@ -30,6 +36,18 @@ class MapBinaryAdapterTest : BinaryAdapterTest<Map<*, *>>(MapBinaryAdapter) {
         val map = mapOf("nested" to nestedMap)
         val copy = copyValue(map)
         assert(nestedMap !== copy["nested"])
+    }
+    
+    @Test
+    fun testCorrectMapImplementation() {
+        val map = enumMapOf(TestEnum.A to "a", TestEnum.B to "b", TestEnum.C to "c")
+        assertContentEquals(map, reserializeValue(map))
+        
+        assert(deserializeValue<Map<TestEnum, String>>(serializeValue(map)) is EnumMap)
+        assert(deserializeValue<MutableMap<TestEnum, String>>(serializeValue(map)) is EnumMap)
+        
+        assert(deserializeValue<Map<String, String>>(serializeValue(map)) is HashMap)
+        assert(deserializeValue<MutableMap<String, String>>(serializeValue(map)) is HashMap)
     }
     
 }
