@@ -7,10 +7,14 @@ import kotlin.reflect.KType
 
 internal object EnumMapInstanceCreator : InstanceCreator<EnumMap<*, *>> {
     
-    private val ENUM_MAP_CONSTRUCTOR = EnumMap::class.java.getConstructor(Class::class.java)
-    
     override fun createInstance(type: KType): EnumMap<*, *> {
-        return ENUM_MAP_CONSTRUCTOR.newInstance(type.arguments[0].type!!.classifierClass!!.java)
+        val clazz = type.arguments[0].type!!.classifierClass!!.java
+        return createEnumMap(clazz)
+    }
+    
+    @Suppress("UNCHECKED_CAST")
+    private fun <E : Enum<E>> createEnumMap(clazz: Class<*>): EnumMap<*, *> {
+        return EnumMap<E, Any>(clazz as Class<E>)
     }
     
 }
