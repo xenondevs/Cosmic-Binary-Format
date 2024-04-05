@@ -210,11 +210,9 @@ object CBF {
      */
     @JvmName("writeNonNull")
     fun write(obj: Any, type: KType?, writer: ByteWriter) {
-        val objClass = obj::class
         val nonNullType = type
-            ?.takeUnless { type.classifierClass in objClass.superclasses } // don't allow serialization as supertype
             ?.withNullability(false)
-            ?: objClass.createStarProjectedType()
+            ?: obj::class.createStarProjectedType()
         
         val adapter = getBinaryAdapterExact<Any>(nonNullType)
         if (adapter !is ComplexBinaryAdapter<*>)
