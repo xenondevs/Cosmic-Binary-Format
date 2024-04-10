@@ -4,6 +4,7 @@ import xyz.xenondevs.cbf.adapter.BinaryAdapter
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
 import java.util.HexFormat
+import java.util.TreeSet
 import kotlin.reflect.KType
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
@@ -76,12 +77,11 @@ class Compound internal constructor(
     fun isNotEmpty(): Boolean = map.isNotEmpty()
     
     fun copy(): Compound {
-        val copy = Compound(HashMap(binMap))
+        val copy = Compound(HashMap(binMap), HashMap(), HashMap(types))
         
         for((key, value) in map) {
             val valueType = types[key]!!
             copy.map[key] = value?.let { CBF.copy(it, valueType.withNullability(false)) }
-            copy.types[key] = valueType
         }
         
         return copy
@@ -95,13 +95,17 @@ class Compound internal constructor(
         val builder = StringBuilder()
         builder.append("{")
         
-        binMap.entries.forEach { (key, value) ->
-            val hexStr = HexFormat.of().formatHex(value)
-            builder.append("\n\"$key\": (serialized) $hexStr")
-        }
+        val keys = TreeSet<String>()
+        keys + binMap.keys
+        keys += map.keys
         
-        map.entries.forEach { (key, value) ->
-            builder.append("\n\"$key\": $value")
+        for (key in keys) {
+            if (key in binMap) {
+                val hexStr = HexFormat.of().formatHex(binMap[key])
+                builder.append("\n\"$key\": (serialized) $hexStr")
+            } else {
+                builder.append("\n\"$key\": ${map[key]}")
+            }
         }
         
         return builder.toString().replace("\n", "\n  ") + "\n}"
