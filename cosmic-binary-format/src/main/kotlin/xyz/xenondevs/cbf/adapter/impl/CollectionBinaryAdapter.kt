@@ -2,9 +2,9 @@ package xyz.xenondevs.cbf.adapter.impl
 
 import xyz.xenondevs.cbf.CBF
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
-import xyz.xenondevs.cbf.internal.nonNullTypeArguments
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
+import xyz.xenondevs.commons.reflection.nonNullTypeArguments
 import kotlin.reflect.KType
 
 internal object CollectionBinaryAdapter : BinaryAdapter<Collection<*>> {
