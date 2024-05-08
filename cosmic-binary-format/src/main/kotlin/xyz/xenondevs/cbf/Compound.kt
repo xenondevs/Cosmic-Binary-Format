@@ -3,11 +3,14 @@ package xyz.xenondevs.cbf
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
-import java.util.HexFormat
-import java.util.TreeSet
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.reflect.KType
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
+
+typealias EntryWatcher = (KType?, Any?) -> Unit
 
 @Suppress("UNCHECKED_CAST")
 class Compound internal constructor(
@@ -15,6 +18,9 @@ class Compound internal constructor(
     private val map: HashMap<String, Any?> = HashMap(),
     private val types: HashMap<String, KType> = HashMap()
 ) {
+    
+    private var entryWatchers: HashMap<String, HashSet<EntryWatcher>>? = null
+    private var weakEntryWatchers: WeakHashMap<Any, HashMap<String, HashSet<EntryWatcher>>>? = null
     
     val keys: Set<String>
         get() = binMap.keys + map.keys
@@ -29,6 +35,8 @@ class Compound internal constructor(
         binMap -= key
         map[key] = value
         types[key] = type
+        
+        entryWatchers?.get(key)?.forEach { it(type, value) }
     }
     
     fun <T : Any> get(type: KType, key: String): T? {
@@ -48,8 +56,12 @@ class Compound internal constructor(
         return get(typeOf<T>(), key)
     }
     
-    inline fun <reified T : Any> getOrPut(key: String, defaultValue: () -> T): T {
-        return get(key) ?: defaultValue().also { set(key, it) }
+    fun <T : Any> getOrPut(type: KType, key: String, defaultValue: () -> T): T {
+        return get(type, key) ?: defaultValue().also { set(type, key, it) }
+    }
+    
+    inline fun <reified T : Any> getOrPut(key: String, noinline defaultValue: () -> T): T {
+        return getOrPut(typeOf<T>(), key, defaultValue)
     }
     
     fun putAll(other: Compound) {
@@ -66,6 +78,8 @@ class Compound internal constructor(
         binMap.remove(key)
         map.remove(key)
         types.remove(key)
+        
+        entryWatchers?.get(key)?.forEach { it(null, null) }
     }
     
     operator fun minusAssign(key: String) {
@@ -89,6 +103,30 @@ class Compound internal constructor(
     
     fun shallowCopy(): Compound {
         return Compound(HashMap(binMap), HashMap(map), HashMap(types))
+    }
+    
+    fun addEntryWatcher(key: String, watcher: EntryWatcher) {
+        if (entryWatchers == null)
+            entryWatchers = HashMap()
+        entryWatchers!!.getOrPut(key, ::HashSet) += watcher
+    }
+    
+    fun addWeakEntryWatcher(owner: Any, key: String, watcher: EntryWatcher) {
+        if (weakEntryWatchers == null)
+            weakEntryWatchers = WeakHashMap()
+        weakEntryWatchers!!.getOrPut(owner, ::HashMap).getOrPut(key, ::HashSet) += watcher
+    }
+    
+    fun removeEntryWatcher(key: String, watcher: EntryWatcher) {
+        entryWatchers?.get(key)?.remove(watcher)
+    }
+    
+    fun removeWeakEntryWatcher(owner: Any, key: String, watcher: EntryWatcher) {
+        weakEntryWatchers?.get(owner)?.get(key)?.remove(watcher)
+    }
+    
+    fun removeWeakEntryWatchers(owner: Any) {
+        weakEntryWatchers?.remove(owner)
     }
     
     override fun toString(): String {

@@ -11,6 +11,7 @@
     <modules>
         <module>cosmic-binary-format</module>
         <module>cosmic-binary-format-netty-adapter</module>
+        <module>cosmic-binary-format-provider</module>
     </modules>
     <properties>
         <kotlin.version>1.9.23</kotlin.version>

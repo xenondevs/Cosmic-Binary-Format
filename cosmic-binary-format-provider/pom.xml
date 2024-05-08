@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>xyz.xenondevs.cbf</groupId>
+        <artifactId>cosmic-binary-format-parent</artifactId>
+        <version>0.9</version>
+    </parent>
+
+    <artifactId>cosmic-binary-format-provider</artifactId>
+    
+    <dependencies>
+        <dependency>
+            <groupId>xyz.xenondevs.cbf</groupId>
+            <artifactId>cosmic-binary-format</artifactId>
+            <version>0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>xyz.xenondevs.commons</groupId>
+            <artifactId>commons-provider</artifactId>
+            <version>1.10</version>
+        </dependency>
+    </dependencies>
+
+</project>
