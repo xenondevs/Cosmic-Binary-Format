@@ -37,6 +37,7 @@ class Compound internal constructor(
         types[key] = type
         
         entryWatchers?.get(key)?.forEach { it(type, value) }
+        weakEntryWatchers?.values?.forEach { it[key]?.forEach { it(type, value) } }
     }
     
     fun <T : Any> get(type: KType, key: String): T? {
@@ -80,6 +81,7 @@ class Compound internal constructor(
         types.remove(key)
         
         entryWatchers?.get(key)?.forEach { it(null, null) }
+        weakEntryWatchers?.values?.forEach { it[key]?.forEach { it(null, null) } }
     }
     
     operator fun minusAssign(key: String) {
