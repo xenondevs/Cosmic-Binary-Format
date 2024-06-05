@@ -6,11 +6,11 @@ import xyz.xenondevs.cbf.assertContentEquals
 import xyz.xenondevs.commons.collections.enumMapOf
 import java.util.EnumMap
 
-private enum class TestEnum {
-    A, B, C
-}
-
 class MapBinaryAdapterTest : BinaryAdapterTest<Map<*, *>>(MapBinaryAdapter) {
+    
+    private enum class TestEnum {
+        A, B, C
+    }
     
     @Test
     fun testMap() {

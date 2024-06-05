@@ -19,10 +19,12 @@ import xyz.xenondevs.cbf.adapter.impl.FloatArrayBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.FloatBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.IntArrayBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.IntBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.ListBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.LongArrayBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.LongBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.MapBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.PairBinaryAdapter
+import xyz.xenondevs.cbf.adapter.impl.SetBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.ShortArrayBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.ShortBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.StringArrayBinaryAdapter
@@ -88,7 +90,8 @@ object CBF {
         
         // default binary hierarchy adapters
         registerBinaryHierarchyAdapter(EnumBinaryAdapter)
-        registerBinaryHierarchyAdapter(CollectionBinaryAdapter)
+        registerBinaryHierarchyAdapter(ListBinaryAdapter)
+        registerBinaryHierarchyAdapter(SetBinaryAdapter)
         registerBinaryHierarchyAdapter(MapBinaryAdapter)
         
         // default instance creators

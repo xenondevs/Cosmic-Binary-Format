@@ -1,11 +1,10 @@
 package xyz.xenondevs.cbf.adapter.impl
 
+import org.junit.jupiter.api.Test
 import xyz.xenondevs.cbf.adapter.BinaryAdapterTest
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
-class CollectionBinaryAdapterTest : BinaryAdapterTest<Collection<*>>(CollectionBinaryAdapter) {
+class ListBinaryAdapterTest: BinaryAdapterTest<List<*>>(ListBinaryAdapter) {
     
     @Test
     fun testStringList() {

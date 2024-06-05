@@ -2,6 +2,7 @@ package xyz.xenondevs.cbf.instancecreator.impl
 
 import xyz.xenondevs.cbf.instancecreator.InstanceCreator
 import xyz.xenondevs.commons.reflection.classifierClass
+import xyz.xenondevs.commons.reflection.nonNullTypeArguments
 import java.util.*
 import kotlin.reflect.KType
 
