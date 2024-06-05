@@ -151,12 +151,12 @@ class Compound internal constructor(
     /**
      * Checks whether this compound is empty.
      */
-    fun isEmpty(): Boolean = map.isNotEmpty()
+    fun isEmpty(): Boolean = map.isEmpty() && binMap.isEmpty()
     
     /**
      * Checks whether this compound is not empty.
      */
-    fun isNotEmpty(): Boolean = map.isNotEmpty()
+    fun isNotEmpty(): Boolean = map.isNotEmpty() || binMap.isNotEmpty()
     
     /**
      * Creates a deep copy of this compound, copying all values via [CBF.copy].
