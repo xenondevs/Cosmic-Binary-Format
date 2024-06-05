@@ -356,6 +356,10 @@ private class InputStreamToByteReaderWrapper(private val inp: InputStream) : Byt
         inp.skip(length.toLong())
     }
     
+    override fun asInputStream(): InputStream {
+        return inp
+    }
+    
 }
 
 private class DataInputToByteReaderWrapper(private val inp: DataInput) : ByteReader {
@@ -370,6 +374,10 @@ private class DataInputToByteReaderWrapper(private val inp: DataInput) : ByteRea
     
     override fun skip(length: Int) {
         inp.skipBytes(length)
+    }
+    
+    override fun asDataInput(): DataInput {
+        return inp
     }
     
 }

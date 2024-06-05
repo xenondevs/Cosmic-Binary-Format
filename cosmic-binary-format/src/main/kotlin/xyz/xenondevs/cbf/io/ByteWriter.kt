@@ -321,6 +321,10 @@ private class DataOutputToByteWriterWrapper(private val out: DataOutput) : ByteW
         out.write(src, srcIndex, length)
     }
     
+    override fun asDataOutput(): DataOutput {
+        return out
+    }
+    
 }
 
 private class OutputStreamToByteWriterWrapper(private val out: OutputStream) : ByteWriter {
@@ -331,6 +335,10 @@ private class OutputStreamToByteWriterWrapper(private val out: OutputStream) : B
     
     override fun writeBytes(src: ByteArray, srcIndex: Int, length: Int) {
         out.write(src, srcIndex, length)
+    }
+    
+    override fun asOutputStream(): OutputStream {
+        return out
     }
     
 }
