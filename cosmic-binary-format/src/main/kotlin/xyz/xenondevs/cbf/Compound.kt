@@ -84,6 +84,15 @@ class Compound internal constructor(
         weakEntryWatchers?.values?.forEach { it[key]?.forEach { it(null, null) } }
     }
     
+    fun rename(old: String, new: String) {
+        if (old in map) {
+            map[new] = map.remove(old)!!
+            types[new] = types.remove(old)!!
+        } else if (old in binMap) {
+            binMap[new] = binMap.remove(old)!!
+        }
+    }
+    
     operator fun minusAssign(key: String) {
         remove(key)
     }
