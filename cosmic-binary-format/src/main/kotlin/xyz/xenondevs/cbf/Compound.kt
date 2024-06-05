@@ -136,7 +136,7 @@ class Compound internal constructor(
         builder.append("{")
         
         val keys = TreeSet<String>()
-        keys + binMap.keys
+        keys += binMap.keys
         keys += map.keys
         
         for (key in keys) {
