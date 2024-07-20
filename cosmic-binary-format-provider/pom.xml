@@ -20,7 +20,7 @@
         <dependency>
             <groupId>xyz.xenondevs.commons</groupId>
             <artifactId>commons-provider</artifactId>
-            <version>1.10</version>
+            <version>1.13</version>
         </dependency>
     </dependencies>
 
