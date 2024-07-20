@@ -6,7 +6,7 @@
     <parent>
         <groupId>xyz.xenondevs.cbf</groupId>
         <artifactId>cosmic-binary-format-parent</artifactId>
-        <version>0.11</version>
+        <version>0.12</version>
     </parent>
 
     <artifactId>cosmic-binary-format-provider</artifactId>
