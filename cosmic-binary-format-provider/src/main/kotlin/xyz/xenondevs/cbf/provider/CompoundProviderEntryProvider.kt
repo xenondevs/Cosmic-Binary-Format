@@ -2,6 +2,7 @@ package xyz.xenondevs.cbf.provider
 
 import xyz.xenondevs.cbf.Compound
 import xyz.xenondevs.cbf.EntryWatcher
+import xyz.xenondevs.cbf.WeakEntryWatcher
 import xyz.xenondevs.commons.provider.AbstractProvider
 import xyz.xenondevs.commons.provider.Provider
 import xyz.xenondevs.commons.provider.mutable.MutableProvider
@@ -22,7 +23,7 @@ internal class CompoundProviderEntryProvider<T : Any>(
 ) : AbstractProvider<T?>() {
     
     private var compound: Compound? = null
-    private val entryWatcher: EntryWatcher = { _, _ -> update() }
+    private val entryWatcher: WeakEntryWatcher<CompoundProviderEntryProvider<T>> = { provider, _, _ -> provider.update() }
     
     override fun loadValue(): T? {
         val prevCompound = compound

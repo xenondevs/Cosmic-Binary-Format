@@ -19,7 +19,7 @@ internal class CompoundEntryProvider<T : Any>(
 ) : AbstractProvider<T?>() {
     
     init {
-        compound.addWeakEntryWatcher(this, key) { _, _ -> update() }
+        compound.addWeakEntryWatcher(this, key) { provider, _, _ -> provider.update() }
     }
     
     override fun loadValue(): T? {
