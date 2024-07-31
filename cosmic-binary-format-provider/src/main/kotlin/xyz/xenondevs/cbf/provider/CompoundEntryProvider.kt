@@ -26,8 +26,8 @@ internal class CompoundEntryProvider<T : Any>(
         return compound.get(type, key)
     }
     
-    override fun set(value: T?, updateChildren: Boolean, callSubscribers: Boolean, ignoredChildren: Set<Provider<*>>) {
-        super.set(value, updateChildren, callSubscribers, ignoredChildren)
+    override fun set(value: T?, ignoredChildren: Set<Provider<*>>) {
+        super.set(value, ignoredChildren)
         
         if (compound.get<T>(type, key) != value) {
             if (value == null) {

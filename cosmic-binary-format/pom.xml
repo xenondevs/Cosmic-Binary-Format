@@ -12,7 +12,7 @@
     <artifactId>cosmic-binary-format</artifactId>
 
     <properties>
-        <commons.version>1.13</commons.version>
+        <commons.version>1.14</commons.version>
     </properties>
 
     <dependencies>
