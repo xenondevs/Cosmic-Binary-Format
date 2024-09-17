@@ -10,9 +10,12 @@ import kotlin.reflect.KType
 internal abstract class CollectionBinaryAdapter<T : Collection<*>> : BinaryAdapter<T> {
     
     override fun write(obj: T, type: KType, writer: ByteWriter) {
-        writer.writeVarInt(obj.size)
+        // create a shallow copy of the collection to prevent size changes during serialization
+        val shallowCopy = obj.toList()
+        
+        writer.writeVarInt(shallowCopy.size)
         val entryType = type.arguments[0].type
-        obj.forEach { CBF.write(it, entryType, writer) }
+        shallowCopy.forEach { CBF.write(it, entryType, writer) }
     }
     
     @Suppress("UNCHECKED_CAST")

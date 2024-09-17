@@ -15,9 +15,12 @@ import kotlin.reflect.typeOf
 internal object MapBinaryAdapter : BinaryAdapter<Map<*, *>> {
     
     override fun write(obj: Map<*, *>, type: KType, writer: ByteWriter) {
-        writer.writeVarInt(obj.size)
+        // create a shallow copy of the map to prevent size changes during serialization
+        val shallowCopy = obj.toMap()
+        
+        writer.writeVarInt(shallowCopy.size)
         val (keyType, valueType) = type.nonNullTypeArguments
-        obj.forEach { (key, value) ->
+        shallowCopy.forEach { (key, value) ->
             CBF.write(key, keyType, writer)
             CBF.write(value, valueType, writer)
         }
