@@ -5,22 +5,233 @@ package xyz.xenondevs.cbf
 import xyz.xenondevs.cbf.adapter.BinaryAdapter
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
+import xyz.xenondevs.commons.provider.MutableProvider
+import xyz.xenondevs.commons.provider.Provider
+import xyz.xenondevs.commons.provider.flatMapMutable
+import xyz.xenondevs.commons.provider.mapNonNull
+import xyz.xenondevs.commons.provider.mutableProvider
+import xyz.xenondevs.commons.reflection.createStarProjectedType
+import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KType
-import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
 /**
- * Typealias for [Compound] entry watchers that are called when a value is set/removed.
+ * An entry in a [Compound].
  */
-typealias EntryWatcher = (type: KType?, value: Any?) -> Unit
+private sealed interface CompoundEntry<T : Any> {
+    
+    /**
+     * The serialized binary data of this entry.
+     * Is null if this entry stores no data.
+     */
+    val bin: ByteArray?
+    
+    /**
+     * The type of the data stored in this entry, if known.
+     * If the type is not known, [cachedValue] will be null as well.
+     */
+    val type: KType?
+    
+    /**
+     * The deserialized value of this entry.
+     * Non-null if [type] is known and entry [isNotEmpty].
+     */
+    val cachedValue: T?
+    
+    /**
+     * Sets the type and value of this entry.
+     * @throws IllegalArgumentException If the given [type] is incompatible with this entry.
+     */
+    fun set(type: KType, value: T?)
+    
+    /**
+     * Gets the value of this entry as [type] [T].
+     * @throws IllegalArgumentException If the given [type] is incompatible with this entry.
+     */
+    fun get(type: KType): T?
+    
+    /**
+     * Clears this entry, removing all data.
+     */
+    fun clear()
+    
+    /**
+     * Transfers the data of this entry to [entry].
+     */
+    fun transferTo(entry: CompoundEntry<T>)
+    
+    /**
+     * Creates a new [DirectCompoundEntry] with the same data as this entry.
+     */
+    fun toDirectEntry(): DirectCompoundEntry<T>
+    
+    /**
+     * Check whether this entry is empty.
+     */
+    fun isEmpty(): Boolean
+    
+    /**
+     * Check whether this entry is not empty.
+     */
+    fun isNotEmpty(): Boolean
+    
+}
 
-/**
- * Typealias for [Compound] weak entry watchers that are called when a value is set/removed.
- */
-typealias WeakEntryWatcher<T> = (owner: T, type: KType?, value: Any?) -> Unit
+private class DirectCompoundEntry<T : Any> private constructor(
+    bin: ByteArray?,
+    override var type: KType?,
+    override var cachedValue: T?
+) : CompoundEntry<T> {
+    
+    private var _bin: ByteArray? = bin
+    override val bin: ByteArray?
+        get() {
+            if (type != null && cachedValue != null) {
+                return CBF.write(cachedValue, type)
+            } else {
+                return _bin
+            }
+        }
+    
+    constructor(bin: ByteArray) : this(bin, null, null)
+    
+    constructor(type: KType, value: T?) : this(null, type, value)
+    
+    fun <T : Any> toProviderEntry(type: KType): ProviderCompoundEntry<T> {
+        if (this.type != null && this.cachedValue != null) {
+            if (this.type != type)
+                throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
+            return ProviderCompoundEntry(type, this.cachedValue as T)
+        } else if (_bin != null) {
+            val value = CBF.read<T>(type, _bin!!)
+            return ProviderCompoundEntry(type, value)
+        } else {
+            return ProviderCompoundEntry(type, null)
+        }
+    }
+    
+    override fun toDirectEntry(): DirectCompoundEntry<T> {
+        return DirectCompoundEntry(_bin, type, cachedValue)
+    }
+    
+    override fun set(type: KType, value: T?) {
+        this.type = type
+        this.cachedValue = value
+        this._bin = null
+    }
+    
+    override fun get(type: KType): T? {
+        if (this.type != null && this.cachedValue != null) {
+            if (this.type != type)
+                throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
+            return this.cachedValue as T
+        }
+        
+        if (_bin != null)
+            return CBF.read(type, _bin!!, strict = true)
+        
+        return null
+    }
+    
+    override fun clear() {
+        _bin = null
+        type = null
+        cachedValue = null
+    }
+    
+    override fun transferTo(entry: CompoundEntry<T>) {
+        when (entry) {
+            is DirectCompoundEntry<T> -> {
+                entry._bin = _bin
+                entry.type = type
+                entry.cachedValue = cachedValue
+            }
+            
+            is ProviderCompoundEntry<T> -> {
+                if (type != null) {
+                    entry.set(type!!, cachedValue!!)
+                } else {
+                    // no type check possible
+                    entry.binProvider.set(_bin)
+                }
+            }
+        }
+    }
+    
+    override fun isEmpty(): Boolean {
+        return _bin == null && cachedValue == null
+    }
+    
+    override fun isNotEmpty(): Boolean {
+        return _bin != null || cachedValue != null
+    }
+    
+}
+
+private fun <T : Any> ProviderCompoundEntry(type: KType): ProviderCompoundEntry<T> {
+    val binProvider: MutableProvider<ByteArray?> = mutableProvider(null)
+    val valueProvider: MutableProvider<T?> = binProvider.mapNonNull(
+        { CBF.read(type, it, strict = true) },
+        { CBF.write(it, type) }
+    )
+    return ProviderCompoundEntry(binProvider, type, valueProvider)
+}
+
+private fun <T : Any> ProviderCompoundEntry(type: KType, value: T?): ProviderCompoundEntry<T> {
+    val binProvider: MutableProvider<ByteArray?> = mutableProvider(null)
+    val valueProvider: MutableProvider<T?> = binProvider.mapNonNull(
+        { CBF.read(type, it, strict = true) },
+        { CBF.write(it, type) }
+    )
+    valueProvider.set(value)
+    return ProviderCompoundEntry(binProvider, type, valueProvider)
+}
+
+private class ProviderCompoundEntry<T : Any>(
+    val binProvider: MutableProvider<ByteArray?>,
+    override val type: KType,
+    val valueProvider: MutableProvider<T?>
+) : CompoundEntry<T> {
+    
+    override val bin: ByteArray? by binProvider
+    override val cachedValue: T? by valueProvider
+    
+    override fun set(type: KType, value: T?) {
+        if (this.type != type)
+            throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
+        
+        valueProvider.set(value)
+    }
+    
+    override fun get(type: KType): T? {
+        if (this.type != type)
+            throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
+        
+        return valueProvider.get()
+    }
+    
+    override fun clear() {
+        valueProvider.set(null)
+    }
+    
+    override fun transferTo(entry: CompoundEntry<T>) {
+        entry.set(type, valueProvider.get())
+    }
+    
+    override fun toDirectEntry(): DirectCompoundEntry<T> {
+        return DirectCompoundEntry(type, valueProvider.get())
+    }
+    
+    override fun isEmpty(): Boolean =
+        valueProvider.get() == null
+    
+    override fun isNotEmpty(): Boolean =
+        valueProvider.get() != null
+    
+}
 
 /**
  * A compound is a key-value storage intended for serialization via [CBF].
@@ -30,14 +241,9 @@ typealias WeakEntryWatcher<T> = (owner: T, type: KType?, value: Any?) -> Unit
  * to the requested type when accessed via [get].
  * Conversely, the type information for serialization is remembered during [set].
  */
-class Compound internal constructor(
-    private val binMap: HashMap<String, ByteArray>,
-    private val map: HashMap<String, Any?> = HashMap(),
-    private val types: HashMap<String, KType> = HashMap()
+class Compound private constructor(
+    private val entryMap: HashMap<String, CompoundEntry<*>>
 ) {
-    
-    private var entryWatchers: HashMap<String, HashSet<EntryWatcher>>? = null
-    private var weakEntryWatchers: WeakHashMap<Any, HashMap<String, HashSet<WeakEntryWatcher<*>>>>? = null
     
     private val lock = ReentrantLock()
     
@@ -45,44 +251,66 @@ class Compound internal constructor(
      * A set of all keys in this compound.
      */
     val keys: Set<String>
-        get() = lock.withLock { binMap.keys + map.keys }
+        get() = lock.withLock {
+            this@Compound.entryMap.mapNotNullTo(HashSet()) { (key, entry) ->
+                key.takeUnless { entry.isEmpty() }
+            }
+        }
     
-    constructor() : this(HashMap(), HashMap(), HashMap())
+    constructor() : this(HashMap())
     
     /**
      * Puts [value] into the compound under [key], remembering [T] for serialization.
      */
-    inline operator fun <reified T> set(key: String, value: T) {
+    inline operator fun <reified T> set(key: String, value: T) =
         set(typeOf<T>(), key, value)
-    }
     
     /**
      * Puts [value] into the compound under [key], remembering [type] for serialization.
      */
-    fun set(type: KType, key: String, value: Any?) {
-        lock.withLock {
-            binMap -= key
-            map[key] = value
-            types[key] = type
+    fun set(type: KType, key: String, value: Any?): Unit = lock.withLock {
+        val entry = entryMap[key]
+        if (entry != null) {
+            entry as CompoundEntry<Any>
+            entry.set(type, value)
+        } else if (value != null) {
+            entryMap[key] = DirectCompoundEntry(type, value)
         }
         
-        notifyWatchers(key, type, value)
+        removeStaleEntries()
+    }
+    
+    inline fun <reified T> entry(key: String): MutableProvider<T?> =
+        entry(typeOf<T>(), key)
+    
+    fun <T : Any> entry(type: KType, key: String): MutableProvider<T?> = lock.withLock {
+        var providerEntry: ProviderCompoundEntry<T>
+        when (val existingEntry = entryMap[key]) {
+            is ProviderCompoundEntry<*> -> {
+                if (existingEntry.type != type)
+                    throw IllegalArgumentException("Type mismatch for key $key: ${existingEntry.type} != $type")
+                providerEntry = existingEntry as ProviderCompoundEntry<T>
+            }
+            
+            is DirectCompoundEntry<*> -> {
+                providerEntry = existingEntry.toProviderEntry(type)
+                entryMap[key] = providerEntry
+            }
+            
+            null -> {
+                providerEntry = ProviderCompoundEntry(type)
+                entryMap[key] = providerEntry
+            }
+        }
+        
+        return providerEntry.valueProvider
     }
     
     /**
      * Gets the value under [key] as [type] [T] or null if it doesn't exist.
      */
-    fun <T : Any> get(type: KType, key: String): T? = lock.withLock {
-        map[key]?.let { return it as T }
-        
-        val bytes = binMap[key] ?: return null
-        val value = CBF.read<T>(type, bytes)
-        
-        types[key] = type
-        map[key] = value
-        binMap -= key
-        
-        return value
+    fun <T : Any> get(type: KType, key: String): T? {
+        return (entryMap[key] as CompoundEntry<T>?)?.get(type)
     }
     
     /**
@@ -97,7 +325,13 @@ class Compound internal constructor(
      * the value generated by [defaultValue] if it doesn't exist.
      */
     fun <T : Any> getOrPut(type: KType, key: String, defaultValue: () -> T): T = lock.withLock {
-        return get(type, key) ?: defaultValue().also { set(type, key, it) }
+        val existingValue = get<T>(type, key)
+        if (existingValue != null)
+            return existingValue
+        
+        val default = defaultValue()
+        set(type, key, default)
+        return default
     }
     
     /**
@@ -112,11 +346,18 @@ class Compound internal constructor(
      * Puts all entries from [other] into this compound.
      */
     fun putAll(other: Compound) {
-        lock.withLock { 
+        lock.withLock {
             other.lock.withLock {
-                binMap.putAll(other.binMap)
-                map.putAll(other.map)
-                types.putAll(other.types)
+                for ((key, otherEntry) in other.entryMap) {
+                    val entry = entryMap[key]
+                    if (entry != null) {
+                        otherEntry as CompoundEntry<Any>
+                        entry as CompoundEntry<Any>
+                        otherEntry.transferTo(entry)
+                    } else {
+                        entryMap[key] = otherEntry.toDirectEntry()
+                    }
+                }
             }
         }
     }
@@ -125,7 +366,7 @@ class Compound internal constructor(
      * Checks whether this compound has an entry under [key].
      */
     operator fun contains(key: String): Boolean = lock.withLock {
-        return map.containsKey(key) || binMap.containsKey(key)
+        return entryMap[key]?.isNotEmpty() == true
     }
     
     /**
@@ -138,14 +379,9 @@ class Compound internal constructor(
     /**
      * Removes the value under [key].
      */
-    fun remove(key: String) {
-        lock.withLock {
-            binMap.remove(key)
-            map.remove(key)
-            types.remove(key)
-        }
-        
-        notifyWatchers(key, null, null)
+    fun remove(key: String): Unit = lock.withLock {
+        entryMap[key]?.clear()
+        removeStaleEntries()
     }
     
     /**
@@ -153,113 +389,72 @@ class Compound internal constructor(
      * If there already is an entry under [new], it will be overwritten.
      */
     fun rename(old: String, new: String): Unit = lock.withLock {
-        if (old in map) {
-            map[new] = map.remove(old)!!
-            types[new] = types.remove(old)!!
-        } else if (old in binMap) {
-            binMap[new] = binMap.remove(old)!!
-        }
+        val entry = entryMap.remove(old) ?: return
+        entryMap[new] = entry
     }
     
     /**
      * Checks whether this compound is empty.
      */
-    fun isEmpty(): Boolean =
-        lock.withLock { map.isEmpty() && binMap.isEmpty() }
+    fun isEmpty(): Boolean = lock.withLock {
+        entryMap.values.all { it.isEmpty() }
+    }
     
     /**
      * Checks whether this compound is not empty.
      */
-    fun isNotEmpty(): Boolean =
-        lock.withLock { map.isNotEmpty() || binMap.isNotEmpty() }
+    fun isNotEmpty(): Boolean = lock.withLock {
+        entryMap.values.any { it.isNotEmpty() }
+    }
     
     /**
-     * Creates a deep copy of this compound, copying all values via [CBF.copy].
+     * Creates a deep copy of this compound, copying all deserialized values using [copyFunc],
+     * which defaults to [CBF.copy].
      */
-    fun copy(): Compound = lock.withLock {
-        val copy = Compound(HashMap(binMap), HashMap(), HashMap(types))
+    fun copy(copyFunc: (KType, Any) -> Any = { type, obj -> CBF.copy(obj, type) }): Compound = lock.withLock {
+        val entryMapCopy = HashMap<String, CompoundEntry<*>>()
         
-        for ((key, value) in map) {
-            val valueType = types[key]!!
-            copy.map[key] = value?.let { CBF.copy(it, valueType.withNullability(false)) }
+        for ((key, entry) in entryMap) {
+            if (entry.isEmpty())
+                continue
+            
+            val type = entry.type
+            val value = entry.cachedValue
+            if (type != null && value != null) {
+                entryMapCopy[key] = DirectCompoundEntry(type, copyFunc(type, value))
+            } else {
+                entryMapCopy[key] = entry.toDirectEntry()
+            }
         }
         
-        return copy
+        return Compound(entryMapCopy)
     }
     
     /**
      * Creates a shallow copy of this compound, not copying any values.
      */
-    fun shallowCopy(): Compound = lock.withLock {
-        return Compound(HashMap(binMap), HashMap(map), HashMap(types))
-    }
-    
-    /**
-     * Registers an [EntryWatcher] for [key].
-     */
-    fun addEntryWatcher(key: String, watcher: EntryWatcher) {
-        if (entryWatchers == null)
-            entryWatchers = HashMap()
-        entryWatchers!!.getOrPut(key, ::HashSet) += watcher
-    }
-    
-    /**
-     * Registers a weak [EntryWatcher] for [key] that is automatically removed when [owner] is garbage collected.
-     */
-    fun <T> addWeakEntryWatcher(owner: T, key: String, watcher: WeakEntryWatcher<T>) {
-        if (weakEntryWatchers == null)
-            weakEntryWatchers = WeakHashMap()
-        weakEntryWatchers!!.getOrPut(owner, ::HashMap).getOrPut(key, ::HashSet) += watcher
-    }
-    
-    /**
-     * Removes the non-weak [watcher] under [key].
-     */
-    fun removeEntryWatcher(key: String, watcher: EntryWatcher) {
-        entryWatchers?.get(key)?.remove(watcher)
-    }
-    
-    /**
-     * Removes the weak [watcher] under [owner] and [key].
-     */
-    fun removeWeakEntryWatcher(owner: Any, key: String, watcher: WeakEntryWatcher<*>) {
-        weakEntryWatchers?.get(owner)?.get(key)?.remove(watcher)
-    }
-    
-    /**
-     * Removes all weak entry watchers registered by [owner].
-     */
-    fun removeWeakEntryWatchers(owner: Any) {
-        weakEntryWatchers?.remove(owner)
-    }
-    
-    private fun notifyWatchers(key: String, type: KType?, value: Any?) {
-        entryWatchers?.get(key)?.forEach { it(type, value) }
-        weakEntryWatchers?.forEach { (owner, watchers) ->
-            watchers[key]?.forEach { watcher ->
-                watcher as (Any?, KType?, Any?) -> Unit
-                watcher(owner, type, value) }
-        }
-    }
+    fun shallowCopy(): Compound = copy { _, obj -> obj }
     
     override fun toString(): String = lock.withLock {
         val builder = StringBuilder()
         builder.append("{")
         
-        val keys = TreeSet<String>()
-        keys += binMap.keys
-        keys += map.keys
-        
-        for (key in keys) {
-            if (key in binMap) {
-                val hexStr = HexFormat.of().formatHex(binMap[key])
-                builder.append("\n\"$key\": (serialized) $hexStr")
+        for (key in TreeSet(keys)) {
+            val entry = entryMap[key]!!
+            if (entry.type != null) {
+                builder.append("\n\"$key\": ${entry.cachedValue}")
             } else {
-                builder.append("\n\"$key\": ${map[key]}")
+                val hexStr = HexFormat.of().formatHex(entry.bin)
+                builder.append("\n\"$key\": (serialized) $hexStr")
             }
         }
         
         return builder.toString().replace("\n", "\n  ") + "\n}"
+    }
+    
+    private fun removeStaleEntries() {
+        assert(lock.isHeldByCurrentThread)
+        this.entryMap.entries.removeIf { (_, entry) -> entry.isEmpty() }
     }
     
     companion object {
@@ -267,41 +462,51 @@ class Compound internal constructor(
         /**
          * Creates a new [Compound] with the given [map] as its values.
          */
-        fun of(map: Map<String, Any?>): Compound =
-            Compound(HashMap(), HashMap(map), HashMap())
+        fun of(map: Map<String, Any>): Compound {
+            val entryMap = map.mapValuesTo(HashMap<String, CompoundEntry<*>>()) { (_, value) ->
+                val type = createStarProjectedType(value::class)
+                DirectCompoundEntry(type, value)
+            }
+            
+            return Compound(entryMap)
+        }
         
     }
     
     internal object CompoundBinaryAdapter : BinaryAdapter<Compound> {
         
         override fun write(obj: Compound, type: KType, writer: ByteWriter): Unit = obj.lock.withLock {
-            writer.writeVarInt(obj.binMap.size + obj.map.size)
-            
-            obj.binMap.forEach { (key, binData) ->
-                writer.writeString(key)
-                writer.writeVarInt(binData.size)
-                writer.writeBytes(binData)
+            val compoundOut = ByteArrayOutputStream()
+            val compoundDataWriter = ByteWriter.fromStream(compoundOut)
+            var count = 0
+            for ((key, entry) in obj.entryMap) {
+                val bytes = entry.bin
+                if (bytes == null)
+                    continue
+                
+                compoundDataWriter.writeString(key)
+                compoundDataWriter.writeVarInt(bytes.size)
+                compoundDataWriter.writeBytes(bytes)
+                count++
             }
             
-            obj.map.forEach { (key, value) ->
-                writer.writeString(key)
-                val binData = CBF.write(value, obj.types[key])
-                writer.writeVarInt(binData.size)
-                writer.writeBytes(binData)
-            }
+            writer.writeVarInt(count)
+            writer.writeBytes(compoundOut.toByteArray())
         }
         
         override fun read(type: KType, reader: ByteReader): Compound {
             val mapSize = reader.readVarInt()
-            val binMap = HashMap<String, ByteArray>(mapSize)
+            val entryMap = HashMap<String, CompoundEntry<*>>(mapSize)
             
             repeat(mapSize) {
                 val key = reader.readString()
                 val length = reader.readVarInt()
-                binMap[key] = reader.readBytes(length)
+                val bytes = reader.readBytes(length)
+                
+                entryMap[key] = DirectCompoundEntry<Any>(bytes)
             }
             
-            return Compound(binMap)
+            return Compound(entryMap)
         }
         
         override fun copy(obj: Compound, type: KType): Compound {
@@ -311,3 +516,6 @@ class Compound internal constructor(
     }
     
 }
+
+inline fun <reified T : Any> Provider<Compound?>.entry(key: String): MutableProvider<T?> =
+    flatMapMutable { it?.entry(typeOf<T>(), key) ?: mutableProvider(null) }

@@ -11,7 +11,6 @@ import xyz.xenondevs.cbf.adapter.impl.ByteArrayBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.ByteBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.CharArrayBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.CharBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.CollectionBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.DoubleArrayBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.DoubleBinaryAdapter
 import xyz.xenondevs.cbf.adapter.impl.EnumBinaryAdapter
@@ -45,7 +44,6 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
@@ -159,10 +157,13 @@ object CBF {
     }
     
     /**
-     * Reads the reified type [T] from the [byte array][bytes] Can return null if null was written.
+     * Reads the reified type [T] from the [byte array][bytes].
+     * Can return null if null was written.
+     *
+     * Throws an exception if [strict] is true and the byte array contains more data than was read.
      */
-    inline fun <reified T : Any> read(bytes: ByteArray): T? {
-        return read(typeOf<T>(), bytes)
+    inline fun <reified T : Any> read(bytes: ByteArray, strict: Boolean = false): T? {
+        return read(typeOf<T>(), bytes, strict)
     }
     
     /**
@@ -182,10 +183,17 @@ object CBF {
     }
     
     /**
-     * Reads the [type] from the [byte array][bytes]. Can return null if null was written.
+     * Reads the [type] from the [byte array][bytes].
+     * Can return null if null was written.
+     *
+     * Throws an exception if [strict] is true and the byte array contains more data than was read.
      */
-    fun <T : Any> read(type: KType, bytes: ByteArray): T? {
-        return read(type, ByteReader.fromStream(ByteArrayInputStream(bytes)))
+    fun <T : Any> read(type: KType, bytes: ByteArray, strict: Boolean = false): T? {
+        val inp = ByteArrayInputStream(bytes)
+        val result = read<T>(type, ByteReader.fromStream(inp))
+        if (strict && inp.available() > 0)
+            throw IllegalArgumentException("Byte array contains more data than expected")
+        return result
     }
     
     /**
