@@ -5,14 +5,14 @@
     <parent>
         <artifactId>cosmic-binary-format-parent</artifactId>
         <groupId>xyz.xenondevs.cbf</groupId>
-        <version>0.15</version>
+        <version>0.16</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cosmic-binary-format</artifactId>
 
     <properties>
-        <commons.version>1.18</commons.version>
+        <commons.version>1.19</commons.version>
     </properties>
 
     <dependencies>
