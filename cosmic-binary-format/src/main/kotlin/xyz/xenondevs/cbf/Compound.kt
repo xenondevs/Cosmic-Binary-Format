@@ -11,6 +11,7 @@ import xyz.xenondevs.commons.provider.flatMapMutable
 import xyz.xenondevs.commons.provider.mapNonNull
 import xyz.xenondevs.commons.provider.mutableProvider
 import xyz.xenondevs.commons.reflection.createStarProjectedType
+import xyz.xenondevs.commons.reflection.equalsIgnoreNullability
 import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -102,7 +103,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
     
     fun <T : Any> toProviderEntry(type: KType): ProviderCompoundEntry<T> {
         if (this.type != null && this.cachedValue != null) {
-            if (this.type != type)
+            if (!this.type.equalsIgnoreNullability(type))
                 throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
             return ProviderCompoundEntry(type, this.cachedValue as T)
         } else if (_bin != null) {
@@ -125,7 +126,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
     
     override fun get(type: KType): T? {
         if (this.type != null && this.cachedValue != null) {
-            if (this.type != type)
+            if (!this.type.equalsIgnoreNullability(type))
                 throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
             return this.cachedValue as T
         }
@@ -200,14 +201,14 @@ private class ProviderCompoundEntry<T : Any>(
     override val cachedValue: T? by valueProvider
     
     override fun set(type: KType, value: T?) {
-        if (this.type != type)
+        if (!this.type.equalsIgnoreNullability(type))
             throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
         
         valueProvider.set(value)
     }
     
     override fun get(type: KType): T? {
-        if (this.type != type)
+        if (!this.type.equalsIgnoreNullability(type))
             throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
         
         return valueProvider.get()
@@ -287,7 +288,7 @@ class Compound private constructor(
         var providerEntry: ProviderCompoundEntry<T>
         when (val existingEntry = entryMap[key]) {
             is ProviderCompoundEntry<*> -> {
-                if (existingEntry.type != type)
+                if (!existingEntry.type.equalsIgnoreNullability(type))
                     throw IllegalArgumentException("Type mismatch for key $key: ${existingEntry.type} != $type")
                 providerEntry = existingEntry as ProviderCompoundEntry<T>
             }
