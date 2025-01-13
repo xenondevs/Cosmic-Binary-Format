@@ -310,7 +310,7 @@ class Compound private constructor(
     /**
      * Gets the value under [key] as [type] [T] or null if it doesn't exist.
      */
-    fun <T : Any> get(type: KType, key: String): T? {
+    fun <T : Any> get(type: KType, key: String): T? = lock.withLock {
         return (entryMap[key] as CompoundEntry<T>?)?.get(type)
     }
     
