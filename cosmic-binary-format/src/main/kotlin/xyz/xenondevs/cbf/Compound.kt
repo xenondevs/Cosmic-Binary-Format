@@ -17,18 +17,13 @@ import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KType
+import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.typeOf
 
 /**
  * An entry in a [Compound].
  */
 private sealed interface CompoundEntry<T : Any> {
-    
-    /**
-     * The serialized binary data of this entry.
-     * Is null if this entry stores no data.
-     */
-    val bin: ByteArray?
     
     /**
      * The type of the data stored in this entry, if known.
@@ -53,6 +48,11 @@ private sealed interface CompoundEntry<T : Any> {
      * @throws IllegalArgumentException If the given [type] is incompatible with this entry.
      */
     fun get(type: KType): T?
+    
+    /**
+     * Serializes this entry to a byte array or null if no data is stored.
+     */
+    fun serialize(): ByteArray?
     
     /**
      * Clears this entry, removing all data.
@@ -82,20 +82,10 @@ private sealed interface CompoundEntry<T : Any> {
 }
 
 private class DirectCompoundEntry<T : Any> private constructor(
-    bin: ByteArray?,
+    private var bin: ByteArray?,
     override var type: KType?,
     override var cachedValue: T?
 ) : CompoundEntry<T> {
-    
-    private var _bin: ByteArray? = bin
-    override val bin: ByteArray?
-        get() {
-            if (type != null && cachedValue != null) {
-                return CBF.write(cachedValue, type)
-            } else {
-                return _bin
-            }
-        }
     
     constructor(bin: ByteArray) : this(bin, null, null)
     
@@ -106,8 +96,8 @@ private class DirectCompoundEntry<T : Any> private constructor(
             if (!this.type.equalsIgnoreNullability(type))
                 throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
             return ProviderCompoundEntry(type, this.cachedValue as T)
-        } else if (_bin != null) {
-            val value = CBF.read<T>(type, _bin!!)
+        } else if (bin != null) {
+            val value = CBF.read<T>(type, bin!!, strict = true)
             return ProviderCompoundEntry(type, value)
         } else {
             return ProviderCompoundEntry(type, null)
@@ -115,30 +105,43 @@ private class DirectCompoundEntry<T : Any> private constructor(
     }
     
     override fun toDirectEntry(): DirectCompoundEntry<T> {
-        return DirectCompoundEntry(_bin, type, cachedValue)
+        return DirectCompoundEntry(bin, type, cachedValue)
     }
     
     override fun set(type: KType, value: T?) {
         this.type = type
         this.cachedValue = value
-        this._bin = null
+        this.bin = null
     }
     
     override fun get(type: KType): T? {
         if (this.type != null && this.cachedValue != null) {
-            if (!this.type.equalsIgnoreNullability(type))
+            if (!this.type!!.isSubtypeOf(type))
                 throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
             return this.cachedValue as T
         }
         
-        if (_bin != null)
-            return CBF.read(type, _bin!!, strict = true)
+        if (bin != null) {
+            this.type = type
+            this.cachedValue = CBF.read(type, bin!!, strict = true)
+            this.bin = null
+            
+            return this.cachedValue
+        }
         
         return null
     }
     
+    override fun serialize(): ByteArray? {
+        if (type != null && cachedValue != null) {
+            return CBF.write(cachedValue, type)
+        } else {
+            return bin
+        }
+    }
+    
     override fun clear() {
-        _bin = null
+        bin = null
         type = null
         cachedValue = null
     }
@@ -146,7 +149,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
     override fun transferTo(entry: CompoundEntry<T>) {
         when (entry) {
             is DirectCompoundEntry<T> -> {
-                entry._bin = _bin
+                entry.bin = bin
                 entry.type = type
                 entry.cachedValue = cachedValue
             }
@@ -156,49 +159,36 @@ private class DirectCompoundEntry<T : Any> private constructor(
                     entry.set(type!!, cachedValue!!)
                 } else {
                     // no type check possible
-                    entry.binProvider.set(_bin)
+                    if (bin != null) {
+                        entry.set(entry.type, CBF.read<T>(type!!, bin!!, strict = true))
+                    } else {
+                        entry.set(entry.type, null)
+                    }
                 }
             }
         }
     }
     
     override fun isEmpty(): Boolean {
-        return _bin == null && cachedValue == null
+        return bin == null && cachedValue == null
     }
     
     override fun isNotEmpty(): Boolean {
-        return _bin != null || cachedValue != null
+        return bin != null || cachedValue != null
     }
     
 }
 
-private fun <T : Any> ProviderCompoundEntry(type: KType): ProviderCompoundEntry<T> {
-    val binProvider: MutableProvider<ByteArray?> = mutableProvider(null)
-    val valueProvider: MutableProvider<T?> = binProvider.mapNonNull(
-        { CBF.read(type, it, strict = true) },
-        { CBF.write(it, type) }
-    )
-    return ProviderCompoundEntry(binProvider, type, valueProvider)
-}
-
-private fun <T : Any> ProviderCompoundEntry(type: KType, value: T?): ProviderCompoundEntry<T> {
-    val binProvider: MutableProvider<ByteArray?> = mutableProvider(null)
-    val valueProvider: MutableProvider<T?> = binProvider.mapNonNull(
-        { CBF.read(type, it, strict = true) },
-        { CBF.write(it, type) }
-    )
-    valueProvider.set(value)
-    return ProviderCompoundEntry(binProvider, type, valueProvider)
-}
-
 private class ProviderCompoundEntry<T : Any>(
-    val binProvider: MutableProvider<ByteArray?>,
     override val type: KType,
     val valueProvider: MutableProvider<T?>
 ) : CompoundEntry<T> {
     
-    override val bin: ByteArray? by binProvider
     override val cachedValue: T? by valueProvider
+    
+    constructor(type: KType) : this (type, mutableProvider(null))
+    
+    constructor(type: KType, value: T?) : this(type, mutableProvider(value))
     
     override fun set(type: KType, value: T?) {
         if (!this.type.equalsIgnoreNullability(type))
@@ -212,6 +202,10 @@ private class ProviderCompoundEntry<T : Any>(
             throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
         
         return valueProvider.get()
+    }
+    
+    override fun serialize(): ByteArray? {
+        return cachedValue?.let { CBF.write(it, type) }
     }
     
     override fun clear() {
@@ -445,7 +439,7 @@ class Compound private constructor(
             if (entry.type != null) {
                 builder.append("\n\"$key\": ${entry.cachedValue}")
             } else {
-                val hexStr = HexFormat.of().formatHex(entry.bin)
+                val hexStr = HexFormat.of().formatHex(entry.serialize())
                 builder.append("\n\"$key\": (serialized) $hexStr")
             }
         }
@@ -481,7 +475,7 @@ class Compound private constructor(
             val compoundDataWriter = ByteWriter.fromStream(compoundOut)
             var count = 0
             for ((key, entry) in obj.entryMap) {
-                val bytes = entry.bin
+                val bytes = entry.serialize()
                 if (bytes == null)
                     continue
                 

@@ -236,4 +236,18 @@ class CompoundTest {
         assert(list === listCopy)
     }
     
+    @Test
+    fun `test get and modify mutable element on direct entry`() {
+        val compound = Compound()
+        val list = arrayListOf("a")
+        compound["list"] = list
+        
+        compound.get<ArrayList<String>>("list")!! += "b"
+        assertEquals(listOf("a", "b"), compound.get<List<String>>("list"))
+        
+        val reserializedCompound = CBF.read<Compound>(CBF.write(compound))!!
+        reserializedCompound.get<ArrayList<String>>("list")!! += "c"
+        assertEquals(listOf("a", "b", "c"), reserializedCompound.get<List<String>>("list"))
+    }
+    
 }
