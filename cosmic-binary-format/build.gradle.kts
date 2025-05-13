@@ -1,5 +1,6 @@
 plugins {
     id("cbf.common-conventions")
+    alias(libs.plugins.jmh)
 }
 
 dependencies {

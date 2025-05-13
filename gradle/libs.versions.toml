@@ -16,3 +16,5 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 netty-buffer = { module = "io.netty:netty-buffer", version = "4.1.109.Final" }
 
+[plugins]
+jmh = { id = "me.champeau.jmh", version = "0.7.3" }
