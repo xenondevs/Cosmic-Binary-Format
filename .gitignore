@@ -65,4 +65,4 @@ ${dir}/
 
 # gradle directories
 build/
-gradle/
+.kotlin/*
