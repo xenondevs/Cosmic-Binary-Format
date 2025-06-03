@@ -5,7 +5,13 @@ plugins {
 
 dependencies {
     api(libs.kotlin.reflect)
-    api(libs.commons.reflection)
     api(libs.commons.provider)
+    implementation(libs.commons.reflection)
     testImplementation(libs.commons.collections)
+}
+
+kotlin {
+    compilerOptions { 
+        optIn.add("kotlin.uuid.ExperimentalUuidApi")
+    }
 }

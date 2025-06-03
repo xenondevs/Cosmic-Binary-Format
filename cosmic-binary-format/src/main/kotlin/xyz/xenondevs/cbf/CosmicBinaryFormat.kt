@@ -2,318 +2,312 @@
 
 package xyz.xenondevs.cbf
 
-import xyz.xenondevs.cbf.Compound.CompoundBinaryAdapter
-import xyz.xenondevs.cbf.adapter.BinaryAdapter
-import xyz.xenondevs.cbf.adapter.ComplexBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.BooleanArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.BooleanBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.ByteArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.ByteBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.CharArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.CharBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.DoubleArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.DoubleBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.EnumBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.FloatArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.FloatBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.IntArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.IntBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.ListBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.LongArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.LongBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.MapBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.PairBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.SetBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.ShortArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.ShortBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.StringArrayBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.StringBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.TripleBinaryAdapter
-import xyz.xenondevs.cbf.adapter.impl.UUIDBinaryAdapter
-import xyz.xenondevs.cbf.instancecreator.InstanceCreator
-import xyz.xenondevs.cbf.instancecreator.impl.EnumMapInstanceCreator
+import xyz.xenondevs.cbf.Compound.CompoundBinarySerializer
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
-import xyz.xenondevs.cbf.security.CBFSecurityException
-import xyz.xenondevs.cbf.security.CBFSecurityManager
-import xyz.xenondevs.commons.reflection.classifierClass
-import xyz.xenondevs.commons.reflection.createStarProjectedType
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
+import xyz.xenondevs.cbf.serializer.BinarySerializer
+import xyz.xenondevs.cbf.serializer.BinarySerializerFactory
+import xyz.xenondevs.cbf.serializer.BooleanArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.BooleanBinarySerializer
+import xyz.xenondevs.cbf.serializer.ByteArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.ByteBinarySerializer
+import xyz.xenondevs.cbf.serializer.CharArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.CharBinarySerializer
+import xyz.xenondevs.cbf.serializer.CollectionBinarySerializer
+import xyz.xenondevs.cbf.serializer.DoubleArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.DoubleBinarySerializer
+import xyz.xenondevs.cbf.serializer.EnumBinarySerializer
+import xyz.xenondevs.cbf.serializer.FloatArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.FloatBinarySerializer
+import xyz.xenondevs.cbf.serializer.IntArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.IntBinarySerializer
+import xyz.xenondevs.cbf.serializer.KotlinUuidBinarySerializer
+import xyz.xenondevs.cbf.serializer.LongArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.LongBinarySerializer
+import xyz.xenondevs.cbf.serializer.MapBinarySerializer
+import xyz.xenondevs.cbf.serializer.PairBinarySerializer
+import xyz.xenondevs.cbf.serializer.ShortArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.ShortBinarySerializer
+import xyz.xenondevs.cbf.serializer.StringArrayBinarySerializer
+import xyz.xenondevs.cbf.serializer.StringBinarySerializer
+import xyz.xenondevs.cbf.serializer.TripleBinarySerializer
+import xyz.xenondevs.cbf.serializer.UUIDBinarySerializer
+import xyz.xenondevs.cbf.serializer.read
+import xyz.xenondevs.cbf.serializer.write
+import xyz.xenondevs.commons.reflection.equalsIgnoreNullability
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
-@Suppress("UNCHECKED_CAST")
 object CBF {
     
-    var securityManager: CBFSecurityManager? = null
-        set(value) {
-            check(field == null) { "CBFSecurityManager has already been set" }
-            field = value
-        }
-    
-    private val binaryAdapters = HashMap<KType, BinaryAdapter<*>>()
-    private val binaryAdaptersByClass = HashMap<KClass<*>, HashMap<KType, BinaryAdapter<*>>>()
-    private val binaryHierarchyAdapters = HashMap<KType, BinaryAdapter<*>>()
-    private val instanceCreators = HashMap<KClass<*>, InstanceCreator<*>>()
+    private var securityManager: CBFSecurityManager? = null
+    private val factories = ArrayList<BinarySerializerFactory>()
+    private val cachedSerializers = ConcurrentHashMap<KType, BinarySerializer<*>>()
     
     init {
-        // default binary adapters
-        registerBinaryAdapter(BooleanBinaryAdapter)
-        registerBinaryAdapter(BooleanArrayBinaryAdapter)
-        registerBinaryAdapter(ByteBinaryAdapter)
-        registerBinaryAdapter(ByteArrayBinaryAdapter)
-        registerBinaryAdapter(ShortBinaryAdapter)
-        registerBinaryAdapter(ShortArrayBinaryAdapter)
-        registerBinaryAdapter(IntBinaryAdapter)
-        registerBinaryAdapter(IntArrayBinaryAdapter)
-        registerBinaryAdapter(LongBinaryAdapter)
-        registerBinaryAdapter(LongArrayBinaryAdapter)
-        registerBinaryAdapter(FloatBinaryAdapter)
-        registerBinaryAdapter(FloatArrayBinaryAdapter)
-        registerBinaryAdapter(DoubleBinaryAdapter)
-        registerBinaryAdapter(DoubleArrayBinaryAdapter)
-        registerBinaryAdapter(CharBinaryAdapter)
-        registerBinaryAdapter(CharArrayBinaryAdapter)
-        registerBinaryAdapter(StringBinaryAdapter)
-        registerBinaryAdapter(StringArrayBinaryAdapter)
-        registerBinaryAdapter(UUIDBinaryAdapter)
-        registerBinaryAdapter(PairBinaryAdapter)
-        registerBinaryAdapter(TripleBinaryAdapter)
-        registerBinaryAdapter(CompoundBinaryAdapter)
+        registerSerializer(BooleanBinarySerializer)
+        registerSerializer(BooleanArrayBinarySerializer)
+        registerSerializer(ByteBinarySerializer)
+        registerSerializer(ByteArrayBinarySerializer)
+        registerSerializer(ShortBinarySerializer)
+        registerSerializer(ShortArrayBinarySerializer)
+        registerSerializer(IntBinarySerializer)
+        registerSerializer(IntArrayBinarySerializer)
+        registerSerializer(LongBinarySerializer)
+        registerSerializer(LongArrayBinarySerializer)
+        registerSerializer(FloatBinarySerializer)
+        registerSerializer(FloatArrayBinarySerializer)
+        registerSerializer(DoubleBinarySerializer)
+        registerSerializer(DoubleArrayBinarySerializer)
+        registerSerializer(CharBinarySerializer)
+        registerSerializer(CharArrayBinarySerializer)
+        registerSerializer(StringBinarySerializer)
+        registerSerializer(StringArrayBinarySerializer)
+        registerSerializer(UUIDBinarySerializer)
+        registerSerializer(KotlinUuidBinarySerializer)
+        registerSerializer(CompoundBinarySerializer)
         
-        // default binary hierarchy adapters
-        registerBinaryHierarchyAdapter(EnumBinaryAdapter)
-        registerBinaryHierarchyAdapter(ListBinaryAdapter)
-        registerBinaryHierarchyAdapter(SetBinaryAdapter)
-        registerBinaryHierarchyAdapter(MapBinaryAdapter)
+        registerSerializerFactory(PairBinarySerializer)
+        registerSerializerFactory(TripleBinarySerializer)
+        registerSerializerFactory(EnumBinarySerializer)
+        registerSerializerFactory(CollectionBinarySerializer)
+        registerSerializerFactory(MapBinarySerializer)
         
-        // default instance creators
-        registerInstanceCreator(EnumMap::class, EnumMapInstanceCreator)
-    }
-    
-    /**
-     * Registers a new [BinaryAdapter] for the reified type [T].
-     */
-    inline fun <reified T : Any> registerBinaryAdapter(adapter: BinaryAdapter<T>) {
-        registerBinaryAdapter(typeOf<T>(), adapter)
-    }
-    
-    /**
-     * Registers a new [BinaryAdapter] for the [type].
-     */
-    fun <T : Any> registerBinaryAdapter(type: KType, adapter: BinaryAdapter<T>) {
-        if (securityManager?.canRegisterAdapter(type, adapter) == false)
-            throw CBFSecurityException()
+        addMapCreator(::HashMap)
+        addMapCreator(::LinkedHashMap)
+        addMapCreator(::WeakHashMap)
+        addMapCreator(::IdentityHashMap)
+        addMapCreator(::ConcurrentHashMap)
+        addMapCreator { TreeMap() }
         
-        binaryAdapters[type] = adapter
-        binaryAdaptersByClass.getOrPut(type.classifierClass!!, ::HashMap)[type] = adapter
+        addCollectionCreator(::ArrayList)
+        addCollectionCreator { LinkedList() }
+        addCollectionCreator { CopyOnWriteArrayList() }
+        addCollectionCreator(::HashSet)
+        addCollectionCreator(::LinkedHashSet)
+        addCollectionCreator { TreeSet() }
+        addCollectionCreator { CopyOnWriteArraySet() }
     }
     
     /**
-     * Registers a new [BinaryAdapter] for the reified type [T].
+     * Sets the [CBFSecurityManager] that decides whether a serializer for a given type can be created.
+     *
+     * @throws IllegalStateException if a security manager has already been set
      */
-    inline fun <reified T : Any> registerBinaryHierarchyAdapter(adapter: BinaryAdapter<T>) {
-        registerBinaryHierarchyAdapter(typeOf<T>(), adapter)
+    fun setSecurityManager(securityManager: CBFSecurityManager) {
+        if (this.securityManager != null)
+            throw IllegalStateException("CBFSecurityManager has already been set")
+        this.securityManager = securityManager
     }
     
     /**
-     * Registers a new [BinaryAdapter] for the [type].
+     * Registers a [BinarySerializer] that serializes, deserializes, and copies the exact type [T?][T].
      */
-    fun <T : Any> registerBinaryHierarchyAdapter(type: KType, adapter: BinaryAdapter<T>) {
-        if (securityManager?.canRegisterHierarchyAdapter(type, adapter) == false)
-            throw CBFSecurityException()
-        
-        binaryHierarchyAdapters[type] = adapter
+    inline fun <reified T : Any> registerSerializer(serializer: BinarySerializer<T?>) {
+        val serializerType = typeOf<T>()
+        val factory = object : BinarySerializerFactory {
+            override fun create(type: KType): BinarySerializer<*>? =
+                if (type.equalsIgnoreNullability(serializerType)) serializer else null
+        }
+        registerSerializerFactory(factory)
     }
     
     /**
-     * Registers a new [InstanceCreator] for the reified type [T].
+     * Registers a [BinarySerializerFactory] that will be queried for serializers.
      */
-    inline fun <reified T : Any> registerInstanceCreator(instanceCreator: InstanceCreator<T>) {
-        registerInstanceCreator(T::class, instanceCreator)
-    }
-    
-    
-    /**
-     * Registers a new [InstanceCreator] for the [clazz].
-     */
-    fun <T : Any> registerInstanceCreator(clazz: KClass<T>, creator: InstanceCreator<T>) {
-        if (securityManager?.canRegisterInstanceCreator(clazz, creator) == false)
-            throw CBFSecurityException()
-        
-        instanceCreators[clazz] = creator
+    fun registerSerializerFactory(factory: BinarySerializerFactory) {
+        this.factories += factory
     }
     
     /**
-     * Reads the reified type [T] from the [buf]. Can return null if null was written.
-     */
-    inline fun <reified T : Any> read(buf: ByteReader): T? {
-        return read(typeOf<T>(), buf)
-    }
-    
-    /**
-     * Reads the reified type [T] from the [byte array][bytes].
+     * Reads a value of the reified type [T?][T] from the [reader]. 
      * Can return null if null was written.
      *
-     * Throws an exception if [strict] is true and the byte array contains more data than was read.
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     */
+    inline fun <reified T : Any> read(reader: ByteReader): T? {
+        return getSerializer<T?>().read(reader)
+    }
+    
+    /**
+     * Reads a value of the reified type [T?][T] from [bytes].
+     * Can return null if null was written.
+     *
+     * @throws IllegalArgumentException if [strict] is true and the byte array contains more data than was read
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
     inline fun <reified T : Any> read(bytes: ByteArray, strict: Boolean = false): T? {
-        return read(typeOf<T>(), bytes, strict)
+        return getSerializer<T?>().read(bytes, strict)
     }
     
     /**
-     * Reads the [type] from the [buf]. Can return null if null was written.
-     */
-    fun <T : Any> read(type: KType, buf: ByteReader): T? {
-        val b = buf.readUnsignedByte()
-        if (b != 0.toUByte()) {
-            val nonNullType = type.withNullability(false)
-            return when (val adapter = getBinaryAdapterExact<T>(nonNullType)) {
-                is ComplexBinaryAdapter<T> -> adapter.read(type, b, buf)
-                else -> adapter.read(type, buf)
-            }
-        }
-        
-        return null
-    }
-    
-    /**
-     * Reads the [type] from the [byte array][bytes].
+     * Reads a value of the type [T?][T] ([type]) from the [reader]. 
      * Can return null if null was written.
-     *
-     * Throws an exception if [strict] is true and the byte array contains more data than was read.
+     * 
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
+    @UncheckedApi
+    fun <T : Any> read(type: KType, reader: ByteReader): T? {
+        return getSerializer<T?>(type).read(reader)
+    }
+    
+    /**
+     * Reads a value of the type [T?][T] ([type]) from [bytes].
+     * Can return null if null was written.
+     * 
+     * @throws IllegalArgumentException if [strict] is true and the byte array contains more data than was read
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     */
+    @UncheckedApi
     fun <T : Any> read(type: KType, bytes: ByteArray, strict: Boolean = false): T? {
-        val inp = ByteArrayInputStream(bytes)
-        val result = read<T>(type, ByteReader.fromStream(inp))
-        if (strict && inp.available() > 0)
-            throw IllegalArgumentException("Byte array contains more data than expected")
-        return result
+        return getSerializer<T?>(type).read(bytes, strict)
     }
     
     /**
-     * Writes the given [obj] as the reified type [T] to the given [writer].
-     */
-    inline fun <reified T : Any> write(obj: T?, writer: ByteWriter) {
-        write(obj, typeOf<T>(), writer)
-    }
-    
-    /**
-     * Writes the [obj] as [type] to the given [writer].
+     * Writes [value] of the reified type [T?][T] to the [writer].
      *
-     * If the [type] is null, a star projected type for the [obj]'s class will be used.
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
-    fun write(obj: Any?, type: KType?, writer: ByteWriter) {
-        if (obj != null) {
-            write(obj, type, writer)
-        } else writer.writeBoolean(false)
+    inline fun <reified T : Any> write(value: T?, writer: ByteWriter) {
+        getSerializer<T?>().write(value, writer)
     }
     
     /**
-     * Writes a non-null [obj] of the given [type] to the given [writer].
+     * Writes [value] of the reified type [T?][T] to a [ByteArray].
      *
-     * If the [type] is null, a star projected type for the [obj]'s class will be used.
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
-    @JvmName("writeNonNull")
-    fun write(obj: Any, type: KType?, writer: ByteWriter) {
-        val nonNullType = type
-            ?.withNullability(false)
-            ?: obj::class.createStarProjectedType()
-        
-        val adapter = getBinaryAdapterExact<Any>(nonNullType)
-        if (adapter !is ComplexBinaryAdapter<*>)
-            writer.writeBoolean(true)
-        adapter.write(obj, nonNullType, writer)
+    inline fun <reified T : Any> write(value: T?): ByteArray {
+        return getSerializer<T?>().write(value)
     }
     
     /**
-     * Writes the given [obj] as the reified type [T] to a new [ByteArray] and returns it.
+     * Writes [value] of the type [T?][T] ([type]) to the [writer].
+     * 
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
-    inline fun <reified T : Any> write(obj: T): ByteArray {
-        return write(obj, typeOf<T>())
+    @UncheckedApi
+    fun <T : Any> write(type: KType, value: T?, writer: ByteWriter) {
+        getSerializer<T?>(type).write(value, writer)
     }
     
     /**
-     * Writes the [obj] as [type] to a new [ByteArray] and returns it.
+     * Writes [value] of the type [T?][T] ([type]) to a [ByteArray].
+     * 
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     */
+    @UncheckedApi
+    fun <T : Any> write(type: KType, value: T?): ByteArray {
+        return getSerializer<T?>(type).write(value)
+    }
+    
+    /**
+     * Creates a deep copy of [value].
      *
-     * If the [type] is null, a star projected type for the [obj]'s class will be used.
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
-    fun write(obj: Any?, type: KType?): ByteArray {
-        val out = ByteArrayOutputStream()
-        write(obj, type, ByteWriter.fromStream(out))
-        return out.toByteArray()
+    inline fun <reified T> copy(value: T): T {
+        return getSerializer<T>().copy(value)
     }
     
     /**
-     * Creates a new instance of the reified type [T].
+     * Creates a deep copy of [value] of the type [T] ([type]).
+     * 
+     * @throws IllegalStateException if no copier is registered for the type
+     * @throws CBFSecurityException if the creation of a copier was prevented by the security manager
+     */
+    @UncheckedApi
+    fun <T> copy(type: KType, value: T): T {
+        return getSerializer<T>(type).copy(value)
+    }
+    
+    /**
+     * Gets a [BinarySerializer] for the reified type [T].
      *
-     * Returns null if no instance creator is registered for the type or if the type has no no-arg constructor.
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
-    inline fun <reified T : Any> createInstance(): T? {
-        return createInstance(typeOf<T>())
+    @OptIn(UncheckedApi::class)
+    inline fun <reified T> getSerializer(): BinarySerializer<T> {
+        return getSerializer(typeOf<T>())
     }
     
     /**
-     * Creates a new instance of the [type] or null if no instance creator is registered for the type or if the type has no no-arg constructor.
+     * Gets a [BinarySerializer] for the given [type].
+     *
+     * @throws IllegalStateException if no serializer is registered for the type
+     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
-    fun <T : Any> createInstance(type: KType): T? {
-        val clazz = type.classifierClass!!
-        
-        val creator = instanceCreators[clazz]
-        if (creator != null)
-            return creator.createInstance(type) as T
-        
-        return clazz.constructors
-            .firstOrNull { it.parameters.isEmpty() }
-            ?.call() as T?
+    @UncheckedApi
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getSerializer(type: KType): BinarySerializer<T> {
+        // use getOrPut instead of computeIfAbsent:
+        // BinarySerializerFactory#create may recursively call getSerializer, which computeIfAbsent does not allow.
+        // Using getOrPut instead may cause multiple serializer for the same type to be created, but that is not a problem.
+        return cachedSerializers.getOrPut(type) {
+            val serializer = factories.asReversed().firstNotNullOfOrNull { it.create(type) }
+            if (serializer == null)
+                throw IllegalStateException("No binary serializer registered for $type")
+            if (securityManager?.isAllowed(type, serializer) == false)
+                throw CBFSecurityException(type, serializer)
+            return@getOrPut serializer
+        } as BinarySerializer<T>
     }
     
     /**
-     * Copies the given [obj] as the reified type [T].
+     * Configures which [Enum] types should be serialized by their ordinal value instead of their name,
+     * when using the built-in enum serializers.
      */
-    inline fun <reified T : Any> copy(obj: T): T {
-        return copy(obj, typeOf<T>())
+    fun addOrdinalEnums(vararg classes: KClass<out Enum<*>>) {
+        EnumBinarySerializer.ordinalEnums.addAll(classes)
     }
     
     /**
-     * Copies the given [obj] as the [type].
+     * Adds a way to create a specific [MutableCollection] type when using the built-in collection serializer.
      */
-    fun <T : Any> copy(obj: T, type: KType): T {
-        val binaryAdapter = getBinaryAdapter<T>(type)
-        return binaryAdapter.copy(obj, type)
+    inline fun <reified C : MutableCollection<Any?>> addCollectionCreator(
+        noinline creator: (size: Int) -> C
+    ) {
+        addCollectionCreator(C::class, creator)
+    }
+    
+    @PublishedApi
+    internal fun <C : MutableCollection<Any?>> addCollectionCreator(
+        clazz: KClass<out C>,
+        creator: (size: Int) -> C
+    ) {
+        CollectionBinarySerializer.collectionCreators[clazz] = creator
     }
     
     /**
-     * Gets the registered [BinaryAdapter] for the [type] without nullability.
+     * Adds a way to create a specific [MutableMap] type when using the built-in map serializer.
      */
-    internal fun <T : Any> getBinaryAdapter(type: KType): BinaryAdapter<T> {
-        return getBinaryAdapterExact(type.withNullability(false))
+    inline fun <reified M : MutableMap<Any?, Any?>> addMapCreator(
+        noinline creator: (size: Int) -> M
+    ) {
+        addMapCreator(M::class, creator)
     }
     
-    /**
-     * Gets the registered [BinaryAdapter] for that exact [type].
-     */
-    private fun <T : Any> getBinaryAdapterExact(type: KType): BinaryAdapter<T> {
-        var adapter: BinaryAdapter<*>? = binaryAdapters[type]
-        if (adapter != null)
-            return adapter as BinaryAdapter<T>
-        
-        val clazz = type.classifierClass!!
-        
-        adapter = binaryAdaptersByClass[clazz]?.entries?.firstOrNull { type.isSubtypeOf(it.key) }?.value
-        if (adapter != null)
-            return adapter as BinaryAdapter<T>
-        
-        adapter = binaryHierarchyAdapters.entries.firstOrNull { type.isSubtypeOf(it.key) }?.value
-        if (adapter != null)
-            return adapter as BinaryAdapter<T>
-        
-        throw IllegalStateException("No binary adapter registered for $clazz")
+    @PublishedApi
+    internal fun <M : MutableMap<Any?, Any?>> addMapCreator(
+        clazz: KClass<out M>,
+        creator: (size: Int) -> M
+    ) {
+        MapBinarySerializer.mapCreators[clazz] = creator
     }
     
 }

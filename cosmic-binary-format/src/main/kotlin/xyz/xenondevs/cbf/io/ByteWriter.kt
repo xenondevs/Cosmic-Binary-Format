@@ -1,10 +1,14 @@
 package xyz.xenondevs.cbf.io
 
+import java.io.ByteArrayOutputStream
 import java.io.DataOutput
 import java.io.DataOutputStream
 import java.io.OutputStream
 import java.util.*
 
+/**
+ * An interface for writing bytes and various primitive data types.
+ */
 interface ByteWriter {
     
     /**
@@ -357,4 +361,14 @@ private class ByteWriterToOutputStreamWrapper(private val writer: ByteWriter) : 
         writer.writeBytes(b, off, len)
     }
     
+}
+
+/**
+ * Creates a [ByteArray] of the bytes written in [write].
+ */
+fun byteWriter(write: ByteWriter.() -> Unit): ByteArray {
+    val out = ByteArrayOutputStream()
+    val writer = ByteWriter.fromStream(out)
+    writer.write()
+    return out.toByteArray()
 }

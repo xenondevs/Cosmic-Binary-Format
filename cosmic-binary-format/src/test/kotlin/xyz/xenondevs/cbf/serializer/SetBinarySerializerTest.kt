@@ -1,12 +1,11 @@
-package xyz.xenondevs.cbf.adapter.impl
+package xyz.xenondevs.cbf.serializer
 
 import org.junit.jupiter.api.Test
-import xyz.xenondevs.cbf.adapter.BinaryAdapterTest
 import xyz.xenondevs.commons.collections.enumSetOf
 import java.util.*
 import kotlin.test.assertEquals
 
-class SetBinaryAdapterTest : BinaryAdapterTest<Set<*>>(SetBinaryAdapter) {
+class SetBinarySerializerTest : BinarySerializerFactoryTest<Set<*>>(CollectionBinarySerializer) {
     
     private enum class TestEnum {
         A, B, C

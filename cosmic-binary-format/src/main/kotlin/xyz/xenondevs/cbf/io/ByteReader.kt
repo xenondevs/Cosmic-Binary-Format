@@ -5,8 +5,10 @@ import java.io.DataInput
 import java.io.DataInputStream
 import java.io.InputStream
 import java.util.*
-import kotlin.math.asin
 
+/**
+ * An interface for reading bytes and converting them to various primitive data types.
+ */
 interface ByteReader {
     
     /**

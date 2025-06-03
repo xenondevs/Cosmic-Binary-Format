@@ -1,17 +1,9 @@
 package xyz.xenondevs.cbf.io
 
-import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.test.Test
 
 class ByteWriterTest {
-    
-    private fun byteWriter(run: ByteWriter.() -> Unit): ByteArray {
-        val out = ByteArrayOutputStream()
-        val writer = ByteWriter.fromStream(out)
-        writer.run()
-        return out.toByteArray()
-    }
     
     private fun assertContentEquals(expected: ByteArray, vararg actual: Byte) {
         kotlin.test.assertContentEquals(expected, actual)

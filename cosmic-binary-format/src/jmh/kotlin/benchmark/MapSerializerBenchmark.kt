@@ -11,21 +11,6 @@ import xyz.xenondevs.cbf.CBF
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
-fun main() {
-    fun randomString(length: Int): String {
-        val chars = ('a'..'z') + ('A'..'Z') + ('0'..'9')
-        return (1..length)
-            .map { chars.random() }
-            .joinToString("")
-    }
-    val random = Random(42)
-    val a: Map<String, Int> = (0..<1_000_000).associate {
-        randomString(random.nextInt(1, 20)) to random.nextInt()
-    }
-    
-    CBF.write(a)
-}
-
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Thread)

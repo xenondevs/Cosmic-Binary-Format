@@ -1,10 +1,9 @@
-package xyz.xenondevs.cbf.adapter.impl
+package xyz.xenondevs.cbf.serializer
 
 import org.junit.jupiter.api.Test
-import xyz.xenondevs.cbf.adapter.BinaryAdapterTest
 import kotlin.test.assertEquals
 
-class TripleBinaryAdapterTest : BinaryAdapterTest<Triple<*, *, *>>(TripleBinaryAdapter) {
+class TripleBinarySerializerTest : BinarySerializerFactoryTest<Triple<*, *, *>>(TripleBinarySerializer) {
     
     @Test
     fun testTriple() {

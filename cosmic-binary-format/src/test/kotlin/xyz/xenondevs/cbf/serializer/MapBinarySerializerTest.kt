@@ -1,12 +1,11 @@
-package xyz.xenondevs.cbf.adapter.impl
+package xyz.xenondevs.cbf.serializer
 
 import org.junit.jupiter.api.Test
-import xyz.xenondevs.cbf.adapter.BinaryAdapterTest
 import xyz.xenondevs.cbf.assertContentEquals
 import xyz.xenondevs.commons.collections.enumMapOf
-import java.util.EnumMap
+import java.util.*
 
-class MapBinaryAdapterTest : BinaryAdapterTest<Map<*, *>>(MapBinaryAdapter) {
+class MapBinarySerializerTest : BinarySerializerFactoryTest<Map<*, *>>(MapBinarySerializer) {
     
     private enum class TestEnum {
         A, B, C

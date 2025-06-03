@@ -1,29 +1,26 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package xyz.xenondevs.cbf
 
-import xyz.xenondevs.cbf.adapter.BinaryAdapter
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
+import xyz.xenondevs.cbf.io.byteWriter
+import xyz.xenondevs.cbf.serializer.VersionedBinarySerializer
+import xyz.xenondevs.cbf.util.withLocksOrdered
 import xyz.xenondevs.commons.provider.MutableProvider
 import xyz.xenondevs.commons.provider.Provider
-import xyz.xenondevs.commons.provider.flatMapMutable
-import xyz.xenondevs.commons.provider.mapNonNull
 import xyz.xenondevs.commons.provider.mutableProvider
 import xyz.xenondevs.commons.reflection.createStarProjectedType
-import xyz.xenondevs.commons.reflection.equalsIgnoreNullability
-import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubtypeOf
+import kotlin.reflect.full.isSupertypeOf
 import kotlin.reflect.typeOf
 
 /**
  * An entry in a [Compound].
  */
-private sealed interface CompoundEntry<T : Any> {
+private sealed interface CompoundEntry<T> {
     
     /**
      * The type of the data stored in this entry, if known.
@@ -41,13 +38,13 @@ private sealed interface CompoundEntry<T : Any> {
      * Sets the type and value of this entry.
      * @throws IllegalArgumentException If the given [type] is incompatible with this entry.
      */
-    fun set(type: KType, value: T?)
+    fun set(type: KType, value: T)
     
     /**
      * Gets the value of this entry as [type] [T].
      * @throws IllegalArgumentException If the given [type] is incompatible with this entry.
      */
-    fun get(type: KType): T?
+    fun get(type: KType): T
     
     /**
      * Serializes this entry to a byte array or null if no data is stored.
@@ -55,19 +52,14 @@ private sealed interface CompoundEntry<T : Any> {
     fun serialize(): ByteArray?
     
     /**
-     * Clears this entry, removing all data.
-     */
-    fun clear()
-    
-    /**
      * Transfers the data of this entry to [entry].
      */
     fun transferTo(entry: CompoundEntry<T>)
     
     /**
-     * Creates a new [DirectCompoundEntry] with the same data as this entry.
+     * Creates a new [DirectCompoundEntry] with the same data as this entry, or null if this entry [isEmpty].
      */
-    fun toDirectEntry(): DirectCompoundEntry<T>
+    fun toDirectEntry(): DirectCompoundEntry<T & Any>?
     
     /**
      * Check whether this entry is empty.
@@ -77,7 +69,7 @@ private sealed interface CompoundEntry<T : Any> {
     /**
      * Check whether this entry is not empty.
      */
-    fun isNotEmpty(): Boolean
+    fun isNotEmpty(): Boolean = !isEmpty()
     
 }
 
@@ -89,18 +81,24 @@ private class DirectCompoundEntry<T : Any> private constructor(
     
     constructor(bin: ByteArray) : this(bin, null, null)
     
-    constructor(type: KType, value: T?) : this(null, type, value)
+    constructor(type: KType, value: T) : this(null, type, value) {
+        require(!type.isMarkedNullable)
+    }
     
-    fun <T : Any> toProviderEntry(type: KType): ProviderCompoundEntry<T> {
+    // unchecked: R is supertype of T, i.e. T is String, R can be String? or String
+    @OptIn(UncheckedApi::class)
+    fun <R> toProviderEntry(type: KType, default: () -> R): ProviderCompoundEntry<R> {
         if (this.type != null && this.cachedValue != null) {
-            if (!this.type.equalsIgnoreNullability(type))
-                throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
-            return ProviderCompoundEntry(type, this.cachedValue as T)
-        } else if (bin != null) {
-            val value = CBF.read<T>(type, bin!!, strict = true)
-            return ProviderCompoundEntry(type, value)
+            if (!type.isSupertypeOf(this.type!!))
+                throw IllegalArgumentException("$type (return type) is not a supertype of ${this.type} (entry type)")
+            
+            @Suppress("UNCHECKED_CAST")
+            return ProviderCompoundEntry(type, this.cachedValue as R, default)
         } else {
-            return ProviderCompoundEntry(type, null)
+            assert(bin != null)
+            val value: R = CBF.read(type, bin!!, strict = true)
+                ?: throw AssertionError("Serialized value is null, but $type was expected")
+            return ProviderCompoundEntry(type, value, default)
         }
     }
     
@@ -108,44 +106,42 @@ private class DirectCompoundEntry<T : Any> private constructor(
         return DirectCompoundEntry(bin, type, cachedValue)
     }
     
-    override fun set(type: KType, value: T?) {
+    override fun set(type: KType, value: T) {
+        require(!type.isMarkedNullable)
+        
         this.type = type
         this.cachedValue = value
         this.bin = null
     }
     
-    override fun get(type: KType): T? {
+    @OptIn(UncheckedApi::class)
+    override fun get(type: KType): T {
         if (this.type != null && this.cachedValue != null) {
-            if (!this.type!!.isSubtypeOf(type))
-                throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
+            if (!type.isSupertypeOf(this.type!!))
+                throw IllegalArgumentException("$type (return type) is not a supertype of ${this.type} (entry type)")
             return this.cachedValue as T
-        }
-        
-        if (bin != null) {
+        } else {
+            assert(bin != null)
+            
             this.type = type
             this.cachedValue = CBF.read(type, bin!!, strict = true)
+                ?: throw AssertionError("Serialized value is null, but $type was expected")
             this.bin = null
             
-            return this.cachedValue
+            return this.cachedValue!!
         }
-        
-        return null
     }
     
+    @OptIn(UncheckedApi::class)
     override fun serialize(): ByteArray? {
         if (type != null && cachedValue != null) {
-            return CBF.write(cachedValue, type)
+            return CBF.write(type!!, cachedValue)
         } else {
             return bin
         }
     }
     
-    override fun clear() {
-        bin = null
-        type = null
-        cachedValue = null
-    }
-    
+    @OptIn(UncheckedApi::class)
     override fun transferTo(entry: CompoundEntry<T>) {
         when (entry) {
             is DirectCompoundEntry<T> -> {
@@ -155,76 +151,72 @@ private class DirectCompoundEntry<T : Any> private constructor(
             }
             
             is ProviderCompoundEntry<T> -> {
-                if (type != null) {
+                if (type != null && cachedValue != null) {
                     entry.set(type!!, cachedValue!!)
                 } else {
                     // no type check possible
-                    if (bin != null) {
-                        entry.set(entry.type, CBF.read<T>(type!!, bin!!, strict = true))
-                    } else {
-                        entry.set(entry.type, null)
-                    }
+                    assert(bin != null)
+                    val value = CBF.read<T>(entry.type, bin!!, strict = true)
+                        ?: throw AssertionError("Serialized value is null, but $type was expected")
+                    entry.set(entry.type, value)
                 }
             }
         }
     }
     
-    override fun isEmpty(): Boolean {
-        return bin == null && cachedValue == null
-    }
-    
-    override fun isNotEmpty(): Boolean {
-        return bin != null || cachedValue != null
-    }
+    // DirectCompoundEntry only exists as non-empty
+    override fun isEmpty(): Boolean = false
     
 }
 
-private class ProviderCompoundEntry<T : Any>(
+private class ProviderCompoundEntry<T>(
     override val type: KType,
-    val valueProvider: MutableProvider<T?>
+    val valueProvider: MutableProvider<T>
 ) : CompoundEntry<T> {
     
-    override val cachedValue: T? by valueProvider
+    override val cachedValue: T by valueProvider
     
-    constructor(type: KType) : this (type, mutableProvider(null))
+    constructor(type: KType, default: () -> T) : this(type, mutableProvider(default))
     
-    constructor(type: KType, value: T?) : this(type, mutableProvider(value))
+    constructor(type: KType, value: T, default: () -> T) : this(
+        type,
+        if (value == null)
+            mutableProvider(default)
+        else mutableProvider(value)
+    )
     
-    override fun set(type: KType, value: T?) {
-        if (!this.type.equalsIgnoreNullability(type))
-            throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
+    override fun set(type: KType, value: T) {
+        if (!type.isSubtypeOf(this.type))
+            throw IllegalArgumentException("$type (value type) is not a subtype of ${this.type} (entry type)")
         
         valueProvider.set(value)
     }
     
-    override fun get(type: KType): T? {
-        if (!this.type.equalsIgnoreNullability(type))
-            throw IllegalArgumentException("Type mismatch: $type != ${this.type}")
+    override fun get(type: KType): T {
+        if (!type.isSupertypeOf(this.type))
+            throw IllegalArgumentException("$type (return type) is not a supertype of ${this.type} (entry type)")
         
         return valueProvider.get()
     }
     
+    @OptIn(UncheckedApi::class)
     override fun serialize(): ByteArray? {
-        return cachedValue?.let { CBF.write(it, type) }
-    }
-    
-    override fun clear() {
-        valueProvider.set(null)
+        return cachedValue?.let { CBF.write(type, it) }
     }
     
     override fun transferTo(entry: CompoundEntry<T>) {
         entry.set(type, valueProvider.get())
     }
     
-    override fun toDirectEntry(): DirectCompoundEntry<T> {
-        return DirectCompoundEntry(type, valueProvider.get())
+    override fun toDirectEntry(): DirectCompoundEntry<T & Any>? {
+        val value = valueProvider.get()
+        if (value == null)
+            return null
+        return DirectCompoundEntry(type, value)
     }
     
     override fun isEmpty(): Boolean =
         valueProvider.get() == null
-    
-    override fun isNotEmpty(): Boolean =
-        valueProvider.get() != null
     
 }
 
@@ -257,43 +249,87 @@ class Compound private constructor(
     /**
      * Puts [value] into the compound under [key], remembering [T] for serialization.
      */
+    @OptIn(UncheckedApi::class)
     inline operator fun <reified T> set(key: String, value: T) =
         set(typeOf<T>(), key, value)
     
     /**
      * Puts [value] into the compound under [key], remembering [type] for serialization.
      */
-    fun set(type: KType, key: String, value: Any?): Unit = lock.withLock {
-        val entry = entryMap[key]
-        if (entry != null) {
-            entry as CompoundEntry<Any>
-            entry.set(type, value)
-        } else if (value != null) {
-            entryMap[key] = DirectCompoundEntry(type, value)
-        }
+    @UncheckedApi
+    fun <T> set(type: KType, key: String, value: T): Unit = lock.withLock {
+        @Suppress("UNCHECKED_CAST")
+        val entry = entryMap[key] as CompoundEntry<T>?
         
-        removeStaleEntries()
+        when (entry) {
+            is DirectCompoundEntry<T> -> {
+                if (value != null) {
+                    entry.set(type, value)
+                } else {
+                    entryMap -= key
+                }
+            }
+            
+            is ProviderCompoundEntry<T> -> entry.set(type, value)
+            null -> {
+                if (value != null) {
+                    entryMap[key] = DirectCompoundEntry(type, value)
+                }
+            }
+        }
     }
     
-    inline fun <reified T> entry(key: String): MutableProvider<T?> =
-        entry(typeOf<T>(), key)
+    /**
+     * Creates a [MutableProvider] of the non-null type [T] that is linked to the value of this compound under [key].
+     * If this compound does not have an entry under [key], [defaultValue] is used to create it lazily.
+     * If there is already an entry provider for [key] that matches [T], [defaultValue] will be ignored and the existing provider will be returned.
+     *
+     * @throws IllegalArgumentException If there already is an entry provider for [key], but for a different type.
+     */
+    @OptIn(UncheckedApi::class)
+    @JvmName("entry0")
+    inline fun <reified T : Any> entry(key: String, noinline defaultValue: () -> T): MutableProvider<T> =
+        entry(typeOf<T>(), key, defaultValue)
     
-    fun <T : Any> entry(type: KType, key: String): MutableProvider<T?> = lock.withLock {
+    /**
+     * Creates a [MutableProvider] of the type [T] that is linked to the value of this compound under [key].
+     * If this compound does not have an entry under [key], [defaultValue] is used to create it lazily.
+     * If there is already an entry provider for [key] that matches [T], [defaultValue] will be ignored and the existing provider will be returned.
+     *
+     * @throws IllegalArgumentException If there already is an entry provider for [key], but for a different type.
+     */
+    @OptIn(UncheckedApi::class)
+    @JvmName("entry1")
+    inline fun <reified T : Any> entry(key: String, noinline defaultValue: () -> T? = { null }): MutableProvider<T?> =
+        entry(typeOf<T?>(), key, defaultValue)
+    
+    /**
+     * Creates a [MutableProvider] of [type] that is linked to the value of this compound under [key].
+     * If this compound does not have an entry under [key], [defaultValue] is used to create it lazily.
+     * If there is already an entry provider for [key] that matches [type], [defaultValue] will be ignored and the existing provider will be returned.
+     *
+     * @throws IllegalArgumentException If there already is an entry provider for [key], but for a different type.
+     */
+    @UncheckedApi
+    @JvmName("entry1")
+    fun <T> entry(type: KType, key: String, defaultValue: () -> T): MutableProvider<T> = lock.withLock {
         var providerEntry: ProviderCompoundEntry<T>
         when (val existingEntry = entryMap[key]) {
             is ProviderCompoundEntry<*> -> {
-                if (!existingEntry.type.equalsIgnoreNullability(type))
-                    throw IllegalArgumentException("Type mismatch for key $key: ${existingEntry.type} != $type")
-                providerEntry = existingEntry as ProviderCompoundEntry<T>
+                if (existingEntry.type != type)
+                    throw IllegalArgumentException("An entry provider for $key already exists, but for a different type. (existing: ${existingEntry.type}, requested: $type)")
+                
+                @Suppress("UNCHECKED_CAST")
+                providerEntry = existingEntry as ProviderCompoundEntry<T> // default value is ignored for existing provider entries
             }
             
             is DirectCompoundEntry<*> -> {
-                providerEntry = existingEntry.toProviderEntry(type)
+                providerEntry = existingEntry.toProviderEntry(type, defaultValue)
                 entryMap[key] = providerEntry
             }
             
             null -> {
-                providerEntry = ProviderCompoundEntry(type)
+                providerEntry = ProviderCompoundEntry(type, defaultValue)
                 entryMap[key] = providerEntry
             }
         }
@@ -304,6 +340,8 @@ class Compound private constructor(
     /**
      * Gets the value under [key] as [type] [T] or null if it doesn't exist.
      */
+    @Suppress("UNCHECKED_CAST")
+    @UncheckedApi
     fun <T : Any> get(type: KType, key: String): T? = lock.withLock {
         return (entryMap[key] as CompoundEntry<T>?)?.get(type)
     }
@@ -311,14 +349,16 @@ class Compound private constructor(
     /**
      * Gets the value under [key] as [T] or null if it doesn't exist.
      */
+    @OptIn(UncheckedApi::class)
     inline operator fun <reified T : Any> get(key: String): T? {
-        return get(typeOf<T>(), key)
+        return get(typeOf<T?>(), key)
     }
     
     /**
      * Gets the value under [key] as [type] [T] or puts and returns
      * the value generated by [defaultValue] if it doesn't exist.
      */
+    @UncheckedApi
     fun <T : Any> getOrPut(type: KType, key: String, defaultValue: () -> T): T = lock.withLock {
         val existingValue = get<T>(type, key)
         if (existingValue != null)
@@ -333,6 +373,7 @@ class Compound private constructor(
      * Gets the value under [key] as [T] or puts and returns
      * the value generated by [defaultValue] if it doesn't exist.
      */
+    @OptIn(UncheckedApi::class)
     inline fun <reified T : Any> getOrPut(key: String, noinline defaultValue: () -> T): T {
         return getOrPut(typeOf<T>(), key, defaultValue)
     }
@@ -340,18 +381,23 @@ class Compound private constructor(
     /**
      * Puts all entries from [other] into this compound.
      */
+    @Suppress("UNCHECKED_CAST")
     fun putAll(other: Compound) {
-        lock.withLock {
-            other.lock.withLock {
-                for ((key, otherEntry) in other.entryMap) {
-                    val entry = entryMap[key]
-                    if (entry != null) {
-                        otherEntry as CompoundEntry<Any>
-                        entry as CompoundEntry<Any>
-                        otherEntry.transferTo(entry)
-                    } else {
-                        entryMap[key] = otherEntry.toDirectEntry()
-                    }
+        if (other === this)
+            return
+        
+        withLocksOrdered(lock, other.lock) {
+            for ((key, otherEntry) in other.entryMap) {
+                if (otherEntry.isEmpty())
+                    continue
+                
+                val entry = entryMap[key]
+                if (entry != null) {
+                    otherEntry as CompoundEntry<Any>
+                    entry as CompoundEntry<Any>
+                    otherEntry.transferTo(entry)
+                } else {
+                    entryMap[key] = otherEntry.toDirectEntry() ?: continue
                 }
             }
         }
@@ -362,21 +408,6 @@ class Compound private constructor(
      */
     operator fun contains(key: String): Boolean = lock.withLock {
         return entryMap[key]?.isNotEmpty() == true
-    }
-    
-    /**
-     * Removes the value under [key].
-     */
-    operator fun minusAssign(key: String) {
-        remove(key)
-    }
-    
-    /**
-     * Removes the value under [key].
-     */
-    fun remove(key: String): Unit = lock.withLock {
-        entryMap[key]?.clear()
-        removeStaleEntries()
     }
     
     /**
@@ -403,10 +434,18 @@ class Compound private constructor(
     }
     
     /**
-     * Creates a deep copy of this compound, copying all deserialized values using [copyFunc],
-     * which defaults to [CBF.copy].
+     * Creates a deep copy of this compound, copying all deserialized values using [CBF.copy].
      */
-    fun copy(copyFunc: (KType, Any) -> Any = { type, obj -> CBF.copy(obj, type) }): Compound = lock.withLock {
+    @OptIn(UncheckedApi::class)
+    fun copy(): Compound = lock.withLock {
+        copy { type, obj -> CBF.copy(type, obj) }
+    }
+    
+    /**
+     * Creates a deep copy of this compound, copying all deserialized values using [copyFunc].
+     */
+    @UncheckedApi
+    fun copy(copyFunc: (KType, Any) -> Any): Compound = lock.withLock {
         val entryMapCopy = HashMap<String, CompoundEntry<*>>()
         
         for ((key, entry) in entryMap) {
@@ -418,7 +457,10 @@ class Compound private constructor(
             if (type != null && value != null) {
                 entryMapCopy[key] = DirectCompoundEntry(type, copyFunc(type, value))
             } else {
-                entryMapCopy[key] = entry.toDirectEntry()
+                val entry = entry.toDirectEntry()
+                if (entry != null) {
+                    entryMapCopy[key] = entry
+                }
             }
         }
         
@@ -428,6 +470,7 @@ class Compound private constructor(
     /**
      * Creates a shallow copy of this compound, not copying any values.
      */
+    @OptIn(UncheckedApi::class)
     fun shallowCopy(): Compound = copy { _, obj -> obj }
     
     override fun toString(): String = lock.withLock {
@@ -447,11 +490,6 @@ class Compound private constructor(
         return builder.toString().replace("\n", "\n  ") + "\n}"
     }
     
-    private fun removeStaleEntries() {
-        assert(lock.isHeldByCurrentThread)
-        this.entryMap.entries.removeIf { (_, entry) -> entry.isEmpty() }
-    }
-    
     companion object {
         
         /**
@@ -468,28 +506,28 @@ class Compound private constructor(
         
     }
     
-    internal object CompoundBinaryAdapter : BinaryAdapter<Compound> {
+    internal object CompoundBinarySerializer : VersionedBinarySerializer<Compound>(2U) {
         
-        override fun write(obj: Compound, type: KType, writer: ByteWriter): Unit = obj.lock.withLock {
-            val compoundOut = ByteArrayOutputStream()
-            val compoundDataWriter = ByteWriter.fromStream(compoundOut)
-            var count = 0
-            for ((key, entry) in obj.entryMap) {
-                val bytes = entry.serialize()
-                if (bytes == null)
-                    continue
-                
-                compoundDataWriter.writeString(key)
-                compoundDataWriter.writeVarInt(bytes.size)
-                compoundDataWriter.writeBytes(bytes)
-                count++
+        override fun writeVersioned(obj: Compound, writer: ByteWriter) {
+            var size = 0
+            val temp = byteWriter {
+                for ((key, entry) in obj.entryMap) {
+                    val bytes = entry.serialize()
+                    if (bytes == null)
+                        continue
+                    
+                    writeString(key)
+                    writeVarInt(bytes.size)
+                    writeBytes(bytes)
+                    size++
+                }
             }
             
-            writer.writeVarInt(count)
-            writer.writeBytes(compoundOut.toByteArray())
+            writer.writeVarInt(size)
+            writer.writeBytes(temp)
         }
         
-        override fun read(type: KType, reader: ByteReader): Compound {
+        override fun readVersioned(version: UByte, reader: ByteReader): Compound {
             val mapSize = reader.readVarInt()
             val entryMap = HashMap<String, CompoundEntry<*>>(mapSize)
             
@@ -498,13 +536,17 @@ class Compound private constructor(
                 val length = reader.readVarInt()
                 val bytes = reader.readBytes(length)
                 
+                // v1 wrote null values into the binary format, which we want to ignore now
+                if (version == 1.toUByte() && length == 1 && bytes[0] == 0.toByte())
+                    return@repeat
+                
                 entryMap[key] = DirectCompoundEntry<Any>(bytes)
             }
             
             return Compound(entryMap)
         }
         
-        override fun copy(obj: Compound, type: KType): Compound {
+        override fun copyNonNull(obj: Compound): Compound {
             return obj.copy()
         }
         
@@ -512,5 +554,28 @@ class Compound private constructor(
     
 }
 
-inline fun <reified T : Any> Provider<Compound?>.entry(key: String): MutableProvider<T?> =
-    flatMapMutable { it?.entry(typeOf<T>(), key) ?: mutableProvider(null) }
+/**
+ * Creates a [MutableProvider] of non-null type [T] that is linked to the value under [key] of this provider's [Compound].
+ * If the compound does not have an entry under [key], [defaultValue] is used to create it lazily.
+ * If there is already an entry provider for [key] that matches [T], [defaultValue] will be ignored and the existing provider will be returned.
+ *
+ * On resolving, the returned provider can throw [IllegalArgumentException] if there already is an entry provider for [key], but for a different type.
+ *
+ * @see Compound.entry
+ */
+@JvmName("entry0")
+inline fun <reified T : Any> Provider<Compound>.entry(key: String, noinline defaultValue: () -> T): MutableProvider<T> =
+    flatMapMutable { it.entry<T>(key, defaultValue) }
+
+/**
+ * Creates a [MutableProvider] of type [T] that is linked to the value under [key] of this provider's [Compound].
+ * If the compound does not have an entry under [key], [defaultValue] is used to create it lazily.
+ * If there is already an entry provider for [key] that matches [T], [defaultValue] will be ignored and the existing provider will be returned.
+ *
+ * On resolving, the returned provider can throw [IllegalArgumentException] if there already is an entry provider for [key], but for a different type.
+ *
+ * @see Compound.entry
+ */
+@JvmName("entry1")
+inline fun <reified T : Any> Provider<Compound?>.entry(key: String, noinline defaultValue: () -> T? = { null }): MutableProvider<T?> =
+    flatMapMutable { it?.entry<T>(key, defaultValue) ?: mutableProvider(null) }
