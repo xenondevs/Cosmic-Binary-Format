@@ -96,7 +96,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
             return ProviderCompoundEntry(type, this.cachedValue as R, default)
         } else {
             assert(bin != null)
-            val value: R = CBF.read(type, bin!!, strict = true)
+            val value: R = CBF.read(type, bin!!)
                 ?: throw AssertionError("Serialized value is null, but $type was expected")
             return ProviderCompoundEntry(type, value, default)
         }
@@ -124,7 +124,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
             assert(bin != null)
             
             this.type = type
-            this.cachedValue = CBF.read(type, bin!!, strict = true)
+            this.cachedValue = CBF.read(type, bin!!)
                 ?: throw AssertionError("Serialized value is null, but $type was expected")
             this.bin = null
             
@@ -156,7 +156,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
                 } else {
                     // no type check possible
                     assert(bin != null)
-                    val value = CBF.read<T>(entry.type, bin!!, strict = true)
+                    val value = CBF.read<T>(entry.type, bin!!)
                         ?: throw AssertionError("Serialized value is null, but $type was expected")
                     entry.set(entry.type, value)
                 }

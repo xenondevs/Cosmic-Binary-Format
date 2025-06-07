@@ -11,7 +11,7 @@ import kotlin.reflect.KType
  * 
  * @throws IllegalArgumentException if [strict] is true and the byte array contains more data than was read
  */
-fun <T> BinarySerializer<T>.read(bytes: ByteArray, strict: Boolean = false): T {
+fun <T> BinarySerializer<T>.read(bytes: ByteArray, strict: Boolean = true): T {
     val inp = ByteArrayInputStream(bytes)
     val reader = ByteReader.fromStream(inp)
     val value = read(reader)

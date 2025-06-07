@@ -143,7 +143,7 @@ object CBF {
      * @throws IllegalStateException if no serializer is registered for the type
      * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
-    inline fun <reified T : Any> read(bytes: ByteArray, strict: Boolean = false): T? {
+    inline fun <reified T : Any> read(bytes: ByteArray, strict: Boolean = true): T? {
         return getSerializer<T?>().read(bytes, strict)
     }
     
@@ -168,7 +168,7 @@ object CBF {
      * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
      */
     @UncheckedApi
-    fun <T : Any> read(type: KType, bytes: ByteArray, strict: Boolean = false): T? {
+    fun <T : Any> read(type: KType, bytes: ByteArray, strict: Boolean = true): T? {
         return getSerializer<T?>(type).read(bytes, strict)
     }
     
