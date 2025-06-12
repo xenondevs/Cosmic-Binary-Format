@@ -15,6 +15,7 @@ import kotlin.concurrent.withLock
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.isSupertypeOf
+import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
 /**
@@ -96,7 +97,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
             return ProviderCompoundEntry(type, this.cachedValue as R, default)
         } else {
             assert(bin != null)
-            val value: R = CBF.read(type, bin!!)
+            val value: R = Cbf.read(type, bin!!)
                 ?: throw AssertionError("Serialized value is null, but $type was expected")
             return ProviderCompoundEntry(type, value, default)
         }
@@ -116,6 +117,8 @@ private class DirectCompoundEntry<T : Any> private constructor(
     
     @OptIn(UncheckedApi::class)
     override fun get(type: KType): T {
+        val type = type.withNullability(false)
+        
         if (this.type != null && this.cachedValue != null) {
             if (!type.isSupertypeOf(this.type!!))
                 throw IllegalArgumentException("$type (return type) is not a supertype of ${this.type} (entry type)")
@@ -123,10 +126,11 @@ private class DirectCompoundEntry<T : Any> private constructor(
         } else {
             assert(bin != null)
             
-            this.type = type
-            this.cachedValue = CBF.read(type, bin!!)
-                ?: throw AssertionError("Serialized value is null, but $type was expected")
-            this.bin = null
+            set(
+                type.withNullability(false),
+                Cbf.read(type, bin!!)
+                    ?: throw AssertionError("Serialized value is null, but $type was expected")
+            )
             
             return this.cachedValue!!
         }
@@ -135,7 +139,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
     @OptIn(UncheckedApi::class)
     override fun serialize(): ByteArray? {
         if (type != null && cachedValue != null) {
-            return CBF.write(type!!, cachedValue)
+            return Cbf.write(type!!, cachedValue)
         } else {
             return bin
         }
@@ -156,7 +160,7 @@ private class DirectCompoundEntry<T : Any> private constructor(
                 } else {
                     // no type check possible
                     assert(bin != null)
-                    val value = CBF.read<T>(entry.type, bin!!)
+                    val value = Cbf.read<T>(entry.type, bin!!)
                         ?: throw AssertionError("Serialized value is null, but $type was expected")
                     entry.set(entry.type, value)
                 }
@@ -201,7 +205,7 @@ private class ProviderCompoundEntry<T>(
     
     @OptIn(UncheckedApi::class)
     override fun serialize(): ByteArray? {
-        return cachedValue?.let { CBF.write(type, it) }
+        return cachedValue?.let { Cbf.write(type, it) }
     }
     
     override fun transferTo(entry: CompoundEntry<T>) {
@@ -221,7 +225,7 @@ private class ProviderCompoundEntry<T>(
 }
 
 /**
- * A compound is a key-value storage intended for serialization via [CBF].
+ * A compound is a key-value storage intended for serialization via [Cbf].
  *
  * After deserialization, a [Compound] contains only binary data of values of unknown types
  * (and the keys under which they're stored), which is then lazily deserialized
@@ -264,7 +268,7 @@ class Compound private constructor(
         when (entry) {
             is DirectCompoundEntry<T> -> {
                 if (value != null) {
-                    entry.set(type, value)
+                    entry.set(type.withNullability(false), value)
                 } else {
                     entryMap -= key
                 }
@@ -273,7 +277,7 @@ class Compound private constructor(
             is ProviderCompoundEntry<T> -> entry.set(type, value)
             null -> {
                 if (value != null) {
-                    entryMap[key] = DirectCompoundEntry(type, value)
+                    entryMap[key] = DirectCompoundEntry(type.withNullability(false), value)
                 }
             }
         }
@@ -434,11 +438,11 @@ class Compound private constructor(
     }
     
     /**
-     * Creates a deep copy of this compound, copying all deserialized values using [CBF.copy].
+     * Creates a deep copy of this compound, copying all deserialized values using [Cbf.copy].
      */
     @OptIn(UncheckedApi::class)
     fun copy(): Compound = lock.withLock {
-        copy { type, obj -> CBF.copy(type, obj) }
+        copy { type, obj -> Cbf.copy(type, obj)!! }
     }
     
     /**

@@ -1,6 +1,6 @@
 package xyz.xenondevs.cbf.serializer
 
-import xyz.xenondevs.cbf.CBF
+import xyz.xenondevs.cbf.Cbf
 import xyz.xenondevs.cbf.UncheckedApi
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
@@ -11,15 +11,15 @@ internal class TripleBinarySerializer<A : Any, B : Any, C : Any>(
     private val aSerializer: BinarySerializer<A>,
     private val bSerializer: BinarySerializer<B>,
     private val cSerializer: BinarySerializer<C>
-) : UnversionedBinarySerializer<Triple<A, B, C>>() {
+) : UnversionedBinarySerializer<Triple<A?, B?, C?>>() {
     
-    override fun writeUnversioned(obj: Triple<A, B, C>, writer: ByteWriter) {
+    override fun writeUnversioned(obj: Triple<A?, B?, C?>, writer: ByteWriter) {
         aSerializer.write(obj.first, writer)
         bSerializer.write(obj.second, writer)
         cSerializer.write(obj.third, writer)
     }
     
-    override fun readUnversioned(reader: ByteReader): Triple<A, B, C> {
+    override fun readUnversioned(reader: ByteReader): Triple<A?, B?, C?> {
         return Triple(
             aSerializer.read(reader),
             bSerializer.read(reader),
@@ -27,11 +27,11 @@ internal class TripleBinarySerializer<A : Any, B : Any, C : Any>(
         )
     }
     
-    override fun copyNonNull(value: Triple<A, B, C>): Triple<A, B, C> {
+    override fun copyNonNull(obj: Triple<A?, B?, C?>): Triple<A?, B?, C?> {
         return Triple(
-            aSerializer.copy(value.first),
-            bSerializer.copy(value.second),
-            cSerializer.copy(value.third)
+            aSerializer.copy(obj.first),
+            bSerializer.copy(obj.second),
+            cSerializer.copy(obj.third)
         )
     }
     
@@ -50,9 +50,9 @@ internal class TripleBinarySerializer<A : Any, B : Any, C : Any>(
                 ?: return null
             
             return TripleBinarySerializer(
-                CBF.getSerializer(typeA),
-                CBF.getSerializer(typeB),
-                CBF.getSerializer(typeC)
+                Cbf.getSerializer(typeA),
+                Cbf.getSerializer(typeB),
+                Cbf.getSerializer(typeC)
             )
         }
         

@@ -3,7 +3,7 @@ package xyz.xenondevs.cbf.serializer
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import xyz.xenondevs.cbf.CBF
+import xyz.xenondevs.cbf.Cbf
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -20,22 +20,22 @@ class EnumBinarySerializerTest : BinarySerializerFactoryTest<Enum<*>>(EnumBinary
     @MethodSource("testEnum1Values")
     @ParameterizedTest
     fun testEnumStringBased(value: TestEnum1) {
-        val bin = CBF.write(value)
+        val bin = Cbf.write(value)
         assert(String(bin).contains(value.toString()))
-        assertEquals(value, CBF.read(bin))
+        assertEquals(value, Cbf.read(bin))
     }
     
     @MethodSource("testEnum2Values")
     @ParameterizedTest
     fun testEnumOrdinalBased(value: TestEnum2) {
-        val bin = CBF.write(value)
+        val bin = Cbf.write(value)
         
         assertContentEquals(bin, byteWriter { 
             writeUnsignedByte(2U)
             writeVarInt(value.ordinal)
         })
     
-        assertEquals(value, CBF.read(bin))
+        assertEquals(value, Cbf.read(bin))
     }
     
     companion object {
@@ -43,7 +43,7 @@ class EnumBinarySerializerTest : BinarySerializerFactoryTest<Enum<*>>(EnumBinary
         @BeforeAll
         @JvmStatic
         fun setup() {
-            CBF.addOrdinalEnums(TestEnum2::class)
+            Cbf.addOrdinalEnums(TestEnum2::class)
         }
         
         @JvmStatic

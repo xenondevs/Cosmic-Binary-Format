@@ -1,14 +1,14 @@
 package xyz.xenondevs.cbf.serializer
 
 import org.junit.jupiter.api.Test
-import xyz.xenondevs.cbf.CBF
+import xyz.xenondevs.cbf.Cbf
 import xyz.xenondevs.cbf.Compound
 import xyz.xenondevs.cbf.entry
 import xyz.xenondevs.commons.provider.observed
 import xyz.xenondevs.commons.provider.orElseNew
 import kotlin.test.assertEquals
 
-class CompoundBinarySerializerTest : BinarySerializerTest<Compound?>(Compound.CompoundBinarySerializer) {
+class CompoundBinarySerializerTest : BinarySerializerTest<Compound>(Compound.CompoundBinarySerializer) {
     
     @Test
     fun `test direct values`() {
@@ -113,12 +113,12 @@ class CompoundBinarySerializerTest : BinarySerializerTest<Compound?>(Compound.Co
                 writeVarInt(2) // element count
                 
                 writeString("element1")
-                val bytes1 = CBF.write<Int>(null)
+                val bytes1 = Cbf.write<Int>(null)
                 writeVarInt(bytes1.size)
                 writeBytes(bytes1)
                 
                 writeString("element2")
-                val bytes2 = CBF.write<Int>(1234)
+                val bytes2 = Cbf.write<Int>(1234)
                 writeVarInt(bytes2.size)
                 writeBytes(bytes2)
             }

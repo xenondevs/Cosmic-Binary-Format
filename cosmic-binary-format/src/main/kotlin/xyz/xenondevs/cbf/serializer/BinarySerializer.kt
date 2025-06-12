@@ -11,7 +11,7 @@ import kotlin.reflect.KType
  * 
  * @throws IllegalArgumentException if [strict] is true and the byte array contains more data than was read
  */
-fun <T> BinarySerializer<T>.read(bytes: ByteArray, strict: Boolean = true): T {
+fun <T : Any> BinarySerializer<T>.read(bytes: ByteArray, strict: Boolean = true): T? {
     val inp = ByteArrayInputStream(bytes)
     val reader = ByteReader.fromStream(inp)
     val value = read(reader)
@@ -23,7 +23,7 @@ fun <T> BinarySerializer<T>.read(bytes: ByteArray, strict: Boolean = true): T {
 /**
  * Writes the given [obj] of type [T] to a [ByteArray].
  */
-fun <T> BinarySerializer<T>.write(obj: T): ByteArray {
+fun <T : Any> BinarySerializer<T>.write(obj: T?): ByteArray {
     val out = ByteArrayOutputStream()
     val writer = ByteWriter.fromStream(out)
     write(obj, writer)
@@ -33,22 +33,22 @@ fun <T> BinarySerializer<T>.write(obj: T): ByteArray {
 /**
  * A serializer for [T] to a binary format.
  */
-interface BinarySerializer<T> {
+interface BinarySerializer<T : Any> {
     
     /**
-     * Reads a value of type [T] from [reader].
+     * Reads a value of type [T?][T] from [reader].
      */
-    fun read(reader: ByteReader): T
+    fun read(reader: ByteReader): T?
     
     /**
-     * Writes the given [obj] of type [T] to [writer].
+     * Writes the given [obj] of type [T?][T] to [writer].
      */
-    fun write(obj: T, writer: ByteWriter)
+    fun write(obj: T?, writer: ByteWriter)
     
     /**
      * Creates a deep copy of [obj].
      */
-    fun copy(obj: T): T
+    fun copy(obj: T?): T?
     
 }
 
@@ -71,7 +71,7 @@ interface BinarySerializerFactory {
  * This serializer can be swapped out with [VersionedBinarySerializer] to make format changes, without breaking compatibility.
  * The remaining values (`2-255`) can then be used to indicate different versions of the format.
  */
-abstract class UnversionedBinarySerializer<T : Any> : BinarySerializer<T?> {
+abstract class UnversionedBinarySerializer<T : Any> : BinarySerializer<T> {
     
     final override fun read(reader: ByteReader): T? {
         if (reader.readUnsignedByte() == 0U.toUByte())
@@ -122,7 +122,7 @@ abstract class UnversionedBinarySerializer<T : Any> : BinarySerializer<T?> {
  */
 abstract class VersionedBinarySerializer<T : Any>(
     private val currentVersion: UByte
-) : BinarySerializer<T?> {
+) : BinarySerializer<T> {
 
     init {
         require(currentVersion > 0U) { "Version 0 is reserved for null values" }

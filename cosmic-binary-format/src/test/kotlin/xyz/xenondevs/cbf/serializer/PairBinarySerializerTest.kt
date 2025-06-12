@@ -28,7 +28,7 @@ class PairBinarySerializerTest : BinarySerializerFactoryTest<Pair<*, *>>(PairBin
         val nestedPair = "a" to 1
         val pair = "nested" to nestedPair
         val copy = copyValue(pair)
-        assert(nestedPair !== copy.second)
+        assert(nestedPair !== copy?.second)
     }
     
 }

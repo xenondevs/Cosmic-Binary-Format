@@ -14,13 +14,13 @@ class MapBinarySerializerTest : BinarySerializerFactoryTest<Map<*, *>>(MapBinary
     @Test
     fun testMap() {
         val map = mapOf("a" to 1, "b" to 2, "c" to 3)
-        assertContentEquals(map, reserializeValue(map))
+        assertContentEquals(map, reserializeValue(map)!!)
     }
     
     @Test
     fun testMapCopyEquals() {
         val map = mapOf("a" to 1, "b" to 2, "c" to 3)
-        assertContentEquals(map, copyValue(map))
+        assertContentEquals(map, copyValue(map)!!)
     }
     
     @Test
@@ -34,13 +34,13 @@ class MapBinarySerializerTest : BinarySerializerFactoryTest<Map<*, *>>(MapBinary
         val nestedMap = mapOf("a" to 1, "b" to 2, "c" to 3)
         val map = mapOf("nested" to nestedMap)
         val copy = copyValue(map)
-        assert(nestedMap !== copy["nested"])
+        assert(nestedMap !== copy?.get("nested"))
     }
     
     @Test
     fun testCorrectMapImplementation() {
         val map = enumMapOf(TestEnum.A to "a", TestEnum.B to "b", TestEnum.C to "c")
-        assertContentEquals(map, reserializeValue(map))
+        assertContentEquals(map, reserializeValue(map)!!)
         
         assert(deserializeValue<Map<TestEnum, String>>(serializeValue(map)) is EnumMap)
         assert(deserializeValue<MutableMap<TestEnum, String>>(serializeValue(map)) is EnumMap)

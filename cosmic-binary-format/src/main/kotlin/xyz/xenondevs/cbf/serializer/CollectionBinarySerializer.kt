@@ -1,6 +1,6 @@
 package xyz.xenondevs.cbf.serializer
 
-import xyz.xenondevs.cbf.CBF
+import xyz.xenondevs.cbf.Cbf
 import xyz.xenondevs.cbf.UncheckedApi
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
@@ -14,9 +14,9 @@ import kotlin.reflect.full.isSuperclassOf
 
 private typealias CollectionCreator<E> = (size: Int) -> MutableCollection<E>
 
-internal class CollectionBinarySerializer<E, C : Collection<E>>(
+internal class CollectionBinarySerializer<E : Any, C : Collection<E>>(
     private val elementSerializer: BinarySerializer<E>,
-    private val createCollection: CollectionCreator<E>
+    private val createCollection: CollectionCreator<E?>
 ) : UnversionedBinarySerializer<C>() {
     
     override fun readUnversioned(reader: ByteReader): C {
@@ -71,7 +71,7 @@ internal class CollectionBinarySerializer<E, C : Collection<E>>(
                 ?: return null
             
             return CollectionBinarySerializer(
-                CBF.getSerializer(elementType),
+                Cbf.getSerializer(elementType),
                 creator
             )
         }

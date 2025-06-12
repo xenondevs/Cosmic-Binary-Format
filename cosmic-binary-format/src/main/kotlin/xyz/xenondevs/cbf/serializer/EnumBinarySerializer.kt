@@ -18,7 +18,7 @@ private fun <E : Enum<E>> EnumBinarySerializer(
 internal class EnumBinarySerializer<E : Enum<E>>(
     private val serializeByOrdinal: Boolean,
     private val enumConstants: Array<E>
-) : BinarySerializer<E?> {
+) : BinarySerializer<E> {
     
     override fun write(obj: E?, writer: ByteWriter) {
         if (obj == null) {

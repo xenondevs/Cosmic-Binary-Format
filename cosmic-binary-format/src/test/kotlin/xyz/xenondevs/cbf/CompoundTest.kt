@@ -379,7 +379,7 @@ class CompoundTest {
         compound.get<ArrayList<String>>("list")!! += "b"
         assertEquals(listOf("a", "b"), compound.get<List<String>>("list"))
         
-        val reserializedCompound = CBF.read<Compound>(CBF.write(compound))!!
+        val reserializedCompound = Cbf.read<Compound>(Cbf.write(compound))!!
         reserializedCompound.get<ArrayList<String>>("list")!! += "c"
         assertEquals(listOf("a", "b", "c"), reserializedCompound.get<List<String>>("list"))
     }

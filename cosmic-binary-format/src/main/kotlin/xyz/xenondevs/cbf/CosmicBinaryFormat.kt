@@ -34,18 +34,19 @@ import xyz.xenondevs.cbf.serializer.TripleBinarySerializer
 import xyz.xenondevs.cbf.serializer.UUIDBinarySerializer
 import xyz.xenondevs.cbf.serializer.read
 import xyz.xenondevs.cbf.serializer.write
-import xyz.xenondevs.commons.reflection.equalsIgnoreNullability
+import xyz.xenondevs.commons.reflection.equalsIgnorePlatformTypes
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
-object CBF {
+object Cbf {
     
-    private var securityManager: CBFSecurityManager? = null
+    private var securityManager: CbfSecurityManager? = null
     private val factories = ArrayList<BinarySerializerFactory>()
     private val cachedSerializers = ConcurrentHashMap<KType, BinarySerializer<*>>()
     
@@ -95,24 +96,24 @@ object CBF {
     }
     
     /**
-     * Sets the [CBFSecurityManager] that decides whether a serializer for a given type can be created.
+     * Sets the [CbfSecurityManager] that decides whether a serializer for a given type can be created.
      *
      * @throws IllegalStateException if a security manager has already been set
      */
-    fun setSecurityManager(securityManager: CBFSecurityManager) {
+    fun setSecurityManager(securityManager: CbfSecurityManager) {
         if (this.securityManager != null)
-            throw IllegalStateException("CBFSecurityManager has already been set")
+            throw IllegalStateException("CbfSecurityManager has already been set")
         this.securityManager = securityManager
     }
     
     /**
      * Registers a [BinarySerializer] that serializes, deserializes, and copies the exact type [T?][T].
      */
-    inline fun <reified T : Any> registerSerializer(serializer: BinarySerializer<T?>) {
-        val serializerType = typeOf<T>()
+    inline fun <reified T : Any> registerSerializer(serializer: BinarySerializer<T>) {
+        val serializerType = typeOf<T?>()
         val factory = object : BinarySerializerFactory {
             override fun create(type: KType): BinarySerializer<*>? =
-                if (type.equalsIgnoreNullability(serializerType)) serializer else null
+                if (type.withNullability(true).equalsIgnorePlatformTypes(serializerType)) serializer else null
         }
         registerSerializerFactory(factory)
     }
@@ -129,10 +130,10 @@ object CBF {
      * Can return null if null was written.
      *
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     inline fun <reified T : Any> read(reader: ByteReader): T? {
-        return getSerializer<T?>().read(reader)
+        return getSerializer<T>().read(reader)
     }
     
     /**
@@ -141,10 +142,10 @@ object CBF {
      *
      * @throws IllegalArgumentException if [strict] is true and the byte array contains more data than was read
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     inline fun <reified T : Any> read(bytes: ByteArray, strict: Boolean = true): T? {
-        return getSerializer<T?>().read(bytes, strict)
+        return getSerializer<T>().read(bytes, strict)
     }
     
     /**
@@ -152,11 +153,11 @@ object CBF {
      * Can return null if null was written.
      * 
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     @UncheckedApi
     fun <T : Any> read(type: KType, reader: ByteReader): T? {
-        return getSerializer<T?>(type).read(reader)
+        return getSerializer<T>(type).read(reader)
     }
     
     /**
@@ -165,62 +166,62 @@ object CBF {
      * 
      * @throws IllegalArgumentException if [strict] is true and the byte array contains more data than was read
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     @UncheckedApi
     fun <T : Any> read(type: KType, bytes: ByteArray, strict: Boolean = true): T? {
-        return getSerializer<T?>(type).read(bytes, strict)
+        return getSerializer<T>(type).read(bytes, strict)
     }
     
     /**
      * Writes [value] of the reified type [T?][T] to the [writer].
      *
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     inline fun <reified T : Any> write(value: T?, writer: ByteWriter) {
-        getSerializer<T?>().write(value, writer)
+        getSerializer<T>().write(value, writer)
     }
     
     /**
      * Writes [value] of the reified type [T?][T] to a [ByteArray].
      *
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     inline fun <reified T : Any> write(value: T?): ByteArray {
-        return getSerializer<T?>().write(value)
+        return getSerializer<T>().write(value)
     }
     
     /**
      * Writes [value] of the type [T?][T] ([type]) to the [writer].
      * 
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     @UncheckedApi
     fun <T : Any> write(type: KType, value: T?, writer: ByteWriter) {
-        getSerializer<T?>(type).write(value, writer)
+        getSerializer<T>(type).write(value, writer)
     }
     
     /**
      * Writes [value] of the type [T?][T] ([type]) to a [ByteArray].
      * 
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     @UncheckedApi
     fun <T : Any> write(type: KType, value: T?): ByteArray {
-        return getSerializer<T?>(type).write(value)
+        return getSerializer<T>(type).write(value)
     }
     
     /**
      * Creates a deep copy of [value].
      *
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
-    inline fun <reified T> copy(value: T): T {
+    inline fun <reified T : Any> copy(value: T?): T? {
         return getSerializer<T>().copy(value)
     }
     
@@ -228,10 +229,10 @@ object CBF {
      * Creates a deep copy of [value] of the type [T] ([type]).
      * 
      * @throws IllegalStateException if no copier is registered for the type
-     * @throws CBFSecurityException if the creation of a copier was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a copier was prevented by the security manager
      */
     @UncheckedApi
-    fun <T> copy(type: KType, value: T): T {
+    fun <T : Any> copy(type: KType, value: T?): T? {
         return getSerializer<T>(type).copy(value)
     }
     
@@ -239,10 +240,10 @@ object CBF {
      * Gets a [BinarySerializer] for the reified type [T].
      *
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     @OptIn(UncheckedApi::class)
-    inline fun <reified T> getSerializer(): BinarySerializer<T> {
+    inline fun <reified T : Any> getSerializer(): BinarySerializer<T> {
         return getSerializer(typeOf<T>())
     }
     
@@ -250,11 +251,11 @@ object CBF {
      * Gets a [BinarySerializer] for the given [type].
      *
      * @throws IllegalStateException if no serializer is registered for the type
-     * @throws CBFSecurityException if the creation of a serializer was prevented by the security manager
+     * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
     @UncheckedApi
     @Suppress("UNCHECKED_CAST")
-    fun <T> getSerializer(type: KType): BinarySerializer<T> {
+    fun <T : Any> getSerializer(type: KType): BinarySerializer<T> {
         // use getOrPut instead of computeIfAbsent:
         // BinarySerializerFactory#create may recursively call getSerializer, which computeIfAbsent does not allow.
         // Using getOrPut instead may cause multiple serializer for the same type to be created, but that is not a problem.
@@ -263,7 +264,7 @@ object CBF {
             if (serializer == null)
                 throw IllegalStateException("No binary serializer registered for $type")
             if (securityManager?.isAllowed(type, serializer) == false)
-                throw CBFSecurityException(type, serializer)
+                throw CbfSecurityException(type, serializer)
             return@getOrPut serializer
         } as BinarySerializer<T>
     }

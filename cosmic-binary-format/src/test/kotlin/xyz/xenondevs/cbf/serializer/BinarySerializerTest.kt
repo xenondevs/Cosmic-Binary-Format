@@ -6,26 +6,26 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.reflect.typeOf
 
-abstract class BinarySerializerTest<T>(val serializer: BinarySerializer<T>) {
+abstract class BinarySerializerTest<T : Any>(val serializer: BinarySerializer<T>) {
     
-    fun serializeValue(value: T): ByteArray {
+    fun serializeValue(value: T?): ByteArray {
         val out = ByteArrayOutputStream()
         val writer = ByteWriter.fromStream(out)
         serializer.write(value, writer)
         return out.toByteArray()
     }
     
-    fun deserializeValue(bin: ByteArray): T {
+    fun deserializeValue(bin: ByteArray): T? {
         val ins = ByteArrayInputStream(bin)
         val reader = ByteReader.fromStream(ins)
         return serializer.read(reader)
     }
     
-    fun reserializeValue(value: T): T {
+    fun reserializeValue(value: T?): T? {
         return deserializeValue(serializeValue(value))
     }
     
-    fun copyValue(value: T): T {
+    fun copyValue(value: T?): T? {
         return serializer.copy(value)
     }
     
@@ -40,7 +40,7 @@ abstract class BinarySerializerTest<T>(val serializer: BinarySerializer<T>) {
 
 abstract class BinarySerializerFactoryTest<T : Any>(val factory: BinarySerializerFactory) {
     
-    inline fun <reified E : T> serializeValue(value: E): ByteArray {
+    inline fun <reified E : T> serializeValue(value: E?): ByteArray {
         val out = ByteArrayOutputStream()
         val writer = ByteWriter.fromStream(out)
         obtainSerializer<E>().write(value, writer)
@@ -53,11 +53,11 @@ abstract class BinarySerializerFactoryTest<T : Any>(val factory: BinarySerialize
         return obtainSerializer<E>().read(reader) as E
     }
     
-    inline fun <reified E : T> reserializeValue(value: E): E {
+    inline fun <reified E : T> reserializeValue(value: E?): E? {
         return deserializeValue(serializeValue(value))
     }
     
-    inline fun <reified E : T> copyValue(value: E): E {
+    inline fun <reified E : T> copyValue(value: E?): E? {
         return obtainSerializer<E>().copy(value)
     }
     

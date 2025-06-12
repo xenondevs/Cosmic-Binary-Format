@@ -1,6 +1,6 @@
 package xyz.xenondevs.cbf.serializer
 
-import xyz.xenondevs.cbf.CBF
+import xyz.xenondevs.cbf.Cbf
 import xyz.xenondevs.cbf.UncheckedApi
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
@@ -14,13 +14,13 @@ import kotlin.reflect.full.isSuperclassOf
 
 private typealias MapCreator<K, V> = (size: Int) -> MutableMap<K, V>
 
-internal class MapBinarySerializer<K, V>(
+internal class MapBinarySerializer<K : Any, V : Any>(
     private val keySerializer: BinarySerializer<K>,
     private val valueSerializer: BinarySerializer<V>,
-    private val createMap: MapCreator<K, V>
-) : UnversionedBinarySerializer<Map<K, V>>() {
+    private val createMap: MapCreator<K?, V?>
+) : UnversionedBinarySerializer<Map<K?, V?>>() {
     
-    override fun readUnversioned(reader: ByteReader): Map<K, V> {
+    override fun readUnversioned(reader: ByteReader): Map<K?, V?> {
         val size = reader.readVarInt()
         val map = createMap(size)
         repeat(size) {
@@ -30,7 +30,7 @@ internal class MapBinarySerializer<K, V>(
         return map
     }
     
-    override fun writeUnversioned(obj: Map<K, V>, writer: ByteWriter) {
+    override fun writeUnversioned(obj: Map<K?, V?>, writer: ByteWriter) {
         // count serialized elements instead of obj.size to prevent concurrent modifications from causing corrupted data
         var size = 0
         val temp = byteWriter {
@@ -45,7 +45,7 @@ internal class MapBinarySerializer<K, V>(
         writer.writeBytes(temp)
     }
     
-    override fun copyNonNull(obj: Map<K, V>): Map<K, V> {
+    override fun copyNonNull(obj: Map<K?, V?>): Map<K?, V?> {
         val copy = createMap(obj.size)
         for ((key, value) in obj) {
             copy[keySerializer.copy(key)] = valueSerializer.copy(value)
@@ -70,8 +70,8 @@ internal class MapBinarySerializer<K, V>(
                 ?: return null
             
             return MapBinarySerializer(
-                CBF.getSerializer(keyType),
-                CBF.getSerializer(valueType),
+                Cbf.getSerializer(keyType),
+                Cbf.getSerializer(valueType),
                 mapCreator
             )
         }

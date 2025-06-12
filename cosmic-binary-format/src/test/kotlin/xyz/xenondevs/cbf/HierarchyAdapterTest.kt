@@ -13,8 +13,8 @@ class HierarchyAdapterTest {
     @Test
     fun testEnumMap() {
         val enumMap = enumMapOf(TimeUnit.SECONDS to "s")
-        val serialized = CBF.write(enumMap)
-        val deserialized = CBF.read<EnumMap<TimeUnit, String>>(serialized)
+        val serialized = Cbf.write(enumMap)
+        val deserialized = Cbf.read<EnumMap<TimeUnit, String>>(serialized)
         
         assertNotNull(deserialized)
         assertContentEquals(enumMap, deserialized)
@@ -23,8 +23,8 @@ class HierarchyAdapterTest {
     @Test
     fun testCopyOnWriteArrayList() {
         val list = CopyOnWriteArrayList<String>().apply { add("A") }
-        val serialized = CBF.write(list)
-        val deserialized = CBF.read<CopyOnWriteArrayList<String>>(serialized)
+        val serialized = Cbf.write(list)
+        val deserialized = Cbf.read<CopyOnWriteArrayList<String>>(serialized)
         
         assertNotNull(deserialized)
         assertContentEquals(list, deserialized)

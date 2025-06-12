@@ -44,17 +44,17 @@ class SpecializedSerializerSelectionTest {
     
     @Test
     fun testSpecializedAdapterSelection() {
-        CBF.registerSerializer(AtomicReferenceStringBinarySerializer)
-        CBF.registerSerializer(AtomicReferenceIntBinarySerializer)
+        Cbf.registerSerializer(AtomicReferenceStringBinarySerializer)
+        Cbf.registerSerializer(AtomicReferenceIntBinarySerializer)
         
         val stringValue = AtomicReference("A")
-        assertEquals(stringValue.get(), CBF.read<AtomicReference<String>>(CBF.write(stringValue))!!.get())
+        assertEquals(stringValue.get(), Cbf.read<AtomicReference<String>>(Cbf.write(stringValue))!!.get())
         
         val intValue = AtomicReference(0)
-        assertEquals(intValue.get(), CBF.read<AtomicReference<Int>>(CBF.write(intValue))!!.get())
+        assertEquals(intValue.get(), Cbf.read<AtomicReference<Int>>(Cbf.write(intValue))!!.get())
         
         val doubleValue = AtomicReference(0.0)
-        assertThrows<IllegalStateException> { CBF.write(doubleValue) }
+        assertThrows<IllegalStateException> { Cbf.write(doubleValue) }
     }
     
 }

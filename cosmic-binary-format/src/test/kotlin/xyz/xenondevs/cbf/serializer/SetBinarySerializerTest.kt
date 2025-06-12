@@ -40,7 +40,7 @@ class SetBinarySerializerTest : BinarySerializerFactoryTest<Set<*>>(CollectionBi
         val nestedSet = setOf("a", "b", "c")
         val set = setOf(nestedSet)
         val copy = copyValue(set)
-        assert(nestedSet !== copy.first())
+        assert(nestedSet !== copy?.first())
     }
     
     @Test

@@ -28,7 +28,7 @@ class TripleBinarySerializerTest : BinarySerializerFactoryTest<Triple<*, *, *>>(
         val nestedTriple = Triple("a", 1, 2.0)
         val triple = Triple(nestedTriple, nestedTriple, nestedTriple)
         val copy = copyValue(triple)
-        assert(nestedTriple !== copy.first && nestedTriple !== copy.second && nestedTriple !== copy.third)
+        assert(nestedTriple !== copy?.first && nestedTriple !== copy?.second && nestedTriple !== copy?.third)
     }
     
 }

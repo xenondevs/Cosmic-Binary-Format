@@ -34,7 +34,7 @@ class ListBinarySerializerTest: BinarySerializerFactoryTest<List<*>>(CollectionB
         val nestedList = listOf("a", "b", "c")
         val list = listOf(nestedList)
         val copy = copyValue(list)
-        assert(nestedList !== copy[0])
+        assert(nestedList !== copy?.get(0))
     }
     
 }

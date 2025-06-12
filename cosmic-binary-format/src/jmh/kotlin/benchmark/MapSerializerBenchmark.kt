@@ -7,7 +7,7 @@ import org.openjdk.jmh.annotations.OutputTimeUnit
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.Setup
 import org.openjdk.jmh.annotations.State
-import xyz.xenondevs.cbf.CBF
+import xyz.xenondevs.cbf.Cbf
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -58,27 +58,27 @@ open class MapSerializerBenchmark {
     
     @Benchmark
     fun serializeMap10() {
-        CBF.write(map10)
+        Cbf.write(map10)
     }
     
     @Benchmark
     fun serializeMap1k() {
-        CBF.write(map1k)
+        Cbf.write(map1k)
     }
     
     @Benchmark
     fun serializeMap1m() {
-        CBF.write(map1m)
+        Cbf.write(map1m)
     }
     
     @Benchmark
     fun serializeNestedMap10() {
-        CBF.write(nestedMap10)
+        Cbf.write(nestedMap10)
     }
     
     @Benchmark
     fun serializeNestedMap1k() {
-        CBF.write(nestedMap1k)
+        Cbf.write(nestedMap1k)
     }
     
 }

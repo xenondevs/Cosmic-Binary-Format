@@ -1,6 +1,6 @@
 package xyz.xenondevs.cbf.serializer
 
-import xyz.xenondevs.cbf.CBF
+import xyz.xenondevs.cbf.Cbf
 import xyz.xenondevs.cbf.UncheckedApi
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
@@ -10,24 +10,24 @@ import kotlin.reflect.KType
 internal class PairBinarySerializer<A : Any, B : Any>(
     private val aSerializer: BinarySerializer<A>,
     private val bSerializer: BinarySerializer<B>
-) : UnversionedBinarySerializer<Pair<A, B>>() {
+) : UnversionedBinarySerializer<Pair<A?, B?>>() {
     
-    override fun writeUnversioned(obj: Pair<A, B>, writer: ByteWriter) {
+    override fun writeUnversioned(obj: Pair<A?, B?>, writer: ByteWriter) {
         aSerializer.write(obj.first, writer)
         bSerializer.write(obj.second, writer)
     }
     
-    override fun readUnversioned(reader: ByteReader): Pair<A, B> {
+    override fun readUnversioned(reader: ByteReader): Pair<A?, B?> {
         return Pair(
             aSerializer.read(reader),
             bSerializer.read(reader)
         )
     }
     
-    override fun copyNonNull(value: Pair<A, B>): Pair<A, B> {
+    override fun copyNonNull(obj: Pair<A?, B?>): Pair<A?, B?> {
         return Pair(
-            aSerializer.copy(value.first),
-            bSerializer.copy(value.second)
+            aSerializer.copy(obj.first),
+            bSerializer.copy(obj.second)
         )
     }
     
@@ -44,8 +44,8 @@ internal class PairBinarySerializer<A : Any, B : Any>(
                 ?: return null
             
             return PairBinarySerializer(
-                CBF.getSerializer(typeA),
-                CBF.getSerializer(typeB)
+                Cbf.getSerializer(typeA),
+                Cbf.getSerializer(typeB)
             )
         }
         
