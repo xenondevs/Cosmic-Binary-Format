@@ -305,7 +305,7 @@ class Compound private constructor(
     @OptIn(UncheckedApi::class)
     @JvmName("entry1")
     inline fun <reified T : Any> entry(key: String, noinline defaultValue: () -> T? = { null }): MutableProvider<T?> =
-        entry(typeOf<T?>(), key, defaultValue)
+        entry(typeOf<T>().withNullability(true), key, defaultValue)
     
     /**
      * Creates a [MutableProvider] of [type] that is linked to the value of this compound under [key].
@@ -355,7 +355,7 @@ class Compound private constructor(
      */
     @OptIn(UncheckedApi::class)
     inline operator fun <reified T : Any> get(key: String): T? {
-        return get(typeOf<T?>(), key)
+        return get(typeOf<T>().withNullability(true), key)
     }
     
     /**

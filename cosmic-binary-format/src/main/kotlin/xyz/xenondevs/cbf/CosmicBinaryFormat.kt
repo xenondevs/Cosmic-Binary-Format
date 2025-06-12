@@ -110,7 +110,7 @@ object Cbf {
      * Registers a [BinarySerializer] that serializes, deserializes, and copies the exact type [T?][T].
      */
     inline fun <reified T : Any> registerSerializer(serializer: BinarySerializer<T>) {
-        val serializerType = typeOf<T?>()
+        val serializerType = typeOf<T>().withNullability(true)
         val factory = object : BinarySerializerFactory {
             override fun create(type: KType): BinarySerializer<*>? =
                 if (type.withNullability(true).equalsIgnorePlatformTypes(serializerType)) serializer else null
