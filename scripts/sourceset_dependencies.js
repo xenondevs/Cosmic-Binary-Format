@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":cosmic-binary-format/main":[]}'

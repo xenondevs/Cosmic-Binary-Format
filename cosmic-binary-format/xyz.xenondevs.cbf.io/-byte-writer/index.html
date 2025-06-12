@@ -1,0 +1,652 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ByteWriter</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../index.html">
+                    Cosmic-Binary-Format
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":cosmic-binary-format/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":cosmic-binary-format/main" data-filter=":cosmic-binary-format/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    Cosmic-Binary-Format
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="cosmic-binary-format::xyz.xenondevs.cbf.io/ByteWriter///PointingToDeclaration//-19899498">
+  <div class="breadcrumbs"><a href="../../index.html">cosmic-binary-format</a><span class="delimiter">/</span><a href="../index.html">xyz.xenondevs.cbf.io</a><span class="delimiter">/</span><span class="current">ByteWriter</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Byte</span><wbr><span><span>Writer</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ByteWriter</a></div><p class="paragraph">An interface for writing bytes and various primitive data types.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-49501957%2FClasslikes%2F-19899498" anchor-label="Companion" id="-49501957%2FClasslikes%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-49501957%2FClasslikes%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1884242921%2FFunctions%2F-19899498" anchor-label="asDataOutput" id="1884242921%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="as-data-output.html"><span>as</span><wbr><span>Data</span><wbr><span><span>Output</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1884242921%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="as-data-output.html"><span class="token function">asDataOutput</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/DataOutput.html">DataOutput</a></div><div class="brief "><p class="paragraph">Creates a <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/DataOutput.html">DataOutput</a> that writes to this <a href="index.html">ByteWriter</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1836970925%2FFunctions%2F-19899498" anchor-label="asOutputStream" id="-1836970925%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="as-output-stream.html"><span>as</span><wbr><span>Output</span><wbr><span><span>Stream</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1836970925%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="as-output-stream.html"><span class="token function">asOutputStream</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/OutputStream.html">OutputStream</a></div><div class="brief "><p class="paragraph">Creates an <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/OutputStream.html">OutputStream</a> that writes to this <a href="index.html">ByteWriter</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="285573570%2FFunctions%2F-19899498" anchor-label="writeBoolean" id="285573570%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-boolean.html"><span>write</span><wbr><span><span>Boolean</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="285573570%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-boolean.html"><span class="token function">writeBoolean</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="839901440%2FFunctions%2F-19899498" anchor-label="writeByte" id="839901440%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-byte.html"><span>write</span><wbr><span><span>Byte</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="839901440%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="write-byte.html"><span class="token function">writeByte</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte/index.html">Byte</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte/index.html">Byte</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1051284913%2FFunctions%2F-19899498" anchor-label="writeBytes" id="1051284913%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-bytes.html"><span>write</span><wbr><span><span>Bytes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1051284913%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-bytes.html"><span class="token function">writeBytes</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">src<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html">ByteArray</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes all bytes from <a href="write-bytes.html">src</a>.</p></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-bytes.html"><span class="token function">writeBytes</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">src<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html">ByteArray</a><span class="token punctuation">, </span></span><span class="parameter ">length<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes <a href="write-bytes.html">length</a> number of bytes from <a href="write-bytes.html">src</a>.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="write-bytes.html"><span class="token function">writeBytes</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">src<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html">ByteArray</a><span class="token punctuation">, </span></span><span class="parameter ">srcIndex<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">length<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes <a href="write-bytes.html">length</a> number of bytes from <a href="write-bytes.html">src</a> starting at <a href="write-bytes.html">srcIndex</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="216177216%2FFunctions%2F-19899498" anchor-label="writeChar" id="216177216%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-char.html"><span>write</span><wbr><span><span>Char</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="216177216%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-char.html"><span class="token function">writeChar</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-char/index.html">Char</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1384414112%2FFunctions%2F-19899498" anchor-label="writeDouble" id="-1384414112%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-double.html"><span>write</span><wbr><span><span>Double</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1384414112%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-double.html"><span class="token function">writeDouble</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-double/index.html">Double</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-double/index.html">Double</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="922001625%2FFunctions%2F-19899498" anchor-label="writeDoubleLE" id="922001625%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-double-l-e.html"><span>write</span><wbr><span>Double</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="922001625%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-double-l-e.html"><span class="token function">writeDoubleLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-double/index.html">Double</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-double/index.html">Double</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2119379046%2FFunctions%2F-19899498" anchor-label="writeFloat" id="-2119379046%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-float.html"><span>write</span><wbr><span><span>Float</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2119379046%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-float.html"><span class="token function">writeFloat</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="39793345%2FFunctions%2F-19899498" anchor-label="writeFloatLE" id="39793345%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-float-l-e.html"><span>write</span><wbr><span>Float</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="39793345%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-float-l-e.html"><span class="token function">writeFloatLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1945848460%2FFunctions%2F-19899498" anchor-label="writeInt" id="-1945848460%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-int.html"><span>write</span><wbr><span><span>Int</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1945848460%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-int.html"><span class="token function">writeInt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes an <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-357892325%2FFunctions%2F-19899498" anchor-label="writeIntLE" id="-357892325%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-int-l-e.html"><span>write</span><wbr><span>Int</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-357892325%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-int-l-e.html"><span class="token function">writeIntLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes an <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1474276224%2FFunctions%2F-19899498" anchor-label="writeLong" id="-1474276224%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-long.html"><span>write</span><wbr><span><span>Long</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1474276224%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-long.html"><span class="token function">writeLong</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1209932921%2FFunctions%2F-19899498" anchor-label="writeLongLE" id="1209932921%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-long-l-e.html"><span>write</span><wbr><span>Long</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1209932921%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-long-l-e.html"><span class="token function">writeLongLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-353889826%2FFunctions%2F-19899498" anchor-label="writeMedium" id="-353889826%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-medium.html"><span>write</span><wbr><span><span>Medium</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-353889826%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-medium.html"><span class="token function">writeMedium</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a medium.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="505997573%2FFunctions%2F-19899498" anchor-label="writeMediumLE" id="505997573%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-medium-l-e.html"><span>write</span><wbr><span>Medium</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="505997573%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-medium-l-e.html"><span class="token function">writeMediumLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a medium in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="619610970%2FFunctions%2F-19899498" anchor-label="writeShort" id="619610970%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-short.html"><span>write</span><wbr><span><span>Short</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="619610970%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-short.html"><span class="token function">writeShort</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-short/index.html">Short</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-short/index.html">Short</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-963910015%2FFunctions%2F-19899498" anchor-label="writeShortLE" id="-963910015%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-short-l-e.html"><span>write</span><wbr><span>Short</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-963910015%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-short-l-e.html"><span class="token function">writeShortLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-short/index.html">Short</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-short/index.html">Short</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="389123168%2FFunctions%2F-19899498" anchor-label="writeString" id="389123168%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-string.html"><span>write</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="389123168%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-string.html"><span class="token function">writeString</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="82811080%2FFunctions%2F-19899498" anchor-label="writeUnsignedByte" id="82811080%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-byte.html"><span>write</span><wbr><span>Unsigned</span><wbr><span><span>Byte</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="82811080%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-byte.html"><span class="token function">writeUnsignedByte</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-byte/index.html">UByte</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-byte/index.html">UByte</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-240305424%2FFunctions%2F-19899498" anchor-label="writeUnsignedInt" id="-240305424%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-int.html"><span>write</span><wbr><span>Unsigned</span><wbr><span><span>Int</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-240305424%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-int.html"><span class="token function">writeUnsignedInt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-int/index.html">UInt</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-int/index.html">UInt</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="518356841%2FFunctions%2F-19899498" anchor-label="writeUnsignedIntLE" id="518356841%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-int-l-e.html"><span>write</span><wbr><span>Unsigned</span><wbr><span>Int</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="518356841%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-int-l-e.html"><span class="token function">writeUnsignedIntLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-int/index.html">UInt</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-int/index.html">UInt</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="842269664%2FFunctions%2F-19899498" anchor-label="writeUnsignedLong" id="842269664%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-long.html"><span>write</span><wbr><span>Unsigned</span><wbr><span><span>Long</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="842269664%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-long.html"><span class="token function">writeUnsignedLong</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-long/index.html">ULong</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-long/index.html">ULong</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-653048761%2FFunctions%2F-19899498" anchor-label="writeUnsignedLongLE" id="-653048761%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-long-l-e.html"><span>write</span><wbr><span>Unsigned</span><wbr><span>Long</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-653048761%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-long-l-e.html"><span class="token function">writeUnsignedLongLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-long/index.html">ULong</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-long/index.html">ULong</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="948168016%2FFunctions%2F-19899498" anchor-label="writeUnsignedMedium" id="948168016%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-medium.html"><span>write</span><wbr><span>Unsigned</span><wbr><span><span>Medium</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="948168016%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-medium.html"><span class="token function">writeUnsignedMedium</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-int/index.html">UInt</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes an unsigned medium.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="180031945%2FFunctions%2F-19899498" anchor-label="writeUnsignedMediumLE" id="180031945%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-medium-l-e.html"><span>write</span><wbr><span>Unsigned</span><wbr><span>Medium</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="180031945%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-medium-l-e.html"><span class="token function">writeUnsignedMediumLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-int/index.html">UInt</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes an unsigned medium in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="340441680%2FFunctions%2F-19899498" anchor-label="writeUnsignedShort" id="340441680%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-short.html"><span>write</span><wbr><span>Unsigned</span><wbr><span><span>Short</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="340441680%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-short.html"><span class="token function">writeUnsignedShort</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-short/index.html">UShort</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-short/index.html">UShort</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1264552631%2FFunctions%2F-19899498" anchor-label="writeUnsignedShortLE" id="-1264552631%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-short-l-e.html"><span>write</span><wbr><span>Unsigned</span><wbr><span>Short</span><wbr><span><span>LE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1264552631%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-short-l-e.html"><span class="token function">writeUnsignedShortLE</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-short/index.html">UShort</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-short/index.html">UShort</a> in little endian.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-865412189%2FFunctions%2F-19899498" anchor-label="writeUnsignedVarInt" id="-865412189%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-var-int.html"><span>write</span><wbr><span>Unsigned</span><wbr><span>Var</span><wbr><span><span>Int</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-865412189%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-var-int.html"><span class="token function">writeUnsignedVarInt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-int/index.html">UInt</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-int/index.html">UInt</a> in a variable length format.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1410089939%2FFunctions%2F-19899498" anchor-label="writeUnsignedVarLong" id="1410089939%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-unsigned-var-long.html"><span>write</span><wbr><span>Unsigned</span><wbr><span>Var</span><wbr><span><span>Long</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1410089939%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-unsigned-var-long.html"><span class="token function">writeUnsignedVarLong</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-long/index.html">ULong</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-u-long/index.html">ULong</a> in a variable length format.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1769176737%2FFunctions%2F-19899498" anchor-label="writeUUID" id="-1769176737%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-u-u-i-d.html"><span>write</span><wbr><span><span>UUID</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1769176737%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-u-u-i-d.html"><span class="token function">writeUUID</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html">UUID</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html">UUID</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-135297749%2FFunctions%2F-19899498" anchor-label="writeVarInt" id="-135297749%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-var-int.html"><span>write</span><wbr><span>Var</span><wbr><span><span>Int</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-135297749%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-var-int.html"><span class="token function">writeVarInt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes an <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a> in a variable length format.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-996797833%2FFunctions%2F-19899498" anchor-label="writeVarLong" id="-996797833%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-var-long.html"><span>write</span><wbr><span>Var</span><wbr><span><span>Long</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-996797833%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-var-long.html"><span class="token function">writeVarLong</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a> in a variable length format.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-622480437%2FFunctions%2F-19899498" anchor-label="writeZero" id="-622480437%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write-zero.html"><span>write</span><wbr><span><span>Zero</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-622480437%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="write-zero.html"><span class="token function">writeZero</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">length<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes <a href="write-zero.html">length</a> amount of null bytes.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

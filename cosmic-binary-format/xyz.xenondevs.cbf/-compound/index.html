@@ -1,0 +1,360 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Compound</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../index.html">
+                    Cosmic-Binary-Format
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":cosmic-binary-format/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":cosmic-binary-format/main" data-filter=":cosmic-binary-format/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    Cosmic-Binary-Format
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="cosmic-binary-format::xyz.xenondevs.cbf/Compound///PointingToDeclaration//-19899498">
+  <div class="breadcrumbs"><a href="../../index.html">cosmic-binary-format</a><span class="delimiter">/</span><a href="../index.html">xyz.xenondevs.cbf</a><span class="delimiter">/</span><span class="current">Compound</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Compound</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Compound</a></div><p class="paragraph">A compound is a key-value storage intended for serialization via <a href="../-cbf/index.html">Cbf</a>.</p><p class="paragraph">After deserialization, a <a href="index.html">Compound</a> contains only binary data of values of unknown types (and the keys under which they're stored), which is then lazily deserialized to the requested type when accessed via <a href="get.html">get</a>. Conversely, the type information for serialization is remembered during <a href="set.html">set</a>.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1176056603%2FConstructors%2F-19899498" anchor-label="Compound" id="1176056603%2FConstructors%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-compound.html"><span><span>Compound</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1176056603%2FConstructors%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-769025189%2FClasslikes%2F-19899498" anchor-label="Companion" id="-769025189%2FClasslikes%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-769025189%2FClasslikes%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-754364526%2FProperties%2F-19899498" anchor-label="keys" id="-754364526%2FProperties%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="keys.html"><span><span>keys</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-754364526%2FProperties%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="keys.html">keys</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/index.html">Set</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A set of all keys in this compound.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="303655709%2FFunctions%2F-19899498" anchor-label="contains" id="303655709%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="contains.html"><span><span>contains</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="303655709%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="contains.html"><span class="token function">contains</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether this compound has an entry under <a href="contains.html">key</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="397175406%2FFunctions%2F-19899498" anchor-label="copy" id="397175406%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="copy.html"><span><span>copy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="397175406%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="copy.html"><span class="token function">copy</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Compound</a></div><div class="brief "><p class="paragraph">Creates a deep copy of this compound, copying all deserialized values using <a href="../-cbf/copy.html">Cbf.copy</a>.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="copy.html"><span class="token function">copy</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">copyFunc<span class="token operator">: </span><span class="token punctuation">(</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-type/index.html">KType</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Compound</a></div><div class="brief "><p class="paragraph">Creates a deep copy of this compound, copying all deserialized values using <a href="copy.html">copyFunc</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1652032645%2FFunctions%2F-19899498" anchor-label="entry" id="-1652032645%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="entry.html"><span><span>entry</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1652032645%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">"entry1"</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="entry.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="entry.html"><span class="token function">entry</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>defaultValue<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="entry.html">T</a><span class="token operator">?</span><span class="token operator"> = </span>{ null }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="xyz.xenondevs.commons.provider/MutableProvider///PointingToDeclaration/">MutableProvider</span><span class="token operator">&lt;</span><a href="entry.html">T</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a <span data-unresolved-link="xyz.xenondevs.commons.provider/MutableProvider///PointingToDeclaration/">MutableProvider</span> of the type <a href="entry.html">T</a> that is linked to the value of this compound under <a href="entry.html">key</a>. If this compound does not have an entry under <a href="entry.html">key</a>, <a href="entry.html">defaultValue</a> is used to create it lazily. If there is already an entry provider for <a href="entry.html">key</a> that matches <a href="entry.html">T</a>, <a href="entry.html">defaultValue</a> will be ignored and the existing provider will be returned.</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">"entry0"</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="entry.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="entry.html"><span class="token function">entry</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>defaultValue<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="entry.html">T</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="xyz.xenondevs.commons.provider/MutableProvider///PointingToDeclaration/">MutableProvider</span><span class="token operator">&lt;</span><a href="entry.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a <span data-unresolved-link="xyz.xenondevs.commons.provider/MutableProvider///PointingToDeclaration/">MutableProvider</span> of the non-null type <a href="entry.html">T</a> that is linked to the value of this compound under <a href="entry.html">key</a>. If this compound does not have an entry under <a href="entry.html">key</a>, <a href="entry.html">defaultValue</a> is used to create it lazily. If there is already an entry provider for <a href="entry.html">key</a> that matches <a href="entry.html">T</a>, <a href="entry.html">defaultValue</a> will be ignored and the existing provider will be returned.</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-name/index.html"><span class="token annotation builtin">JvmName</span></a><span class="token punctuation">(</span><span>name<span class="token operator"> = </span><span class="breakable-word"><span class="token string">"entry1"</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="entry.html">T</a><span class="token operator">&gt; </span><a href="entry.html"><span class="token function">entry</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-type/index.html">KType</a><span class="token punctuation">, </span></span><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">defaultValue<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="entry.html">T</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="xyz.xenondevs.commons.provider/MutableProvider///PointingToDeclaration/">MutableProvider</span><span class="token operator">&lt;</span><a href="entry.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a <span data-unresolved-link="xyz.xenondevs.commons.provider/MutableProvider///PointingToDeclaration/">MutableProvider</span> of <a href="entry.html">type</a> that is linked to the value of this compound under <a href="entry.html">key</a>. If this compound does not have an entry under <a href="entry.html">key</a>, <a href="entry.html">defaultValue</a> is used to create it lazily. If there is already an entry provider for <a href="entry.html">key</a> that matches <a href="entry.html">type</a>, <a href="entry.html">defaultValue</a> will be ignored and the existing provider will be returned.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1669589954%2FFunctions%2F-19899498" anchor-label="get" id="1669589954%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get.html"><span><span>get</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1669589954%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">inline operator </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="get.html">T</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Gets the value under <a href="get.html">key</a> as <a href="get.html">T</a> or null if it doesn't exist.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-type/index.html">KType</a><span class="token punctuation">, </span></span><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="get.html">T</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Gets the value under <a href="get.html">key</a> as <a href="get.html">type</a> or null if it doesn't exist.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-599259502%2FFunctions%2F-19899498" anchor-label="getOrPut" id="-599259502%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-or-put.html"><span>get</span><wbr><span>Or</span><wbr><span><span>Put</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-599259502%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get-or-put.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="get-or-put.html"><span class="token function">getOrPut</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>defaultValue<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="get-or-put.html">T</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="get-or-put.html">T</a></div><div class="brief "><p class="paragraph">Gets the value under <a href="get-or-put.html">key</a> as <a href="get-or-put.html">T</a> or puts and returns the value generated by <a href="get-or-put.html">defaultValue</a> if it doesn't exist.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="get-or-put.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="get-or-put.html"><span class="token function">getOrPut</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-type/index.html">KType</a><span class="token punctuation">, </span></span><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">defaultValue<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="get-or-put.html">T</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="get-or-put.html">T</a></div><div class="brief "><p class="paragraph">Gets the value under <a href="get-or-put.html">key</a> as <a href="get-or-put.html">type</a> or puts and returns the value generated by <a href="get-or-put.html">defaultValue</a> if it doesn't exist.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="309478129%2FFunctions%2F-19899498" anchor-label="isEmpty" id="309478129%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-empty.html"><span>is</span><wbr><span><span>Empty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="309478129%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-empty.html"><span class="token function">isEmpty</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether this compound is empty.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-261462206%2FFunctions%2F-19899498" anchor-label="isNotEmpty" id="-261462206%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-not-empty.html"><span>is</span><wbr><span>Not</span><wbr><span><span>Empty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-261462206%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-not-empty.html"><span class="token function">isNotEmpty</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks whether this compound is not empty.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1631865539%2FFunctions%2F-19899498" anchor-label="putAll" id="-1631865539%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put-all.html"><span>put</span><wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1631865539%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="put-all.html"><span class="token function">putAll</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">other<span class="token operator">: </span><a href="index.html">Compound</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Puts all entries from <a href="put-all.html">other</a> into this compound.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1007439521%2FFunctions%2F-19899498" anchor-label="rename" id="1007439521%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rename.html"><span><span>rename</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1007439521%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="rename.html"><span class="token function">rename</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">old<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">new<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Renames an entry from <a href="rename.html">old</a> to <a href="rename.html">new</a>. If there already is an entry under <a href="rename.html">new</a>, it will be overwritten.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1918868406%2FFunctions%2F-19899498" anchor-label="set" id="-1918868406%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set.html"><span><span>set</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1918868406%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">inline operator </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="set.html">T</a><span class="token operator">&gt; </span><a href="set.html"><span class="token function">set</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="set.html">T</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Puts <a href="set.html">value</a> into the compound under <a href="set.html">key</a>, remembering <a href="set.html">T</a> for serialization.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="set.html">T</a><span class="token operator">&gt; </span><a href="set.html"><span class="token function">set</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.reflect/-k-type/index.html">KType</a><span class="token punctuation">, </span></span><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="set.html">T</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Puts <a href="set.html">value</a> into the compound under <a href="set.html">key</a>, remembering <a href="set.html">type</a> for serialization.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-322595637%2FFunctions%2F-19899498" anchor-label="shallowCopy" id="-322595637%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="shallow-copy.html"><span>shallow</span><wbr><span><span>Copy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-322595637%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="shallow-copy.html"><span class="token function">shallowCopy</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Compound</a></div><div class="brief "><p class="paragraph">Creates a shallow copy of this compound, not copying any values.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1998706074%2FFunctions%2F-19899498" anchor-label="toString" id="1998706074%2FFunctions%2F-19899498" data-filterable-set=":cosmic-binary-format/main"></a>
+          <div class="table-row" data-filterable-current=":cosmic-binary-format/main" data-filterable-set=":cosmic-binary-format/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-string.html"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1998706074%2FFunctions%2F-19899498"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":cosmic-binary-format/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

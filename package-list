@@ -1,0 +1,7 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:cosmic-binary-format
+xyz.xenondevs.cbf
+xyz.xenondevs.cbf.io
+xyz.xenondevs.cbf.serializer
