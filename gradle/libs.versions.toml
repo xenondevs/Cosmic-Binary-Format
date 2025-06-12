@@ -3,9 +3,9 @@ kotlin = "2.1.21"
 junit = "5.12.2"
 
 [libraries]
-commons-collections = { module = "xyz.xenondevs.commons:commons-collections", version = "1.31" }
-commons-provider = { module = "xyz.xenondevs.commons:commons-provider", version = "2.0.0-alpha.1" }
-commons-reflection = { module = "xyz.xenondevs.commons:commons-reflection", version = "1.31" }
+commons-collections = { module = "xyz.xenondevs.commons:commons-collections", version = "1.32" }
+commons-provider = { module = "xyz.xenondevs.commons:commons-provider", version = "2.0.0-alpha.2" }
+commons-reflection = { module = "xyz.xenondevs.commons:commons-reflection", version = "1.32" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.0.0" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
