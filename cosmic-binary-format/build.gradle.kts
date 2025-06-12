@@ -1,5 +1,6 @@
 plugins {
     id("cbf.common-conventions")
+    id("cbf.dokka-conventions")
     alias(libs.plugins.jmh)
 }
 

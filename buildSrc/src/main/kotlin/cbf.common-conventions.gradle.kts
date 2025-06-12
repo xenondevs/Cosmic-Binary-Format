@@ -3,7 +3,6 @@ import org.gradle.accessors.dm.LibrariesForLibs
 plugins {
     kotlin("jvm")
     `maven-publish`
-    id("org.jetbrains.dokka")
 }
 
 group = "xyz.xenondevs.cbf"
