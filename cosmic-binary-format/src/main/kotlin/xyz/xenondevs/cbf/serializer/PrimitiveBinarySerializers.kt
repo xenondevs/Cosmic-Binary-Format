@@ -104,8 +104,8 @@ internal object IntArrayBinarySerializer : UnversionedBinarySerializer<IntArray>
 
 internal object LongBinarySerializer : UnversionedBinarySerializer<Long>() {
     
-    override fun writeUnversioned(obj: Long, buf: ByteWriter) {
-        buf.writeVarLong(obj)
+    override fun writeUnversioned(obj: Long, writer: ByteWriter) {
+        writer.writeVarLong(obj)
     }
     
     override fun readUnversioned(reader: ByteReader): Long {
@@ -170,8 +170,8 @@ internal object FloatArrayBinarySerializer : UnversionedBinarySerializer<FloatAr
 
 internal object DoubleBinarySerializer : UnversionedBinarySerializer<Double>() {
     
-    override fun writeUnversioned(obj: Double, buf: ByteWriter) {
-        buf.writeDouble(obj)
+    override fun writeUnversioned(obj: Double, writer: ByteWriter) {
+        writer.writeDouble(obj)
     }
     
     override fun readUnversioned(reader: ByteReader): Double {

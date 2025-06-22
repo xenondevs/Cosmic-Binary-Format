@@ -12,8 +12,8 @@ class SpecializedSerializerSelectionTest {
     
     private object AtomicReferenceStringBinarySerializer : UnversionedBinarySerializer<AtomicReference<String>>() {
         
-        override fun copyNonNull(value: AtomicReference<String>): AtomicReference<String> {
-            return AtomicReference(value.get())
+        override fun copyNonNull(obj: AtomicReference<String>): AtomicReference<String> {
+            return AtomicReference(obj.get())
         }
         
         override fun writeUnversioned(obj: AtomicReference<String>, writer: ByteWriter) {
@@ -28,8 +28,8 @@ class SpecializedSerializerSelectionTest {
     
     private object AtomicReferenceIntBinarySerializer : UnversionedBinarySerializer<AtomicReference<Int>>() {
         
-        override fun copyNonNull(value: AtomicReference<Int>): AtomicReference<Int> {
-            return AtomicReference(value.get())
+        override fun copyNonNull(obj: AtomicReference<Int>): AtomicReference<Int> {
+            return AtomicReference(obj.get())
         }
         
         override fun writeUnversioned(obj: AtomicReference<Int>, writer: ByteWriter) {
