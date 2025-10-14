@@ -569,7 +569,7 @@ class Compound private constructor(
  */
 @JvmName("entry0")
 inline fun <reified T : Any> Provider<Compound>.entry(key: String, noinline defaultValue: () -> T): MutableProvider<T> =
-    flatMapMutable { it.entry<T>(key, defaultValue) }
+    immediateFlatMapMutable { it.entry<T>(key, defaultValue) }
 
 /**
  * Creates a [MutableProvider] of type [T] that is linked to the value under [key] of this provider's [Compound].
@@ -582,4 +582,4 @@ inline fun <reified T : Any> Provider<Compound>.entry(key: String, noinline defa
  */
 @JvmName("entry1")
 inline fun <reified T : Any> Provider<Compound?>.entry(key: String, noinline defaultValue: () -> T? = { null }): MutableProvider<T?> =
-    flatMapMutable { it?.entry<T>(key, defaultValue) ?: mutableProvider(null) }
+    immediateFlatMapMutable { it?.entry<T>(key, defaultValue) ?: mutableProvider(null) }

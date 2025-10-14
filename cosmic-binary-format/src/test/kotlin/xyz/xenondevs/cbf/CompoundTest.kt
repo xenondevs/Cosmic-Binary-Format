@@ -8,6 +8,9 @@ import xyz.xenondevs.cbf.serializer.read
 import xyz.xenondevs.cbf.serializer.write
 import xyz.xenondevs.commons.provider.MutableProvider
 import xyz.xenondevs.commons.provider.mapNonNull
+import xyz.xenondevs.commons.provider.observed
+import xyz.xenondevs.commons.provider.orElseNew
+import xyz.xenondevs.commons.provider.provider
 import kotlin.test.assertEquals
 
 class CompoundTest {
@@ -400,6 +403,32 @@ class CompoundTest {
         
         compound["a"] = 2
         assertEquals(2, entryValue)
+    }
+    
+    @Test
+    fun `test compound entry with observed list provider`() {
+        val compound = Compound()
+        val entry = compound
+            .entry<MutableList<String>>("list")
+            .orElseNew(::ArrayList)
+            .observed()
+        
+        entry.get().add("a")
+        
+        assertEquals(listOf("a"), compound["list"])
+    }
+    
+    @Test
+    fun `test compound provider entry with observed list provider`() {
+        val compound = Compound()
+        val entry = provider(compound)
+            .entry<MutableList<String>>("list")
+            .orElseNew(::ArrayList)
+            .observed()
+        
+        entry.get().add("a")
+        
+        assertEquals(listOf("a"), compound["list"])
     }
     
 }
