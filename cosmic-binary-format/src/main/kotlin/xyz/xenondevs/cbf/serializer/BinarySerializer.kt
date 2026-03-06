@@ -99,17 +99,17 @@ abstract class UnversionedBinarySerializer<T : Any> : BinarySerializer<T> {
     /**
      * Reads a non-null value of type [T] from [reader].
      */
-    abstract fun readUnversioned(reader: ByteReader): T
+    protected abstract fun readUnversioned(reader: ByteReader): T
     
     /**
      * Writes the given non-null [obj] of type [T] to [writer].
      */
-    abstract fun writeUnversioned(obj: T, writer: ByteWriter)
+    protected abstract fun writeUnversioned(obj: T, writer: ByteWriter)
     
     /**
      * Creates a deep copy of the given non-null [obj].
      */
-    abstract fun copyNonNull(obj: T): T
+    protected abstract fun copyNonNull(obj: T): T
     
 }
 
@@ -155,16 +155,16 @@ abstract class VersionedBinarySerializer<T : Any>(
     /**
      * Reads a non-null value of type [T] from [reader] in the specified [version].
      */
-    abstract fun readVersioned(version: UByte, reader: ByteReader): T
+    protected abstract fun readVersioned(version: UByte, reader: ByteReader): T
     
     /**
      * Writes the given non-null [obj] of type [T] to [writer] in the current version format.
      */
-    abstract fun writeVersioned(obj: T, writer: ByteWriter)
+    protected abstract fun writeVersioned(obj: T, writer: ByteWriter)
     
     /**
      * Creates a deep copy of the given non-null [obj].
      */
-    abstract fun copyNonNull(obj: T): T
+    protected abstract fun copyNonNull(obj: T): T
     
 }
