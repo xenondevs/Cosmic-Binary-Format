@@ -2,6 +2,7 @@ package xyz.xenondevs.cbf
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertNull
 import org.junit.jupiter.api.assertThrows
 import xyz.xenondevs.cbf.Compound.CompoundBinarySerializer
 import xyz.xenondevs.cbf.serializer.read
@@ -11,6 +12,7 @@ import xyz.xenondevs.commons.provider.mapNonNull
 import xyz.xenondevs.commons.provider.observed
 import xyz.xenondevs.commons.provider.orElseNew
 import xyz.xenondevs.commons.provider.provider
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class CompoundTest {
@@ -141,7 +143,7 @@ class CompoundTest {
         // the initial default value is used, latter ones are ignored
         assertEquals(1, a1)
         assertEquals(1, a2)
-    
+        
         val b1 by compound.entry("b") { 1 }
         val b2 by compound.entry("b") { 2 }
         
@@ -429,6 +431,32 @@ class CompoundTest {
         entry.get().add("a")
         
         assertEquals(listOf("a"), compound["list"])
+    }
+    
+    @Test
+    fun `getSerialized serializes value`() {
+        val compound = Compound()
+        compound["a"] = "A"
+        
+        assertContentEquals(Cbf.write("A"), compound.getSerialized("a")!!)
+    }
+    
+    @Test
+    fun `getSerialized returns already serialized value`() {
+        val compound = Cbf.read<Compound>(Cbf.write(Compound().apply { set("a", "A") }))!!
+        assertContentEquals(Cbf.write("A"), compound.getSerialized("a")!!)
+    }
+    
+    @Test
+    fun `getSerialized works with entry provider`() {
+        val compound = Compound()
+        val entry = compound.entry<String>("a")
+        
+        assertNull(compound.getSerialized("a"))
+        entry.set("A")
+        assertContentEquals(Cbf.write("A"), compound.getSerialized("a")!!)
+        entry.set("B")
+        assertContentEquals(Cbf.write("B"), compound.getSerialized("a")!!)
     }
     
 }

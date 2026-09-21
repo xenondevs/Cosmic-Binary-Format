@@ -342,6 +342,13 @@ class Compound private constructor(
     }
     
     /**
+     * Gets the serialized data under [key] or null if it doesn't exist.
+     */
+    fun getSerialized(key: String): ByteArray? = lock.withLock {
+        return entryMap[key]?.serialize()
+    }
+    
+    /**
      * Gets the value under [key] as [type] [T] or null if it doesn't exist.
      */
     @Suppress("UNCHECKED_CAST")
