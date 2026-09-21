@@ -243,7 +243,7 @@ class Compound private constructor(
      */
     val keys: Set<String>
         get() = lock.withLock {
-            this@Compound.entryMap.mapNotNullTo(HashSet()) { (key, entry) ->
+            entryMap.mapNotNullTo(HashSet.newHashSet(entryMap.size)) { (key, entry) ->
                 key.takeUnless { entry.isEmpty() }
             }
         }
@@ -457,7 +457,7 @@ class Compound private constructor(
      */
     @UncheckedApi
     fun copy(copyFunc: (KType, Any) -> Any): Compound = lock.withLock {
-        val entryMapCopy = HashMap<String, CompoundEntry<*>>()
+        val entryMapCopy = HashMap.newHashMap<String, CompoundEntry<*>>(entryMap.size)
         
         for ((key, entry) in entryMap) {
             if (entry.isEmpty())
@@ -524,8 +524,7 @@ class Compound private constructor(
             val temp = byteWriter {
                 for ((key, entry) in obj.entryMap) {
                     val bytes = entry.serialize()
-                    if (bytes == null)
-                        continue
+                        ?: continue
                     
                     writeString(key)
                     writeVarInt(bytes.size)
@@ -540,7 +539,7 @@ class Compound private constructor(
         
         override fun readVersioned(version: UByte, reader: ByteReader): Compound {
             val mapSize = reader.readVarInt()
-            val entryMap = HashMap<String, CompoundEntry<*>>(mapSize)
+            val entryMap = HashMap.newHashMap<String, CompoundEntry<*>>(mapSize.coerceAtMost(MAX_PRE_ALLOCATE_COLLECTION_SIZE))
             
             repeat(mapSize) {
                 val key = reader.readString()

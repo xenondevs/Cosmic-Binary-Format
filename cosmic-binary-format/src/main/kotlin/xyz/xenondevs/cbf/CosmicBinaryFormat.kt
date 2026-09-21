@@ -44,6 +44,8 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
+internal const val MAX_PRE_ALLOCATE_COLLECTION_SIZE = 16384
+
 object Cbf {
     
     private var securityManager: CbfSecurityManager? = null
@@ -79,9 +81,9 @@ object Cbf {
         registerSerializerFactory(CollectionBinarySerializer)
         registerSerializerFactory(MapBinarySerializer)
         
-        addMapCreator(::HashMap)
-        addMapCreator(::LinkedHashMap)
-        addMapCreator(::WeakHashMap)
+        addMapCreator { HashMap.newHashMap(it) }
+        addMapCreator { LinkedHashMap.newLinkedHashMap(it) }
+        addMapCreator { WeakHashMap.newWeakHashMap(it) }
         addMapCreator(::IdentityHashMap)
         addMapCreator(::ConcurrentHashMap)
         addMapCreator { TreeMap() }
@@ -89,8 +91,8 @@ object Cbf {
         addCollectionCreator(::ArrayList)
         addCollectionCreator { LinkedList() }
         addCollectionCreator { CopyOnWriteArrayList() }
-        addCollectionCreator(::HashSet)
-        addCollectionCreator(::LinkedHashSet)
+        addCollectionCreator { HashSet.newHashSet(it) }
+        addCollectionCreator { LinkedHashSet.newLinkedHashSet(it) }
         addCollectionCreator { TreeSet() }
         addCollectionCreator { CopyOnWriteArraySet() }
     }

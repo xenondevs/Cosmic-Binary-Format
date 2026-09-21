@@ -1,6 +1,7 @@
 package xyz.xenondevs.cbf.serializer
 
 import xyz.xenondevs.cbf.Cbf
+import xyz.xenondevs.cbf.MAX_PRE_ALLOCATE_COLLECTION_SIZE
 import xyz.xenondevs.cbf.UncheckedApi
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
@@ -21,8 +22,7 @@ internal class CollectionBinarySerializer<E : Any, C : Collection<E>>(
     
     override fun readUnversioned(reader: ByteReader): C {
         val size = reader.readVarInt()
-        val collection = createCollection(size)
-        
+        val collection = createCollection(size.coerceAtMost(MAX_PRE_ALLOCATE_COLLECTION_SIZE))
         repeat(size) {
             collection += elementSerializer.read(reader)
         }

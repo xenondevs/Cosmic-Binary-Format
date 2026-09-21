@@ -1,6 +1,7 @@
 package xyz.xenondevs.cbf.serializer
 
 import xyz.xenondevs.cbf.Cbf
+import xyz.xenondevs.cbf.MAX_PRE_ALLOCATE_COLLECTION_SIZE
 import xyz.xenondevs.cbf.UncheckedApi
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
@@ -22,7 +23,7 @@ internal class MapBinarySerializer<K : Any, V : Any>(
     
     override fun readUnversioned(reader: ByteReader): Map<K?, V?> {
         val size = reader.readVarInt()
-        val map = createMap(size)
+        val map = createMap(size.coerceAtMost(MAX_PRE_ALLOCATE_COLLECTION_SIZE))
         repeat(size) {
             map[keySerializer.read(reader)] = valueSerializer.read(reader)
         }
