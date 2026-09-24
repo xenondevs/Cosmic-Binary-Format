@@ -4,6 +4,7 @@ import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
 import xyz.xenondevs.cbf.io.byteWriter
 import xyz.xenondevs.cbf.serializer.VersionedBinarySerializer
+import xyz.xenondevs.cbf.util.debugRequire
 import xyz.xenondevs.cbf.util.withLocksOrdered
 import xyz.xenondevs.commons.provider.MutableProvider
 import xyz.xenondevs.commons.provider.Provider
@@ -37,13 +38,13 @@ private sealed interface CompoundEntry<T> {
     
     /**
      * Sets the type and value of this entry.
-     * @throws IllegalArgumentException If the given [type] is incompatible with this entry.
+     * @throws IllegalArgumentException If [type] incompatible with this entry and JVM assertions are enabled.
      */
     fun set(type: KType, value: T)
     
     /**
      * Gets the value of this entry as [type] [T].
-     * @throws IllegalArgumentException If the given [type] is incompatible with this entry.
+     * @throws IllegalArgumentException If [type] is incompatible with this entry and JVM assertions are enabled.
      */
     fun get(type: KType): T
     
@@ -90,13 +91,13 @@ private class DirectCompoundEntry<T : Any> private constructor(
     @OptIn(UncheckedApi::class)
     fun <R> toProviderEntry(type: KType, default: () -> R): ProviderCompoundEntry<R> {
         if (this.type != null && this.cachedValue != null) {
-            if (!type.isSupertypeOf(this.type!!))
-                throw IllegalArgumentException("$type (return type) is not a supertype of ${this.type} (entry type)")
+            debugRequire({ type.isSupertypeOf(this.type!!) }) {
+                "$type (return type) is not a supertype of ${this.type} (entry type)"
+            }
             
             @Suppress("UNCHECKED_CAST")
             return ProviderCompoundEntry(type, this.cachedValue as R, default)
         } else {
-            assert(bin != null)
             val value: R = Cbf.read(type, bin!!)
                 ?: throw AssertionError("Serialized value is null, but $type was expected")
             return ProviderCompoundEntry(type, value, default)
@@ -120,8 +121,9 @@ private class DirectCompoundEntry<T : Any> private constructor(
         val type = type.withNullability(false)
         
         if (this.type != null && this.cachedValue != null) {
-            if (!type.isSupertypeOf(this.type!!))
-                throw IllegalArgumentException("$type (return type) is not a supertype of ${this.type} (entry type)")
+            debugRequire({ type.isSupertypeOf(this.type!!) }) {
+                "$type (return type) is not a supertype of ${this.type} (entry type)"
+            }
             return this.cachedValue as T
         } else {
             assert(bin != null)
@@ -190,15 +192,17 @@ private class ProviderCompoundEntry<T>(
     )
     
     override fun set(type: KType, value: T) {
-        if (!type.isSubtypeOf(this.type))
-            throw IllegalArgumentException("$type (value type) is not a subtype of ${this.type} (entry type)")
+        debugRequire({ type.isSubtypeOf(this.type) }) {
+            "$type (value type) is not a subtype of ${this.type} (entry type)"
+        }
         
         valueProvider.set(value)
     }
     
     override fun get(type: KType): T {
-        if (!type.isSupertypeOf(this.type))
-            throw IllegalArgumentException("$type (return type) is not a supertype of ${this.type} (entry type)")
+        debugRequire({ type.isSupertypeOf(this.type) }) {
+            "$type (return type) is not a supertype of ${this.type} (entry type)"
+        }
         
         return valueProvider.get()
     }
@@ -252,6 +256,7 @@ class Compound private constructor(
     
     /**
      * Puts [value] into the compound under [key], remembering [T] for serialization.
+     * @throws IllegalArgumentException If [key] has an entry provider with an incompatible type and JVM assertions are enabled.
      */
     @OptIn(UncheckedApi::class)
     inline operator fun <reified T> set(key: String, value: T) =
@@ -259,6 +264,7 @@ class Compound private constructor(
     
     /**
      * Puts [value] into the compound under [key], remembering [type] for serialization.
+     * @throws IllegalArgumentException If [key] has an entry provider with an incompatible type and JVM assertions are enabled.
      */
     @UncheckedApi
     fun <T> set(type: KType, key: String, value: T): Unit = lock.withLock {
@@ -288,7 +294,8 @@ class Compound private constructor(
      * If this compound does not have an entry under [key], [defaultValue] is used to create it lazily.
      * If there is already an entry provider for [key] that matches [T], [defaultValue] will be ignored and the existing provider will be returned.
      *
-     * @throws IllegalArgumentException If there already is an entry provider for [key], but for a different type.
+     * @throws IllegalArgumentException If an existing entry provider has a different type, or if a direct
+     * entry has an incompatible type and JVM assertions are enabled.
      */
     @OptIn(UncheckedApi::class)
     @JvmName("entry0")
@@ -300,7 +307,8 @@ class Compound private constructor(
      * If this compound does not have an entry under [key], [defaultValue] is used to create it lazily.
      * If there is already an entry provider for [key] that matches [T], [defaultValue] will be ignored and the existing provider will be returned.
      *
-     * @throws IllegalArgumentException If there already is an entry provider for [key], but for a different type.
+     * @throws IllegalArgumentException If an existing entry provider has a different type, or if a direct
+     * entry has an incompatible type and JVM assertions are enabled.
      */
     @OptIn(UncheckedApi::class)
     @JvmName("entry1")
@@ -312,7 +320,8 @@ class Compound private constructor(
      * If this compound does not have an entry under [key], [defaultValue] is used to create it lazily.
      * If there is already an entry provider for [key] that matches [type], [defaultValue] will be ignored and the existing provider will be returned.
      *
-     * @throws IllegalArgumentException If there already is an entry provider for [key], but for a different type.
+     * @throws IllegalArgumentException If an existing entry provider has a different type, or if a direct
+     * entry has an incompatible type and JVM assertions are enabled.
      */
     @UncheckedApi
     @JvmName("entry1")
@@ -350,6 +359,7 @@ class Compound private constructor(
     
     /**
      * Gets the value under [key] as [type] [T] or null if it doesn't exist.
+     * @throws IllegalArgumentException If [type] is incompatible with an existing entry and JVM assertions are enabled.
      */
     @Suppress("UNCHECKED_CAST")
     @UncheckedApi
@@ -359,6 +369,7 @@ class Compound private constructor(
     
     /**
      * Gets the value under [key] as [T] or null if it doesn't exist.
+     * @throws IllegalArgumentException If [T] is incompatible with an existing entry and JVM assertions are enabled.
      */
     @OptIn(UncheckedApi::class)
     inline operator fun <reified T : Any> get(key: String): T? {
@@ -368,6 +379,7 @@ class Compound private constructor(
     /**
      * Gets the value under [key] as [type] [T] or puts and returns
      * the value generated by [defaultValue] if it doesn't exist.
+     * @throws IllegalArgumentException If [type] is incompatible with an existing entry and JVM assertions are enabled.
      */
     @UncheckedApi
     fun <T : Any> getOrPut(type: KType, key: String, defaultValue: () -> T): T = lock.withLock {
@@ -383,6 +395,7 @@ class Compound private constructor(
     /**
      * Gets the value under [key] as [T] or puts and returns
      * the value generated by [defaultValue] if it doesn't exist.
+     * @throws IllegalArgumentException If [T] is incompatible with an existing entry and JVM assertions are enabled.
      */
     @OptIn(UncheckedApi::class)
     inline fun <reified T : Any> getOrPut(key: String, noinline defaultValue: () -> T): T {
@@ -391,6 +404,7 @@ class Compound private constructor(
     
     /**
      * Puts all entries from [other] into this compound.
+     * @throws IllegalArgumentException If an entry type is incompatible with an existing provider and JVM assertions are enabled.
      */
     @Suppress("UNCHECKED_CAST")
     fun putAll(other: Compound) {
@@ -569,7 +583,8 @@ class Compound private constructor(
  * If the compound does not have an entry under [key], [defaultValue] is used to create it lazily.
  * If there is already an entry provider for [key] that matches [T], [defaultValue] will be ignored and the existing provider will be returned.
  *
- * On resolving, the returned provider can throw [IllegalArgumentException] if there already is an entry provider for [key], but for a different type.
+ * On resolving, the returned provider can throw [IllegalArgumentException] if an existing entry provider has a
+ * different type, or if a direct entry has an incompatible type and JVM assertions are enabled.
  *
  * @see Compound.entry
  */
@@ -582,7 +597,8 @@ inline fun <reified T : Any> Provider<Compound>.entry(key: String, noinline defa
  * If the compound does not have an entry under [key], [defaultValue] is used to create it lazily.
  * If there is already an entry provider for [key] that matches [T], [defaultValue] will be ignored and the existing provider will be returned.
  *
- * On resolving, the returned provider can throw [IllegalArgumentException] if there already is an entry provider for [key], but for a different type.
+ * On resolving, the returned provider can throw [IllegalArgumentException] if an existing entry provider has a
+ * different type, or if a direct entry has an incompatible type and JVM assertions are enabled.
  *
  * @see Compound.entry
  */

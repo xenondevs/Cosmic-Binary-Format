@@ -23,11 +23,11 @@ class CompoundTest {
         
         compound["a"] = 1
         assertEquals(1, compound["a"])
-        assertThrows<Exception> { compound.get<String>("a") } // should fail because of incorrect type
+        assertThrows<IllegalArgumentException> { compound.get<String>("a") } // should fail because of incorrect type
         
         assertDoesNotThrow { compound["a"] = "1" } // changing type should be allowed if there is no entry provider
         compound.entry<String>("a")
-        assertThrows<Exception> { compound["a"] = 1 } // type change is no longer allowed
+        assertThrows<IllegalArgumentException> { compound["a"] = 1 } // type change is no longer allowed
     }
     
     @Test
