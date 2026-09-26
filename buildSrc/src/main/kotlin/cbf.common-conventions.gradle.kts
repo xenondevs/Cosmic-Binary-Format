@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "xyz.xenondevs.cbf"
-version = "1.0.0-alpha.4"
+version = "1.0.0-alpha.5"
 
 val libs = the<LibrariesForLibs>()
 
