@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.10"
-junit = "6.0.3"
+junit = "6.1.1"
 
 [libraries]
 commons-collections = { module = "xyz.xenondevs.commons:commons-collections", version = "1.32" }
