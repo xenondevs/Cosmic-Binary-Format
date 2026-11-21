@@ -2,6 +2,7 @@ package xyz.xenondevs.cbf.serializer
 
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
+import xyz.xenondevs.cbf.io.readSizedArray
 
 internal object StringBinarySerializer : UnversionedBinarySerializer<String>() {
     
@@ -26,8 +27,12 @@ internal object StringArrayBinarySerializer : UnversionedBinarySerializer<Array<
         obj.forEach(writer::writeString)
     }
     
+    @Suppress("UNCHECKED_CAST")
     override fun readUnversioned(reader: ByteReader): Array<String> {
-        return Array(reader.readVarInt()) { reader.readString() }
+        // each string consists of at least a varint length
+        return reader.readSizedArray(1, { arrayOfNulls<String>(it) }, Array<String?>::copyOf) { array, index ->
+            array[index] = reader.readString()
+        } as Array<String>
     }
     
     override fun copyNonNull(obj: Array<String>): Array<String> {

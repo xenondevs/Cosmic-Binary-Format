@@ -22,6 +22,7 @@ internal class CollectionBinarySerializer<E : Any, C : Collection<E>>(
     
     override fun readUnversioned(reader: ByteReader): C {
         val size = reader.readVarInt()
+        require(size >= 0) { "size must not be negative: $size" }
         val collection = createCollection(size.coerceAtMost(MAX_PRE_ALLOCATE_COLLECTION_SIZE))
         repeat(size) {
             collection += elementSerializer.read(reader)

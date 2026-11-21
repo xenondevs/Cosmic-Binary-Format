@@ -3,6 +3,7 @@ package xyz.xenondevs.cbf
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
 import xyz.xenondevs.cbf.io.byteWriter
+import xyz.xenondevs.cbf.io.requireRemaining
 import xyz.xenondevs.cbf.serializer.VersionedBinarySerializer
 import xyz.xenondevs.cbf.util.debugRequire
 import xyz.xenondevs.cbf.util.withLocksOrdered
@@ -553,6 +554,7 @@ class Compound private constructor(
         
         override fun readVersioned(version: UByte, reader: ByteReader): Compound {
             val mapSize = reader.readVarInt()
+            reader.requireRemaining(mapSize, 2) // each entry consists of at least a key and a varint length
             val entryMap = HashMap.newHashMap<String, CompoundEntry<*>>(mapSize.coerceAtMost(MAX_PRE_ALLOCATE_COLLECTION_SIZE))
             
             repeat(mapSize) {

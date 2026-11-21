@@ -2,6 +2,7 @@ package xyz.xenondevs.cbf.serializer
 
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
+import xyz.xenondevs.cbf.io.readSizedArray
 
 internal object ByteBinarySerializer : UnversionedBinarySerializer<Byte>() {
     
@@ -27,7 +28,7 @@ internal object ByteArrayBinarySerializer : UnversionedBinarySerializer<ByteArra
     }
     
     override fun readUnversioned(reader: ByteReader): ByteArray {
-        return ByteArray(reader.readVarInt()) { reader.readByte() }
+        return reader.readBytes(reader.readVarInt())
     }
     
     override fun copyNonNull(obj: ByteArray): ByteArray {
@@ -60,7 +61,9 @@ internal object ShortArrayBinarySerializer : UnversionedBinarySerializer<ShortAr
     }
     
     override fun readUnversioned(reader: ByteReader): ShortArray {
-        return ShortArray(reader.readVarInt()) { reader.readShort() }
+        return reader.readSizedArray(2, ::ShortArray, ShortArray::copyOf) { array, index ->
+            array[index] = reader.readShort()
+        }
     }
     
     override fun copyNonNull(obj: ShortArray): ShortArray {
@@ -93,7 +96,9 @@ internal object IntArrayBinarySerializer : UnversionedBinarySerializer<IntArray>
     }
     
     override fun readUnversioned(reader: ByteReader): IntArray {
-        return IntArray(reader.readVarInt()) { reader.readVarInt() }
+        return reader.readSizedArray(1, ::IntArray, IntArray::copyOf) { array, index ->
+            array[index] = reader.readVarInt()
+        }
     }
     
     override fun copyNonNull(obj: IntArray): IntArray {
@@ -126,7 +131,9 @@ internal object LongArrayBinarySerializer : UnversionedBinarySerializer<LongArra
     }
     
     override fun readUnversioned(reader: ByteReader): LongArray {
-        return LongArray(reader.readVarInt()) { reader.readVarLong() }
+        return reader.readSizedArray(1, ::LongArray, LongArray::copyOf) { array, index ->
+            array[index] = reader.readVarLong()
+        }
     }
     
     override fun copyNonNull(obj: LongArray): LongArray {
@@ -159,7 +166,9 @@ internal object FloatArrayBinarySerializer : UnversionedBinarySerializer<FloatAr
     }
     
     override fun readUnversioned(reader: ByteReader): FloatArray {
-        return FloatArray(reader.readVarInt()) { reader.readFloat() }
+        return reader.readSizedArray(4, ::FloatArray, FloatArray::copyOf) { array, index ->
+            array[index] = reader.readFloat()
+        }
     }
     
     override fun copyNonNull(obj: FloatArray): FloatArray {
@@ -192,7 +201,9 @@ internal object DoubleArrayBinarySerializer : UnversionedBinarySerializer<Double
     }
     
     override fun readUnversioned(reader: ByteReader): DoubleArray {
-        return DoubleArray(reader.readVarInt()) { reader.readDouble() }
+        return reader.readSizedArray(8, ::DoubleArray, DoubleArray::copyOf) { array, index ->
+            array[index] = reader.readDouble()
+        }
     }
     
     override fun copyNonNull(obj: DoubleArray): DoubleArray {
@@ -225,7 +236,9 @@ internal object BooleanArrayBinarySerializer : UnversionedBinarySerializer<Boole
     }
     
     override fun readUnversioned(reader: ByteReader): BooleanArray {
-        return BooleanArray(reader.readVarInt()) { reader.readBoolean() }
+        return reader.readSizedArray(1, ::BooleanArray, BooleanArray::copyOf) { array, index ->
+            array[index] = reader.readBoolean()
+        }
     }
     
     override fun copyNonNull(obj: BooleanArray): BooleanArray {
@@ -258,7 +271,9 @@ internal object CharArrayBinarySerializer : UnversionedBinarySerializer<CharArra
     }
     
     override fun readUnversioned(reader: ByteReader): CharArray {
-        return CharArray(reader.readVarInt()) { reader.readChar() }
+        return reader.readSizedArray(2, ::CharArray, CharArray::copyOf) { array, index ->
+            array[index] = reader.readChar()
+        }
     }
     
     override fun copyNonNull(obj: CharArray): CharArray {

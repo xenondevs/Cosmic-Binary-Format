@@ -1,9 +1,16 @@
 package xyz.xenondevs.cbf.io
 
+import java.io.ByteArrayInputStream
+import java.io.DataInput
+import java.io.DataInputStream
+import java.io.EOFException
+import java.io.InputStream
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 class ByteReaderTest {
     
@@ -135,7 +142,7 @@ class ByteReaderTest {
             0, 0, 0,
             -1, -1, 127
         )
-    
+        
         assertEquals(-8388608, reader.readMediumLE())
         assertEquals(0, reader.readMediumLE())
         assertEquals(8388607, reader.readMediumLE())
@@ -388,5 +395,151 @@ class ByteReaderTest {
         assertEquals(UUID(Long.MAX_VALUE, Long.MIN_VALUE), reader.readUUID())
     }
     
+    @Test
+    fun testReadByteEof() {
+        val reader = byteReaderOf(1)
+        assertEquals(1, reader.readByte())
+        assertFailsWith<EOFException> { reader.readByte() }
+        
+        val streamReader = ByteReader.fromStream(ByteArrayInputStream(byteArrayOf(1)))
+        assertEquals(1, streamReader.readByte())
+        assertFailsWith<EOFException> { streamReader.readByte() }
+    }
+    
+    @Test
+    fun testReadBytesMoreThanRemaining() {
+        val reader = byteReaderOf(1, 2, 3)
+        assertFailsWith<EOFException> { reader.readBytes(4) }
+        assertContentEquals(byteArrayOf(1, 2, 3), reader.readBytes(3))
+    }
+    
+    @Test
+    fun testReadBytesIntoArrayMoreThanRemaining() {
+        val reader = byteReaderOf(1, 2)
+        assertFailsWith<EOFException> { reader.readBytes(ByteArray(4), 0, 4) }
+    }
+    
+    @Test
+    fun testReadBytesNegativeLength() {
+        val reader = byteReaderOf(1)
+        assertFailsWith<IllegalArgumentException> { reader.readBytes(-1) }
+        assertFailsWith<IllegalArgumentException> { reader.readBytes(ByteArray(1), 0, -1) }
+    }
+    
+    @Test
+    fun testReadStringMoreThanRemaining() {
+        val reader = byteReaderOf(5, 'a'.code.toByte())
+        assertFailsWith<EOFException> { reader.readString() }
+    }
+    
+    @Test
+    fun testRemaining() {
+        val reader = byteReaderOf(1, 2, 3)
+        assertEquals(3, reader.remaining())
+        reader.readByte()
+        assertEquals(2, reader.remaining())
+        
+        assertEquals(3, ByteReader.fromStream(ByteArrayInputStream(byteArrayOf(1, 2, 3))).remaining())
+        assertNull(ByteReader.fromStream(InputStream.nullInputStream()).remaining())
+        assertNull(ByteReader.fromDataInput(DataInputStream(ByteArrayInputStream(byteArrayOf(1)))).remaining())
+    }
+    
+    @Test
+    fun testSkip() {
+        val reader = byteReaderOf(1, 2, 3)
+        reader.skip(2)
+        assertEquals(3, reader.readByte())
+        assertFailsWith<EOFException> { reader.skip(1) }
+        assertFailsWith<IllegalArgumentException> { reader.skip(-1) }
+    }
+    
+    @Test
+    fun testSkipDataInput() {
+        val reader = ByteReader.fromDataInput(DataInputStream(ByteArrayInputStream(byteArrayOf(1, 2, 3))))
+        reader.skip(2)
+        assertEquals(3, reader.readByte())
+        assertFailsWith<EOFException> { reader.skip(1) }
+        assertFailsWith<IllegalArgumentException> { reader.skip(-1) }
+    }
+    
+    @Test
+    fun testSkipDataInputWithoutSkipProgress() {
+        // a DataInput whose skipBytes() never makes progress, even though the input has not ended
+        val input = object : DataInput by DataInputStream(ByteArrayInputStream(byteArrayOf(1, 2, 3))) {
+            override fun skipBytes(n: Int): Int = 0
+        }
+        val reader = ByteReader.fromDataInput(input)
+        reader.skip(2)
+        assertEquals(3, reader.readByte())
+        assertFailsWith<EOFException> { reader.skip(1) }
+    }
+    
+    @Test
+    fun testAsInputStream() {
+        val reader = byteReaderOf(-1, 1)
+        val ins = reader.asInputStream()
+        assertEquals(255, ins.read())
+        assertEquals(1, ins.read())
+        assertEquals(-1, ins.read())
+    }
+    
+    @Test
+    fun testAsInputStreamAvailable() {
+        val ins = byteReaderOf(1, 2, 3).asInputStream()
+        assertEquals(3, ins.available())
+        ins.read()
+        assertEquals(2, ins.available())
+        
+        val unknownIns = ByteReader.fromDataInput(DataInputStream(ByteArrayInputStream(byteArrayOf(1)))).asInputStream()
+        assertEquals(0, unknownIns.available())
+    }
+    
+    @Test
+    fun testAsInputStreamSkip() {
+        val ins = byteReaderOf(1, 2, 3, 4).asInputStream()
+        assertEquals(0, ins.skip(-1))
+        assertEquals(0, ins.skip(0))
+        assertEquals(1, ins.skip(1))
+        assertEquals(3, ins.skip(Long.MAX_VALUE))
+        assertEquals(-1, ins.read())
+        
+        val unknownIns = ByteReader.fromDataInput(DataInputStream(ByteArrayInputStream(byteArrayOf(1, 2, 3)))).asInputStream()
+        assertEquals(3, unknownIns.skip(Long.MAX_VALUE))
+        assertEquals(-1, unknownIns.read())
+    }
+    
+    @Test
+    fun testAsInputStreamPartialReads() {
+        val reader = byteReaderOf(1, 2, 3)
+        val ins = reader.asInputStream()
+        val buffer = ByteArray(5)
+        assertEquals(3, ins.read(buffer, 0, 5))
+        assertContentEquals(byteArrayOf(1, 2, 3), buffer.copyOf(3))
+        assertEquals(-1, ins.read(buffer, 0, 5))
+    }
+    
+    @Test
+    fun testAsInputStreamReadNBytes() {
+        val reader = byteReaderOf(1, 2, 3)
+        val ins = reader.asInputStream()
+        assertContentEquals(byteArrayOf(1, 2, 3), ins.readNBytes(10))
+        assertContentEquals(ByteArray(0), ins.readNBytes(10))
+    }
+    
+    @Test
+    fun testAsInputStreamReadAllBytes() {
+        val reader = byteReaderOf(1, 2, 3)
+        assertContentEquals(byteArrayOf(1, 2, 3), reader.asInputStream().readAllBytes())
+    }
+    
+    @Test
+    fun testAsDataInput() {
+        val reader = byteReaderOf(1, 2, 3)
+        val input = reader.asDataInput()
+        assertEquals(1, input.readByte().toInt())
+        assertEquals(1, input.skipBytes(1))
+        assertEquals(3, input.readByte().toInt())
+        assertFailsWith<EOFException> { input.readByte() }
+    }
+    
 }
-

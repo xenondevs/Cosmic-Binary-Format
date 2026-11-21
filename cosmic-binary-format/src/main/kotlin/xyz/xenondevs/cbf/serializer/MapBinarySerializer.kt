@@ -23,6 +23,7 @@ internal class MapBinarySerializer<K : Any, V : Any>(
     
     override fun readUnversioned(reader: ByteReader): Map<K?, V?> {
         val size = reader.readVarInt()
+        require(size >= 0) { "size must not be negative: $size" }
         val map = createMap(size.coerceAtMost(MAX_PRE_ALLOCATE_COLLECTION_SIZE))
         repeat(size) {
             map[keySerializer.read(reader)] = valueSerializer.read(reader)

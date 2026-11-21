@@ -44,7 +44,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
-internal const val MAX_PRE_ALLOCATE_COLLECTION_SIZE = 16384
+internal const val MAX_PRE_ALLOCATE_COLLECTION_SIZE = 8192
 
 object Cbf {
     
@@ -128,7 +128,7 @@ object Cbf {
     }
     
     /**
-     * Reads a value of the reified type [T?][T] from the [reader]. 
+     * Reads a value of the reified type [T?][T] from the [reader].
      * Can return null if null was written.
      *
      * @throws IllegalStateException if no serializer is registered for the type
@@ -151,9 +151,9 @@ object Cbf {
     }
     
     /**
-     * Reads a value of the type [T?][T] ([type]) from the [reader]. 
+     * Reads a value of the type [T?][T] ([type]) from the [reader].
      * Can return null if null was written.
-     * 
+     *
      * @throws IllegalStateException if no serializer is registered for the type
      * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
@@ -165,7 +165,7 @@ object Cbf {
     /**
      * Reads a value of the type [T?][T] ([type]) from [bytes].
      * Can return null if null was written.
-     * 
+     *
      * @throws IllegalArgumentException if [strict] is true and the byte array contains more data than was read
      * @throws IllegalStateException if no serializer is registered for the type
      * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
@@ -197,7 +197,7 @@ object Cbf {
     
     /**
      * Writes [value] of the type [T?][T] ([type]) to the [writer].
-     * 
+     *
      * @throws IllegalStateException if no serializer is registered for the type
      * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
@@ -208,7 +208,7 @@ object Cbf {
     
     /**
      * Writes [value] of the type [T?][T] ([type]) to a [ByteArray].
-     * 
+     *
      * @throws IllegalStateException if no serializer is registered for the type
      * @throws CbfSecurityException if the creation of a serializer was prevented by the security manager
      */
@@ -229,7 +229,7 @@ object Cbf {
     
     /**
      * Creates a deep copy of [value] of the type [T] ([type]).
-     * 
+     *
      * @throws IllegalStateException if no copier is registered for the type
      * @throws CbfSecurityException if the creation of a copier was prevented by the security manager
      */

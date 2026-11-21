@@ -2,20 +2,20 @@ package xyz.xenondevs.cbf.serializer
 
 import xyz.xenondevs.cbf.io.ByteReader
 import xyz.xenondevs.cbf.io.ByteWriter
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.EOFException
 import kotlin.reflect.KType
 
 /**
  * Reads a value of type [T] from [bytes].
- * 
+ *
  * @throws IllegalArgumentException if [strict] is true and the byte array contains more data than was read
+ * @throws EOFException if the byte array contains less data than was expected
  */
 fun <T : Any> BinarySerializer<T>.read(bytes: ByteArray, strict: Boolean = true): T? {
-    val inp = ByteArrayInputStream(bytes)
-    val reader = ByteReader.fromStream(inp)
+    val reader = ByteReader.fromByteArray(bytes)
     val value = read(reader)
-    if (strict && inp.available() > 0)
+    if (strict && (reader.remaining() ?: 0) > 0)
         throw IllegalArgumentException("Byte array contains more data than expected")
     return value
 }
@@ -67,7 +67,7 @@ interface BinarySerializerFactory {
 /**
  * A [BinarySerializer] for an unversioned format of [T], supporting nulls.
  * Every value is prefixed with an unsigned byte, where `0` indicates a null value and `1` indicates a non-null value.
- * 
+ *
  * This serializer can be swapped out with [VersionedBinarySerializer] to make format changes, without breaking compatibility.
  * The remaining values (`2-255`) can then be used to indicate different versions of the format.
  */
@@ -117,17 +117,17 @@ abstract class UnversionedBinarySerializer<T : Any> : BinarySerializer<T> {
  * A [BinarySerializer] for a versioned format of [T], supporting nulls.
  * Every value is prefixed with an unsigned byte, where `0` indicates a null value and any other value indicates a non-null value in a specific version.
  * A [VersionedBinarySerializer] can only write data in the current version, but can also read data serialized in previous versions.
- * 
+ *
  * @param currentVersion The current version of the format, i.e. the unsigned byte that will be written on serialization.
  */
 abstract class VersionedBinarySerializer<T : Any>(
     private val currentVersion: UByte
 ) : BinarySerializer<T> {
-
+    
     init {
         require(currentVersion > 0U) { "Version 0 is reserved for null values" }
     }
-
+    
     final override fun write(obj: T?, writer: ByteWriter) {
         if (obj == null) {
             writer.writeUnsignedByte(0U)
@@ -136,12 +136,12 @@ abstract class VersionedBinarySerializer<T : Any>(
             writeVersioned(obj, writer)
         }
     }
-
+    
     final override fun read(reader: ByteReader): T? {
         val version = reader.readUnsignedByte()
         if (version == 0U.toUByte())
             return null
-
+        
         return readVersioned(version, reader)
     }
     
