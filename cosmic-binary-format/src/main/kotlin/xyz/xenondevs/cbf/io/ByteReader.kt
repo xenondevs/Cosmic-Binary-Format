@@ -323,7 +323,7 @@ interface ByteReader {
     }
     
     /**
-     * Reads a [String].
+     * Reads a [String] as a varint byte length prefix followed by the UTF-8 encoded bytes.
      * @throws EOFException if there are fewer bytes remaining than the string length prefix declares.
      * @throws IllegalArgumentException if the string length prefix is negative.
      */

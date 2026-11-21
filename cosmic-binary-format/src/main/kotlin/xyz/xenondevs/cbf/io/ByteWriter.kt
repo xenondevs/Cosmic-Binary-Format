@@ -263,11 +263,12 @@ interface ByteWriter {
     }
     
     /**
-     * Writes a [String].
+     * Writes a [String] as a varint byte length prefix followed by the UTF-8 encoded bytes.
      */
     fun writeString(value: String) {
-        writeVarInt(value.length)
-        writeBytes(value.toByteArray())
+        val bytes = value.toByteArray()
+        writeVarInt(bytes.size)
+        writeBytes(bytes)
     }
     
     /**

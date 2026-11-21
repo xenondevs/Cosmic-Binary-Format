@@ -306,12 +306,12 @@ class ByteWriterTest {
             byteWriter { writeLongLE(Long.MIN_VALUE) },
             byteArrayOf(0, 0, 0, 0, 0, 0, 0, -128)
         )
-    
+        
         kotlin.test.assertContentEquals(
             byteWriter { writeLongLE(0) },
             byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0)
         )
-    
+        
         kotlin.test.assertContentEquals(
             byteWriter { writeLongLE(Long.MAX_VALUE) },
             byteArrayOf(-1, -1, -1, -1, -1, -1, -1, 127)
@@ -365,7 +365,7 @@ class ByteWriterTest {
             byteWriter { writeFloat(0f) },
             0, 0, 0, 0
         )
-    
+        
         kotlin.test.assertContentEquals(
             byteWriter { writeFloat(Float.MAX_VALUE) },
             Float.MAX_VALUE.toBits().toByteArray()
@@ -383,7 +383,7 @@ class ByteWriterTest {
             byteWriter { writeFloatLE(0f) },
             0, 0, 0, 0
         )
-    
+        
         kotlin.test.assertContentEquals(
             byteWriter { writeFloatLE(Float.MAX_VALUE) },
             Float.MAX_VALUE.toBits().toByteArrayLE()
@@ -401,7 +401,7 @@ class ByteWriterTest {
             byteWriter { writeDouble(0.0) },
             0, 0, 0, 0, 0, 0, 0, 0
         )
-    
+        
         kotlin.test.assertContentEquals(
             byteWriter { writeDouble(Double.MAX_VALUE) },
             Double.MAX_VALUE.toBits().toByteArray()
@@ -419,7 +419,7 @@ class ByteWriterTest {
             byteWriter { writeDoubleLE(0.0) },
             0, 0, 0, 0, 0, 0, 0, 0
         )
-    
+        
         kotlin.test.assertContentEquals(
             byteWriter { writeDoubleLE(Double.MAX_VALUE) },
             Double.MAX_VALUE.toBits().toByteArrayLE()
@@ -499,12 +499,19 @@ class ByteWriterTest {
     }
     
     
-    
     @Test
     fun testWriteString() {
         assertContentEquals(
             byteWriter { writeString("abc") },
             3, 'a'.code.toByte(), 'b'.code.toByte(), 'c'.code.toByte()
+        )
+    }
+    
+    @Test
+    fun testWriteStringNonAscii() {
+        assertContentEquals(
+            byteWriter { writeString("\u00E4") },
+            2, -61, -92
         )
     }
     

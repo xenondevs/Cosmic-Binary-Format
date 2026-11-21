@@ -1,5 +1,7 @@
 package xyz.xenondevs.cbf.io
 
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.io.ByteArrayInputStream
 import java.io.DataInput
 import java.io.DataInputStream
@@ -380,6 +382,23 @@ class ByteReaderTest {
         )
         
         assertEquals("abc", reader.readString())
+    }
+    
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "",
+        "abc",
+        "äöüß", // 2 bytes per character
+        "€中文", // 3 bytes per character
+        "🍎🚀" // 4 bytes per character (surrogate pairs)
+    ])
+    fun testWriteReadString(value: String) {
+        val reader = ByteReader.fromByteArray(byteWriter {
+            writeString(value)
+            writeByte(42)
+        })
+        assertEquals(value, reader.readString())
+        assertEquals(42, reader.readByte())
     }
     
     @Test
