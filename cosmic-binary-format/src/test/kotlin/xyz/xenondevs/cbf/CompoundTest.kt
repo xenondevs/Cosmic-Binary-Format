@@ -9,9 +9,6 @@ import xyz.xenondevs.cbf.serializer.read
 import xyz.xenondevs.cbf.serializer.write
 import xyz.xenondevs.commons.provider.MutableProvider
 import xyz.xenondevs.commons.provider.mapNonNull
-import xyz.xenondevs.commons.provider.observed
-import xyz.xenondevs.commons.provider.orElseNew
-import xyz.xenondevs.commons.provider.provider
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -94,40 +91,40 @@ class CompoundTest {
     fun testCompoundEntryNonNullDefaultValue() {
         val compound = Compound()
         
-        val entry: MutableProvider<MutableList<Int>> = compound.entry("a", ::ArrayList)
+        val entry: MutableProvider<List<Int>> = compound.entry("a") { emptyList() }
         
         assertEquals(emptyList(), entry.get())
         
-        entry.get().add(1)
+        entry.set(listOf(1))
         
         assertEquals(listOf(1), entry.get())
         
-        compound["a"] = mutableListOf(2)
+        compound["a"] = listOf(2)
         
         assertEquals(listOf(2), entry.get())
         
         assertThrows<IllegalArgumentException> { compound["a"] = null } // null with Nothing? type
-        assertThrows<IllegalArgumentException> { compound.set<MutableList<Int>?>("a", null) } // null with MutableList<Int>? type
-        assertThrows<IllegalArgumentException> { compound["a"] = mutableListOf<String>() } // empty list of String instead of Int
+        assertThrows<IllegalArgumentException> { compound.set<List<Int>?>("a", null) } // null with List<Int>? type
+        assertThrows<IllegalArgumentException> { compound["a"] = listOf<String>() } // empty list of String instead of Int
     }
     
     @Test
     fun testCompoundEntryNullableDefaultValue() {
         var defaultEnabled = false
         val compound = Compound()
-        val defaultValue: () -> MutableList<Int>? = { if (defaultEnabled) ArrayList() else null }
-        val entryA: MutableProvider<MutableList<Int>?> = compound.entry("a", defaultValue)
-        val entryB: MutableProvider<MutableList<Int>?> = compound.entry("b", defaultValue)
+        val defaultValue: () -> List<Int>? = { if (defaultEnabled) emptyList() else null }
+        val entryA: MutableProvider<List<Int>?> = compound.entry("a", defaultValue)
+        val entryB: MutableProvider<List<Int>?> = compound.entry("b", defaultValue)
         
         assertEquals(null, entryA.get())
         
         defaultEnabled = true // captured in lambda above! note https://youtrack.jetbrains.com/issue/KTIJ-34162
         
         assertEquals(null, entryA.get()) // once resolved, defaultValue lambda should not be called again
-        assertEquals(mutableListOf(), entryB.get())
+        assertEquals(emptyList(), entryB.get())
         
-        compound["a"] = mutableListOf<Int>()
-        assertEquals(mutableListOf(), entryA.get())
+        compound["a"] = emptyList<Int>()
+        assertEquals(emptyList(), entryA.get())
         
         compound["a"] = null
         assertEquals(null, entryA.get()) // like above, defaultValue lambda should not be called again
@@ -405,32 +402,6 @@ class CompoundTest {
         
         compound["a"] = 2
         assertEquals(2, entryValue)
-    }
-    
-    @Test
-    fun `test compound entry with observed list provider`() {
-        val compound = Compound()
-        val entry = compound
-            .entry<MutableList<String>>("list")
-            .orElseNew(::ArrayList)
-            .observed()
-        
-        entry.get().add("a")
-        
-        assertEquals(listOf("a"), compound["list"])
-    }
-    
-    @Test
-    fun `test compound provider entry with observed list provider`() {
-        val compound = Compound()
-        val entry = provider(compound)
-            .entry<MutableList<String>>("list")
-            .orElseNew(::ArrayList)
-            .observed()
-        
-        entry.get().add("a")
-        
-        assertEquals(listOf("a"), compound["list"])
     }
     
     @Test

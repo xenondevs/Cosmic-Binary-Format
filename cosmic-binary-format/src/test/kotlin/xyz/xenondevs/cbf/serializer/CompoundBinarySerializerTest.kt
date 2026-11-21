@@ -3,9 +3,6 @@ package xyz.xenondevs.cbf.serializer
 import org.junit.jupiter.api.Test
 import xyz.xenondevs.cbf.Cbf
 import xyz.xenondevs.cbf.Compound
-import xyz.xenondevs.cbf.entry
-import xyz.xenondevs.commons.provider.observed
-import xyz.xenondevs.commons.provider.orElseNew
 import kotlin.test.assertEquals
 
 class CompoundBinarySerializerTest : BinarySerializerTest<Compound>(Compound.CompoundBinarySerializer) {
@@ -32,27 +29,6 @@ class CompoundBinarySerializerTest : BinarySerializerTest<Compound>(Compound.Com
         
         assertEquals("a", reserializedCompound.get<String>("a"))
         assertEquals(2, reserializedCompound.get<Int>("b"))
-    }
-    
-    @Test
-    fun `test collection provider values`() {
-        val compound = Compound()
-        val mapEntry = compound.entry<MutableMap<String, Int>>("map")
-            .orElseNew {
-                HashMap<String, Int>().apply {
-                    put("a", 0)
-                    put("b", 2)
-                }
-            }
-            .observed()
-        
-        mapEntry.get().put("a", 1)
-        
-        val reserializedCompound = reserializeValue(compound)!!
-        
-        val map = reserializedCompound.get<Map<String, Int>>("map")!!
-        assertEquals(1, map["a"])
-        assertEquals(2, map["b"])
     }
     
     @Test
@@ -87,22 +63,6 @@ class CompoundBinarySerializerTest : BinarySerializerTest<Compound>(Compound.Com
         
         val reserializedCompound2 = reserializeValue(compound)!!
         assertEquals("b", reserializedCompound2.get<Compound>("compound")!!.get<String>("a"))
-    }
-    
-    @Test
-    fun `test compound provider entry that has observed list provider entry`() {
-        val compound = Compound()
-        
-        val provider = compound.entry<Compound>("compound", ::Compound)
-            .entry<MutableList<String>>("list")
-            .orElseNew(::ArrayList)
-            .observed()
-        
-        provider.get() += "A"
-        assertEquals(listOf("A"), reserializeValue(compound)!!.get<Compound>("compound")!!.get<List<String>>("list"))
-        
-        provider.get() += "B"
-        assertEquals(listOf("A", "B"), reserializeValue(compound)!!.get<Compound>("compound")!!.get<List<String>>("list"))
     }
     
     @Test

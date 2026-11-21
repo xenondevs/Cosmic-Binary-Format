@@ -272,7 +272,7 @@ class Compound private constructor(
         val entry = entryMap[key] as CompoundEntry<T>?
         
         when (entry) {
-            is DirectCompoundEntry<T> -> {
+            is DirectCompoundEntry<*> -> {
                 if (value != null) {
                     entry.set(type.withNullability(false), value)
                 } else {

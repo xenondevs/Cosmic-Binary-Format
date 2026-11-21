@@ -21,13 +21,13 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platformLauncher)
-    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.kotlin.test.junit5)
 }
 
 java {
     withSourcesJar()
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 

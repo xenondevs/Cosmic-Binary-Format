@@ -1,19 +1,19 @@
 [versions]
-kotlin = "2.3.10"
-junit = "6.0.3"
+kotlin = "2.4.21"
+junit = "6.1.3"
 
 [libraries]
-commons-collections = { module = "xyz.xenondevs.commons:commons-collections", version = "1.32" }
-commons-provider = { module = "xyz.xenondevs.commons:commons-provider", version = "2.0.0-alpha.9" }
-commons-reflection = { module = "xyz.xenondevs.commons:commons-reflection", version = "1.32" }
-dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.1.0" }
+commons-collections = { module = "xyz.xenondevs.commons:commons-collections", version = "1.38" }
+commons-provider = { module = "xyz.xenondevs.commons:commons-provider", version = "2.0.0-alpha.11" }
+commons-reflection = { module = "xyz.xenondevs.commons:commons-reflection", version = "1.38" }
+dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.3.0" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
-kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
+kotlin-test-junit5 = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
 
 [plugins]
-jmh = { id = "me.champeau.jmh", version = "0.7.3" }
+jmh = { id = "me.champeau.jmh", version = "0.7.4" }
